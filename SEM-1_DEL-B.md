@@ -1,7 +1,5 @@
 # [Semesteroppgave 1: “Rogue One oh one”](https://retting.ii.uib.no/inf101.v18.sem1/blob/master/SEM-1_DEL-B.md) Del B: Implementasjonsarbeid
 
-**OBS: koden / oppgaveteksen er ikke helt ferdig ennå – du kan lese den og se på ting online men ikke laste den ned**
-
 * [Oversikt](SEM-1.md)
 * [Praktisk informasjon](SEM-1.md#praktisk-informasjon)
 * [Del A: Bakgrunn, modellering og utforskning](SEM-1_DEL-A.md)
@@ -86,5 +84,62 @@ Vi vil gjerne la brukeren kunne plukke opp og legge fra seg ting på kartet – 
    * `game.drop()` kan i prinsippet feile (fullt på bakken, kanskje?), i såfall returnerer den `false` og du bør *ikke* slette tingen fra `Player`-objektet
 * **d)** Det er praktisk for brukeren å vite hva man bærer på, så legg inn navnet på objektet i status-meldingen (fra B2.e)  
 
-###
-###
+### Deloppgave B5: Finne synlige ting / ting i nærheten
+IGame spesifiserer en metode `getVisible()` som skal gi deg alle locations i nærheten som du kan se. Denne er foreløpig ikke skikkelig implementert. Den kaller `map.getNeighbourhood(currentLocation, dist)`, som mangler implementasjon for dist > 0.
+
+* **a)** Lag en enkel versjon av `getNeighbourhood()` som bare returnerer alle de direkte naboene til lokasjonen. ILocation har metoder som kan hjelpe deg (men du må kanskje flytte resultatet over i en liste). Med *naboer* mener vi her alle de åtte cellene som er rundt cellene i midten, *unntatt* de av naboene som er utenfor kartet (du vil uansett ikke få tak i ILocations for dissse); og med *nabolag* tenker også på naboene til naboene osv.
+* **b)** Det er litt dumt å bare kunne se de aller nærmeste cellene. Endre din `getNeighbourhood()` slik at den finner alle locations som er innenfor <code>dist</code> cellers avstand. (Dette er gjerne mye vanskeligere. Du kan sette begrensninger på <code>dist</code> om vil, men du bør håndtere minst 3.)
+* **c)** Du bør lage tester for dette også, slik som i B3. Du trenger et GameMap, og en ILocation på kartet.
+   * Du kan sjekke at resultatet fra `getNeighbourhood()` er riktig ved å gå gjennom hele listen og så sjekke at `centre.gridDistanceTo(element) <= dist`.
+   * Du må også teste at du får det forventede antall naboer (f.eks. så lenge du er midt inne i kartet skal du ha 8 naboer for `dist=1`, 24 for `dist=2`). Sjekk også at du får riktig antall naboer når du er ute i kanten eller hjørnene av kartet. Du bør gjerne ha tester for minst 3 scenarier.
+* **d)** *(Ekstra:)* nabolagslisten er litt mer praktisk hvis de nærmeste naboenen kommer først. Det kan være din versjon allerede funker slik – men i såfall bør du også teste det.
+   * Gjør om nødvendig om på `getNeighbourhood()` slik at de nærmeste cellene kommer først i listen.
+   * Lag en test / juster testene over, slik at du sjekker avstanden (med `gridDistanceTo()`) til senere elementer i listen alltid er like eller større en avstanden til de tidligere elementene (du kan bruke liknende teknikk som når du testet at items var sortert etter størrelse).  
+
+Du vil kanskje ha lyst på en annen (mer fornuftig) `getVisible()` senere – da kan du enten legge til en ny metode i IGame og Game, og bruke den i stedet, eller evt. kommentere ut svar et ditt på B5.b).
+
+Hvis du vil ha *skikkelig* synlighet, f.eks. slik at aktørene ikke kan oppdage det som er bak vegger, trenger du en betydelig mer komplisert synlighetsalgoritme. Den går an å lage en veldig simplistisk synlighetstest ved hjelp av `ILocation.gridLineTo(ILocation)`, som gir deg alle locations om ligger på en linje mellom denne og en annen location – men dette er ikke en del av oppgave (du kan selvfølgelig likevel prøve deg i Del C!).
+
+### Deloppgave B6: Enkelt “Angrep”
+Tradisjonelle roguelikes er *veldig* opptatt av slossing (kan med rette kalles “hack-and-slash”), så vi bør ha med en eller annen slik mekanikk. Du kan selvfølgelig velge selv (i del C) hva slags betydning dette skal ha for historien i spillet (om du har en historie).
+
+Kampmekanikken er en forenkling av vanlige regler fra liknende dataspill og bord-rollespill:
+* A *gjør et angrep* på B
+* A har en “attack score” og B har en “defence score”
+* Vi tilsetter litt tilfeldighet, og hvis *attack* > *defence* har A vunnet, ellers har B vunnet.
+* Hvis A vinner, blir B skadet – A har en “damage score” som sier hvor mye og B sine “health points” holder rede på skade som har skjedd og hvor alvorlig den er
+* Hvis B vinner, skjer det ingen ting – bortsett fra at det nå antakelig er B sin tur, og B kan angripe A (eller løpe sin vei)
+
+En grei formel for angrep er f.eks.: `attack+random.nextInt(20)+1 >= defence+10` (brukt i et populert bordrollespill basert på 20-sidede terninger).
+
+* **a)** Du må implementere ferdig metoden `Game.attack(dir, target)` (vi har lagt den i Game-klassen, slik at den kan håndtere spillereglene uten at aktørene "jukser"). Du kan justere reglene litt etter hva du ønsker selv, men formelen over er at bra utgangspunkt.
+   * Når du har avgjort vinneren kan du gi en passende melding på skjermen. F.eks., `formatMessage("%s hits %s for %d damage", currentActor.getName(), target.getName(), damage);` og en tilsvarende hvis angrepet mislykkes.
+   * Du skal også kalle `handleDamage()` på target-objektet. Denne metoden returnerer skaden som *faktisk* skjedde – det kan f.eks. brukes i tilfeller hvor forsvareren hadde en eller annen form for beskyttelse. 
+* **b)** Selv om Game nå kan avgjøre hva som skjer med angrep, er det foreløpig ingen som vil prøve seg på å angripe! Oppdater `Rabbit` slik at `doTurn()` metoden kaller `attack()` i stedet for `move()` (enten når det er mulig, eller når spilleren ved siden av):
+   * Du trenger å sjekke alle gyldige naboer, ikke bare de du kan gå til – du er kanskje særlig interessert i å angripe andre IActors, og de befinner seg i felter du ikke kan gå inn i (ja, i prinsippet vil det også være mulig å angripe og ødelegge veggene – men de har ganske mange helsepoeng!).
+   * I prinsippet kan du angripe et hvilket som helst IItem så lenge det er i et nabofelt (evt. kan du oppgi `GridDirection.CENTER` og angripe noe i samme felt), men du har kanskje lyst til å sjekke mot `instanceof IActor` eller `instanceof IPlayer`.
+   * Du må kalle `attack()`-metoden med et spesifikk IItem som mål, og med en spesifikk retning.
+   * En mulighet er f.eks.: gå gjennom alle nabocellene; hvis du ser en gulrot, flytt dit, hvis du ser en IPlayer, angrip og eller beveg i en tilfeldig retning.
+   * Prøv spillet og se hva som skjer.
+* **c)** Spilleren bør også kunne angripe. En grei mekanikk for det er at når spilleren prøver å “gå på” en annen aktør, så telles det som angrip (i stedet for å resultere i en “Ouch!” (eller enda verre, IllegalMoveException)). Går helt fint å la spilleren få lov å angripe veggene også. Siden du må velge et spesifikt item å angripe, kan du f.eks. velge det første fra `game.getLocalItems()` (evt. finne noe som er en IActor hvis mulig)
+   * Prøv spillet og se hva som skjer.
+   
+*MERK:* det er forskjell om en kartcelle er “lovlig”, “lovlig og opptatt” og “ulovlig”. Hvis du prøver å gå `NORTH` fra (0,0) vil du f.eks. havne utenfor kartet, så dette er en ulovlig celle (egentlig ikke en celle i det hele tatt). Hvis du antar at du har en location `loc` (f.eks. din nåværende plassering fra `game.getLocation()`):
+   * Hvis du gjør `loc.canGo(GridDirection.NORTH)`, så får du vite om det finnes en lovlig location nord for nåværende location; tilsvarende med `game.getMap().hasNeighbour(loc, GridDirection.NORTH)`. Det kan likevel godt være at du ikke får lov til å gjøre `game.move(GridDirection.NORTH)` likevel, f.eks. fordi det er en vegg der.
+   * Hvis du gjør `game.canGo(GridDirection.NORTH)` eller `map.canGo(GridDirection.NORTH)` får du vite om det går an å gå nordover, altså at naboen i nord ikke er ulovlig og ikke er opptatt (av en vegg eller en aktør). Litt forskjellige deler av systemet har altså litt forskjellig oppfatning av “canGo” og om man skal sjekke om ting er opptatt eller ikke.
+   * For angrep er du antakelig særlig interessert i feltene som er lovlige men opptatte.
+   
+ – i Rabbit, Player og Game.attack()
+
+
+### Deloppgave B7: Spørsmål
+* **a)** Du har måttet gjøre en del arbeid med nabo-celler og slikt. Håndterer du dette på en annen måte enn vi gjorde i labbene (f.eks. cell-automatene og labyrinten)? Hva synes du er mest praktisk?
+
+* **b)** Hvorfor går de fleste av spill-"trekkene" (slik som at noen flytter seg, plukker en ting, legger ned en ting, angriper naboen, etc.) gjennom Game? Kan du se for deg fordeler / ulemper ved dette? 
+
+* **c)** I en del av metodene burde vi kanskje vært litt mer presise på hva som er “forkravene” – hva må være oppfylt for at det skal gå bra å kalle denne metoden? Vi har nevnt litt at `game.move()` krever at feltet i retningen er lovlig og ledig. Se gjennom de andre metodene i `Game` og `GameMap` og se om de har spesielle antakelser rundt parameterne. Ser du noe som burde endres? F.eks., enten metoder som sjekker for ting som kan gå galt, men ikke sier noe om forutsetningene i dokument – eller metoder som *burde* sjekket parameterne sine / andre forutsetninger. F.eks., hva med `Game.addItem()`  (og `drop()` også, forsåvidt) – bør den f.eks. sjekke at feltet ikke allerede er opptatt (f.eks. legge til ny IActor når det allerede er en IActor der, e.l.)?
+
+* **d)** Det er to kart-grensesnitt, IGameMap og IMapView. Hvorfor tror du vi har gjort det slikt?
+
+* **e)** Tenker du annerledes om noen av spørsmålene fra Del A nå?
+

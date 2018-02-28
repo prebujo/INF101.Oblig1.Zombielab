@@ -1,7 +1,5 @@
 # [Semesteroppgave 1: “Rogue One oh one”](https://retting.ii.uib.no/inf101.v18.sem1/blob/master/SEM-1_DEL-A.md) Del A: Bakgrunn, modellering og utforskning
 
-**OBS: koden / oppgaveteksen er ikke helt ferdig ennå – du kan lese den og se på ting online men ikke laste den ned**
-
 * [Oversikt](SEM-1.md)
 * [Praktisk informasjon](SEM-1.md#praktisk-informasjon)
 * [Del A: Bakgrunn, modellering og utforskning](SEM-1_DEL-A.md)
@@ -60,8 +58,6 @@ Dette er likende til prosessen vi snakket om på de første forelesningene:
 Mesteparten av denne jobben er allerede gjort for deg. Din jobb er nå å sette deg inn i koden og vår dungeon crawling modell. Vi har gjort analyse og design og en god del implementasjon, så vi er ca. på slutten av punkt 3. Du må bli kjent med koden og komfortabel med å gjøre endringer, og så gå videre med implementasjonen. I siste del av oppgaven er det du som er “sjefen”, og kan gjøre (nesten) som du vil med design og regler.
 
 ### Analyse – hva er de essensielle bitene av Rogue-101?
-TODO: make links
-
 Basert på tidligere erfaringer med slike spill, samt grunding tenking og lesing av de relevante Wikipedia-sidene, ser vi for oss følgende:
 
 * Alt foregår på et ruteformet kart (2D grid)
@@ -82,8 +78,8 @@ Basert på tidligere erfaringer med slike spill, samt grunding tenking og lesing
 ### Design – hvordan lager vi dette i Java?
 Basert på dette tenker vi oss følgende typer objekter:
 
-* IGameMap – spillkartet
-* IItem – en ting. Siden både småobjekter (sverd og gulrøtter), aktører og vegger er ting som befinner seg på kartet, er det praktisk å gjøre alle til IItem.
+* [IMapView](src/inf101/v18/rogue101/map/IMapView.java], [IGameMap](src/inf101/v18/rogue101/map/IGameMap.java] – spillkartet
+* [IItem](src/inf101/v18/rogue101/objects/IItem.java) – en ting. Siden både småobjekter (sverd og gulrøtter), aktører og vegger er ting som befinner seg på kartet, er det praktisk å gjøre alle til IItem.
     * Wall – en IItem som ikke kan dele plass med noe annet
     * IActor – en IItem som bevege seg og ikke kan dele plass med en annen IActor
        * IPlayer – en IActor som styres ved at brukeren trykker på tastene
@@ -145,7 +141,7 @@ Hvis du ser på koden for [Rabbit.java]() finner du gjerne også ut hvorfor ting
 
 #### Bedre gulrøtter
 
-Prøv også å justere gulrøttene litt ([Carrot](TODO)):
+Prøv også å justere gulrøttene litt ([Carrot](src/inf101/v18/rogue101/examples/Carrot.java)):
 
 * **a)** Gulrøttene får helsen satt til -1 når de blir spist – etter helsereglene våre vil de derfor bli fjernet fra kartet. Prøv å sette helsen til 0 i stedet. Hvorfor går det ikke bedre med kaninene selv om gulrøttene nå blir værende på kartet?
 * **b)** Det hadde kanskje vært praktisk (ihvertfall for kaninene) om gulrøttene vokste seg store og fine igjen etter en stund; for eksempel ved at de “helbreder” ett helsepoeng for hver runde som går – men `Carrot` har ingen `doTurn()` metode slik `Rabbit` har, så den får ikke med seg at rundene går eller at kaninene hopper rundt (rent bortsett fra at det går an å “jukse” ved å regne med / håpe på at `draw()` blir kalt en gang per runde).
