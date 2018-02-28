@@ -1,5 +1,7 @@
 # [Semesteroppgave 1: “Rogue One oh one”](https://retting.ii.uib.no/inf101.v18.sem1/blob/master/SEM-1_DEL-C.md) Del A: Fri utfoldelse
 
+**OBS: koden / oppgaveteksen er ikke helt ferdig ennå – du kan lese den og se på ting online men ikke laste den ned**
+
 * [Oversikt](SEM-1.md)
 * [Praktisk informasjon](SEM-1.md#praktisk-informasjon)
 * [Del A: Bakgrunn, modellering og utforskning](SEM-1_DEL-A.md)
