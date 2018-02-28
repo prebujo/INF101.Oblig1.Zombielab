@@ -1,7 +1,6 @@
 # [Semesteroppgave 1: “Rogue One oh one”](https://retting.ii.uib.no/inf101.v18.sem1/blob/master/SEM-1_DEL-A.md) Del A: Bakgrunn, modellering og utforskning *(15%)*
 
-* [Oversikt](SEM-1.md)
-* [Praktisk informasjon 5%](SEM-1.md#praktisk-informasjon)
+* [Oversikt](SEM-1.md) – [Praktisk informasjon 5%](SEM-1.md#praktisk-informasjon)
 * **Del A: Bakgrunn, modellering og utforskning 15%**
 * [Del B: Fullfør basisimplementasjonen 40%](SEM-1_DEL-B.md)
 * [Del C: Videreutvikling 40%](SEM-1_DEL-C.md)

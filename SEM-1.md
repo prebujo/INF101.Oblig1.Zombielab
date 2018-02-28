@@ -1,13 +1,13 @@
 # [Semesteroppgave 1: “Rogue One Oh One”](https://retting.ii.uib.no/inf101.v18.sem1/blob/master/SEM-1.md)
 
-* **Oversikt**
-* [Praktisk informasjon 5%](SEM-1.md#praktisk-informasjon)
+* **Oversikt** – Praktisk informasjon 5%
 * [Del A: Bakgrunn, modellering og utforskning 15%](SEM-1_DEL-A.md)
 * [Del B: Fullfør basisimplementasjonen 40%](SEM-1_DEL-B.md)
 * [Del C: Videreutvikling 40%](SEM-1_DEL-C.md)
 
 
 # Praktisk informasjon
+(Generell oversikt og ryddighet i innleveringen teller 5%)
 
 ## Sjekkliste:
 
@@ -27,8 +27,8 @@
    * [ ] Sjekk at du har formattert koden (bruk Source → Format i Eclipse, f.eks.)
    * [ ] Sjekk at all bruk av kilder, bilder, lyd, annen kode er spesifisert i README.md
    * [ ] Sjekk [README.md](README.md), commit og push!
-* [ ] Things to do
-* [ ] More things to do
+* [ ] *Things to do*
+* [ ] *More things to do*
 
 ## Om semesteroppgaven
 

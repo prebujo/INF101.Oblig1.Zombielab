@@ -1,7 +1,6 @@
 # [Semesteroppgave 1: “Rogue One oh one”](https://retting.ii.uib.no/inf101.v18.sem1/blob/master/SEM-1_DEL-B.md) Del B: Fullfør basisimplementasjonen
 
-* [Oversikt](SEM-1.md)
-* [Praktisk informasjon 5%](SEM-1.md#praktisk-informasjon)
+* [Oversikt](SEM-1.md) – [Praktisk informasjon 5%](SEM-1.md#praktisk-informasjon)
 * [Del A: Bakgrunn, modellering og utforskning 15%](SEM-1_DEL-A.md)
 * **Del B: Fullfør basisimplementasjonen 40%**
 * [Del C: Videreutvikling 40%](SEM-1_DEL-C.md)
@@ -148,7 +147,7 @@ En grei formel for angrep er f.eks.: `attack+random.nextInt(20)+1 >= defence+10`
 
 * **d)** Tenker du annerledes om noen av spørsmålene fra Del A nå?
 
-## *(5%)* Deloppgave B*n*
+## *(5%)* generelt
 
 *Ca. 5% for generell ryddighet og kvalitet.*
 

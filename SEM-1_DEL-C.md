@@ -1,7 +1,6 @@
 # [Semesteroppgave 1: “Rogue One oh one”](https://retting.ii.uib.no/inf101.v18.sem1/blob/master/SEM-1_DEL-C.md) Del C: Videreutvikling
 
-* [Oversikt](SEM-1.md)
-* [Praktisk informasjon 5%](SEM-1.md#praktisk-informasjon)
+* [Oversikt](SEM-1.md) – [Praktisk informasjon 5%](SEM-1.md#praktisk-informasjon)
 * [Del A: Bakgrunn, modellering og utforskning 15%](SEM-1_DEL-A.md)
 * [Del B: Fullfør basisimplementasjonen 40%](SEM-1_DEL-B.md)
 * **Del C: Videreutvikling 40%**
@@ -120,4 +119,4 @@ Det går foreløpig ikke an å vinne spillet – her må du eventuelt være krea
 
 
 
-# Gå videre til [**DEL D**](SEM-1.md#praktisk-informasjon)
+# Gå videre til [**Innlevering**](SEM-1.md#praktisk-informasjon)
