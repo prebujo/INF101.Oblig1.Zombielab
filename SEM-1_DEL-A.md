@@ -96,12 +96,12 @@ Vi har også et par andre mer abstrakte ting vi bør tenke på – f.eks. koordi
 * (IGrid<T> og IMultiGrid<T> – IGrid<T> er tilsvarende til den du har brukt i labbene tidligere; IMultiGrid<T> er et grid der hver celle er en liste av T-er. Den blir brukt av spillkartet, men du trenger neppe bruke den selv.)
 
 ### Deloppgave A1: Tilstand, oppførsel og grensesnitt for objektene
-*Du vil sikkert finne på lurere svar på spørsmålene etterhvert som du jobber med oppgaven. Det er fint om du lar de opprinnelige svarene stå (det er helt OK om de er totalt feil eller helt på jordet) og heller gjør tilføyelser. Du kan evt. bruke ~~overstryking~~ (TODO, putt dobbel tilde rundt teksten, `~~Rabbit.java funker fordi det bor en liten kanin inni datamaskinen~~`) for å markere det du ikke lenger synes er like lurt.
+*Du vil sikkert finne på lurere svar på spørsmålene etterhvert som du jobber med oppgaven. Det er fint om du lar de opprinnelige svarene stå (det er helt OK om de er totalt feil eller helt på jordet) og heller gjør tilføyelser. Du kan evt. bruke ~~overstryking~~ (putt dobbel tilde rundt teksten, `~~Rabbit.java funker fordi det bor en liten kanin inni datamaskinen~~`) for å markere det du ikke lenger synes er like lurt.
+
+Alle grensesnittene beskriver hvordan du kan håndtere objekter (objekter som er av klasser som implementerer grensesnittene). Selv om tilstanden til objektene er innkapslet (du vet ikke om feltvariablene), så lar metodene deg *observere* tilstanden, så ut fra de tilgjengelige metodene kan du spekulere litt rundt hvordan tilstanden må være.
 
 Les gjennom grensesnittene vi har nevnt over ([IGameMap](TODO), [IItem](TODO), [IActor](TODO), [INonPlayer](TODO), [IPlayer](TODO) – vent med å se på klassene) og svar på spørsmålene (skriv svarene i [README.md](README.md), det holder med én eller noen få setninger):
 
-
-Alle grensesnittene beskriver hvordan du kan håndtere objekter (objekter som er av klasser som implementerer grensesnittene). Selv om tilstanden til objektene er innkapslet (du vet ikke om feltvariablene), så lar metodene deg *observere* tilstanden, så ut fra de tilgjengelige metodene kan du spekulere litt rundt hvordan tilstanden må være.
 * **1. Hva vil du si utgjør tilstanden til objekter som implementerer de nevnte grensesnittene?**  *(F.eks. hvis du ser på `ILocation` så vil du gjerne se at ILocation-objekter må ha en tilstand som inkluderer `x`- og `y`-koordinater – selv om de sikkert kan lagres på mange forskjellige måter)*   
 
 * **2. Hva ser ut til å være sammenhengen mellom grensesnittene?** Flere av dem er f.eks. laget slik at de utvider (extends) andre grensesnitt.
