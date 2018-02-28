@@ -1,5 +1,6 @@
 # [Semesteroppgave 1: “Rogue One Oh One”](https://retting.ii.uib.no/inf101.v18.sem1/blob/master/SEM-1.md)
 
+* [README](README.md)
 * **Oversikt** – Praktisk informasjon 5%
 * [Del A: Bakgrunn, modellering og utforskning 15%](SEM-1_DEL-A.md)
 * [Del B: Fullfør basisimplementasjonen 40%](SEM-1_DEL-B.md)
@@ -7,28 +8,9 @@
 
 
 # Praktisk informasjon
-(Generell oversikt og ryddighet i innleveringen teller 5%)
-
-## Sjekkliste:
-
-* [ ] Gjøre Del A
-   * [ ] Oppdatere README.md, commit og push!
-* [ ] Gjøre Del B
-   * [ ] Oppdatere README.md, commit og push!
-* [ ] Gjøre Del C
-   * [ ] Commit og push ofte! 
-   * [ ] Beskrive hva du har gjort i README.md, fortell om eventuelt idé-samarbeid
-   * [ ] Sørge for at du har rettigheter til evt. mediafiler du bruker 
-* [ ] Gjøre klar innlevering
-   * [ ] Sjekke at alle filer som skal være med er med når du commiter
-   * [ ] Sjekk *Commits* siden på Retting, og se at ting du har pushet har dukket opp
-   * [ ] Sjekk teststatus på https://retting.ii.uib.no:81/me
-   * [ ] Sjekk at du har skrevet JavaDoc for nye metoder / typer du har lagt til
-   * [ ] Sjekk at du har formattert koden (bruk Source → Format i Eclipse, f.eks.)
-   * [ ] Sjekk at all bruk av kilder, bilder, lyd, annen kode er spesifisert i README.md
-   * [ ] Sjekk [README.md](README.md), commit og push!
-* [ ] *Things to do*
-* [ ] *More things to do*
+* **For å forstå hvordan du skal levere inn oppgaven må du ha gjort labbene** (spesielt Lab 1 og Lab 3).
+* **Semesteroppgaven vil være mye lettere å løse når du har ferdighetene og teorien fra labbene** (spesielt Lab 3 og 4) – det er best å ta seg tid til å løse disse først!
+* For poengsummen teller generell oversikt og ryddighet i innleveringen ca. 5%.
 
 ## Om semesteroppgaven
 
@@ -109,6 +91,27 @@ tidligere versjon hvis du har havnet på villspor.
   tilbakemelding hver gang du pusher til Gitlab, også før innleveringsfristen.
   Alt skal være *grønt* der. Hvis du ser feil der som du ikke finner ut av, er det bare å spørre om hjelp.
  
+
+## Sjekkliste:
+
+* [ ] Gjøre Del A
+   * [ ] Oppdatere README.md, commit og push!
+* [ ] Gjøre Del B
+   * [ ] Oppdatere README.md, commit og push!
+* [ ] Gjøre Del C
+   * [ ] Commit og push ofte! 
+   * [ ] Beskrive hva du har gjort i README.md, fortell om eventuelt idé-samarbeid
+   * [ ] Sørge for at du har rettigheter til evt. mediafiler du bruker 
+* [ ] Gjøre klar innlevering
+   * [ ] Sjekke at alle filer som skal være med er med når du commiter
+   * [ ] Sjekk *Commits* siden på Retting, og se at ting du har pushet har dukket opp
+   * [ ] Sjekk teststatus på https://retting.ii.uib.no:81/me
+   * [ ] Sjekk at du har skrevet JavaDoc for nye metoder / typer du har lagt til
+   * [ ] Sjekk at du har formattert koden (bruk Source → Format i Eclipse, f.eks.)
+   * [ ] Sjekk at all bruk av kilder, bilder, lyd, annen kode er spesifisert i README.md
+   * [ ] Sjekk [README.md](README.md), commit og push!
+* [ ] *Things to do*
+* [ ] *More things to do*
 
 ### Tips
 
