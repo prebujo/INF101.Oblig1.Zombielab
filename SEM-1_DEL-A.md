@@ -27,7 +27,7 @@ Ting som (kanskje) er nytt:
 Semesteroppgaven er en naturlig videreutvikling av Labyrint-oppgaven – i stedet for å bare gå rundt i en kjedelig labyrint, skal vi nå kunne gå rundt, plukke opp ting og interagere med ting.
 
 ### Bakgrunn
-Et eksempel på et slikt labyrint-spill er [Rogue](https://en.wikipedia.org/wiki/Rogue_(video_game)), som er et gammel [dungeon crawl](https://en.wikipedia.org/wiki/Dungeon_crawl)-spill med “tekst-grafikk”, der du går rundt i en labyrint, plukker opp ting og dreper monstre. De første slike spillene dukket opp på slutten av 1970-tallet; *Rogue* (1980) var et av de første, og har gitt navn til hele sjangeren ([“Roguelike”](https://en.wikipedia.org/wiki/Roguelike)). Dungeon crawls og roguelike spill har vært veldig populære opp gjennom tidene (ikke minst på grunn av fancy 2D-grafikk med tekst-symboler, som var et betydelig steg opp fra [tidligere adventure/fantasy spill](https://en.wikipedia.org/wiki/Colossal_Cave_Adventure) som hvor alt var bare tekst), inkludert gamle klassikere som [NetHack](TODO), [Moria](TODO) og [Larn](TODO). Ofte har disse spillene vært laget som hobbyprosjekter av programmører (informatikk-studenter, for eksempel) og vært mer kompliserte (og mye vanskeligere) enn spill fra kommersielle spillprodusenter, selv om de gjerne ikke har hatt spesielt fancy grafikk. 
+Et eksempel på et slikt labyrint-spill er [Rogue](https://en.wikipedia.org/wiki/Rogue_(video_game)), som er et gammel [dungeon crawl](https://en.wikipedia.org/wiki/Dungeon_crawl)-spill med “tekst-grafikk”, der du går rundt i en labyrint, plukker opp ting og dreper monstre. De første slike spillene dukket opp på slutten av 1970-tallet; *Rogue* (1980) var et av de første, og har gitt navn til hele sjangeren ([“Roguelike”](https://en.wikipedia.org/wiki/Roguelike)). Dungeon crawls og roguelike spill har vært veldig populære opp gjennom tidene (ikke minst på grunn av fancy 2D-grafikk med tekst-symboler, som var et betydelig steg opp fra [tidligere adventure/fantasy spill](https://en.wikipedia.org/wiki/Colossal_Cave_Adventure) som hvor alt var bare tekst), inkludert gamle klassikere som [NetHack](https://en.wikipedia.org/wiki/NetHack), [Moria](https://en.wikipedia.org/wiki/Moria_(video_game)) og [Larn](https://en.wikipedia.org/wiki/Larn_(video_game)). Ofte har disse spillene vært laget som hobbyprosjekter av programmører (informatikk-studenter, for eksempel) og vært mer kompliserte (og mye vanskeligere) enn spill fra kommersielle spillprodusenter, selv om de gjerne ikke har hatt spesielt fancy grafikk. 
 
 Moderne roguelike spill (og moderne utgaver av de gamle) kommer gjerne med mer fancy grafikk og er ofte laget av uavhengige utviklere. I de litt bredere kategoriene “dungeon crawls” og “adventure” finner du en haug med vanlige, populære spill – f.eks. [Zelda-serien](https://en.wikipedia.org/wiki/The_Legend_of_Zelda_(video_game)) (startet i 1986 med “gå rundt på et 2D-grid/kart, plukk opp ting, sloss med monstre og løs puzzles”; de nyeste versjonene tilbyr en åpen 3D-verden med detaljert fysikk, grafikk og lyd).
 
@@ -78,40 +78,41 @@ Basert på tidligere erfaringer med slike spill, samt grunding tenking og lesing
 ### Design – hvordan lager vi dette i Java?
 Basert på dette tenker vi oss følgende typer objekter:
 
-* [IMapView](src/inf101/v18/rogue101/map/IMapView.java], [IGameMap](src/inf101/v18/rogue101/map/IGameMap.java] – spillkartet
+* [IMapView](src/inf101/v18/rogue101/map/IMapView.java), [IGameMap](src/inf101/v18/rogue101/map/IGameMap.java) – spillkartet
+* [IGame](src/inf101/v18/rogue101/game/IGame.java) – selve spillet, som styrer reglene i spillverdenen
 * [IItem](src/inf101/v18/rogue101/objects/IItem.java) – en ting. Siden både småobjekter (sverd og gulrøtter), aktører og vegger er ting som befinner seg på kartet, er det praktisk å gjøre alle til IItem.
-    * Wall – en IItem som ikke kan dele plass med noe annet
-    * IActor – en IItem som bevege seg og ikke kan dele plass med en annen IActor
-       * IPlayer – en IActor som styres ved at brukeren trykker på tastene
-       * INonPlayer – en IActor som styrer seg selv (datamaskinen styrer)
+    * [Wall](src/inf101/v18/rogue101/objects/Wall.java) – en IItem som ikke kan dele plass med noe annet
+    * [IActor](src/inf101/v18/rogue101/objects/IActor.java) – en IItem som bevege seg og ikke kan dele plass med en annen IActor
+       * [IPlayer](src/inf101/v18/rogue101/objects/IPlayer.java) – en IActor som styres ved at brukeren trykker på tastene
+       * [INonPlayer](src/inf101/v18/rogue101/objects/INonPlayer.java) – en IActor som styrer seg selv (datamaskinen styrer)
        
 Vi har også et par andre mer abstrakte ting vi bør tenke på – f.eks. koordinater. Det går an å bruke heltall som koordinater / indekser (`int x`, `int y`), men det er generelt ganske praktisk med en egen abstraksjon for grid-plasseringer; blant annet kan vi da slippe å gjøre kompliserte utregninger på koordinatene for å finne frem til andre koordinater. Vi har derfor også:
-* ILocation – en lovlig (x,y)-koordinat på kartet. Hver ILocation har opptil åtte andre ILocations som naboer, og har metoder for å finne alle eller noen av naboene, og for å finne nabo i en spesifikk retning.
-* GridDirection – en retning (NORTH, SOUTH, ...), til bruk sammen med ILocation
-* IArea – et rektangulært sett med ILocations. Brukes f.eks. av spillkartet for å lettvint gå gjennom alle cellene/rutene i kartet.
-* (IGrid<T> og IMultiGrid<T> – IGrid<T> er tilsvarende til den du har brukt i labbene tidligere; IMultiGrid<T> er et grid der hver celle er en liste av T-er. Den blir brukt av spillkartet, men du trenger neppe bruke den selv.)
+* [ILocation](src/inf101/v18/grid/ILocation.java) – en lovlig (x,y)-koordinat på kartet. Hver ILocation har opptil åtte andre ILocations som naboer, og har metoder for å finne alle eller noen av naboene, og for å finne nabo i en spesifikk retning.
+* [GridDirection](src/inf101/v18/grid/GridDirection.java) – en retning (NORTH, SOUTH, ...), til bruk sammen med ILocation
+* [IArea](src/inf101/v18/grid/IArea.java) – et rektangulært sett med ILocations. Brukes f.eks. av spillkartet for å lettvint gå gjennom alle cellene/rutene i kartet.
+* ([IGrid<T>](src/inf101/v18/grid/IGrid.java) og [IMultiGrid<T>](src/inf101/v18/grid/IMultiGrid.java) – IGrid<T> er tilsvarende til den du har brukt i labbene tidligere; IMultiGrid<T> er et grid der hver celle er en liste av T-er. Den blir brukt av spillkartet, men du trenger neppe bruke den selv.)
 
 ### Deloppgave A1: Tilstand, oppførsel og grensesnitt for objektene
 *Du vil sikkert finne på lurere svar på spørsmålene etterhvert som du jobber med oppgaven. Det er fint om du lar de opprinnelige svarene stå (det er helt OK om de er totalt feil eller helt på jordet) og heller gjør tilføyelser. Du kan evt. bruke ~~overstryking~~ (putt dobbel tilde rundt teksten, `~~Rabbit.java funker fordi det bor en liten kanin inni datamaskinen~~`) for å markere det du ikke lenger synes er like lurt.
 
 Alle grensesnittene beskriver hvordan du kan håndtere objekter (objekter som er av klasser som implementerer grensesnittene). Selv om tilstanden til objektene er innkapslet (du vet ikke om feltvariablene), så lar metodene deg *observere* tilstanden, så ut fra de tilgjengelige metodene kan du spekulere litt rundt hvordan tilstanden må være.
 
-Les gjennom grensesnittene vi har nevnt over ([IGameMap](TODO), [IItem](TODO), [IActor](TODO), [INonPlayer](TODO), [IPlayer](TODO) – vent med å se på klassene) og svar på spørsmålene (skriv svarene i [README.md](README.md), det holder med én eller noen få setninger):
+Les gjennom grensesnittene vi har nevnt over [IGame](src/inf101/v18/rogue101/game/IGame.java), ([IMapView](src/inf101/v18/rogue101/map/IMapView.java), [IItem](src/inf101/v18/rogue101/objects/IItem.java), [IActor](src/inf101/v18/rogue101/objects/IActor.java), [INonPlayer](src/inf101/v18/rogue101/objects/INonPlayer.java), [IPlayer](src/inf101/v18/rogue101/objects/IPlayer.java) – vent med å se på klassene) og svar på spørsmålene (skriv svarene i [README.md](README.md), det holder med én eller noen få setninger):
 
 * **1. Hva vil du si utgjør tilstanden til objekter som implementerer de nevnte grensesnittene?**  *(F.eks. hvis du ser på `ILocation` så vil du gjerne se at ILocation-objekter må ha en tilstand som inkluderer `x`- og `y`-koordinater – selv om de sikkert kan lagres på mange forskjellige måter)*   
 
-* **2. Hva ser ut til å være sammenhengen mellom grensesnittene?** Flere av dem er f.eks. laget slik at de utvider (extends) andre grensesnitt.
+* **2. Hva ser ut til å være sammenhengen mellom grensesnittene?** Flere av dem er f.eks. laget slik at de utvider (extends) andre grensesnitt. Hvem ser ut til å ta imot / returnere objekter av de andre grensesnittene?
 
-* **3. Det er to grensesnitt for kart, både [IGameMap](TODO) og [IMapView](TODO). Hvorfor har vi gjort det slik?**
+* **3. Det er to grensesnitt for kart, både [IGameMap](src/inf101/v18/rogue101/map/IGameMap.java) og [IMapView](src/inf101/v18/rogue101/map/IMapView.java). Hvorfor har vi gjort det slik?**
 
-* **4. Hvorfor tror du [INonPlayer](TODO) og [IPlayer](TODO) er forskjellige? Ville du gjort det annerledes?**
+* **4. Hvorfor tror du [INonPlayer](src/inf101/v18/rogue101/objects/INonPlayer.java) og [IPlayer](src/inf101/v18/rogue101/objects/IPlayer.java) er forskjellige? Ville du gjort det annerledes?**
 
 ### Deloppgave A2: Eksempler på IItem og IActor
-Til denne deloppgaven kan du se først på [Carrot](TODO) og [Rabbit](TODO). Svar på spørsmålene (skriv svarene i [README.md](README.md), det holder med én eller noen få setninger):
+Til denne deloppgaven kan du se først på [Carrot](src/inf101/v18/rogue101/objects/Carrot.java) og [Rabbit](src/inf101/v18/rogue101/objects/Rabbit.java). Svar på spørsmålene (skriv svarene i [README.md](README.md), det holder med én eller noen få setninger):
 
 * **5. Stemmer implementasjonen overens med hva du tenkte om tilstanden i Spørsmål 1 (over)? Hva er evt. likt / forskjellig?**
 
-Se på [Game](TODO) og [GameMap](TODO) også.
+Se på [Game](src/inf101/v18/rogue101/game/Game.java) og [GameMap](src/inf101/v18/rogue101/map/GameMap.java) også.
 
 `Rabbit` trenger å vite hvor den er, fordi den skal prøve å spise gulroten (hvis den finner en) og fordi den må finne seg et gyldig sted å hoppe videre til.
 * **6. Hvordan finner Rabbit ut hvor den er, hvilke andre ting som er på stedet og hvor den har lov å gå?**
@@ -166,7 +167,7 @@ Prøv også å justere gulrøttene litt ([Carrot](src/inf101/v18/rogue101/exampl
 ### Deloppgave A5: Ting du ikke trenger å se på (0/100)
 
 * Du trenger ikke se på koden i `gfx` (grafikkbibliotek), `grid` (utvidet IGrid) eller `util` (generering av testdata).
-* Hvis du lager grafikk selv, vil du gjerne komme til å *bruke* `ITurtle` (fra `gfx`), men du trenger ikke se på implementasjone.
+* Hvis du lager grafikk selv, vil du gjerne komme til å *bruke* [`ITurtle`](src/inf101/v18/gfx/gfxmode/ITurtle.java) (fra `gfx`), men du trenger ikke se på implementasjone.
 * GameMap gjør bruk av `grid`-pakken, men du trenger antakelig ikke gjøre noe med den selv. 
-# Gå videre til Del B
-[SEM-1_DEL-B](SEM-1–DEL-B.md)
+
+# Gå videre til [**DEL B**](SEM-1–DEL-B.md)
