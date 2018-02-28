@@ -36,6 +36,16 @@ public class Printer implements IPaintLayer {
 			4.0000, -8.5000, 1.5000, 1.0000, true);
 	public static final TextFont FONT_ZXSPECTRUM7 = new TextFont("ZXSpectrum-7.otf", 22.00, TextMode.CHAR_BOX_SIZE,
 			3.1000, -3.8000, 1.0000, 1.0000, true);
+
+	/**
+	 * TTF file can be found here: http://users.teilar.gr/~g1951d/ in this ZIP file:
+	 * http://users.teilar.gr/~g1951d/Symbola.zip
+	 * <p>
+	 * (Put the extracted Symbola.ttf in src/inf101/v18/gfx/fonts/)
+	 */
+	public static final TextFont FONT_SYMBOLA = new TextFont("Symbola.ttf", 26.70, TextMode.CHAR_BOX_SIZE, -0.4000,
+			-7.6000, 1.35000, 1.0000, true);
+
 	/**
 	 * TTF file can be found here:
 	 * http://www.kreativekorp.com/software/fonts/c64.shtml
@@ -49,8 +59,6 @@ public class Printer implements IPaintLayer {
 	 */
 	public static final TextFont FONT_C64 = new TextFont("PetMe64.ttf", 31.50, TextMode.CHAR_BOX_SIZE, 0.0000, -4.000,
 			1.0000, 1.0000, true);
-	Color DEFAULT_FILL = Color.BLACK;
-	Color DEFAULT_STROKE = Color.TRANSPARENT;
 	private static final Paint DEFAULT_BACKGROUND = Color.TRANSPARENT;
 	private static final TextMode DEFAULT_MODE = TextMode.MODE_40X22;
 
@@ -66,6 +74,10 @@ public class Printer implements IPaintLayer {
 			;
 		return r;
 	}
+
+	Color DEFAULT_FILL = Color.BLACK;
+
+	Color DEFAULT_STROKE = Color.TRANSPARENT;
 
 	private TextMode textMode;
 	private Color fill;
@@ -87,6 +99,10 @@ public class Printer implements IPaintLayer {
 	private boolean csiEnabled = true;
 
 	private int csiMode = 0;
+
+	public Printer(double width, double height) {
+		this(null, new Canvas(width, height));
+	}
 
 	public Printer(Screen screen, Canvas page) {
 		this.screen = screen;
@@ -140,17 +156,6 @@ public class Printer implements IPaintLayer {
 				break;
 			}
 		});
-	}
-
-	private void drawChar(int x, int y, Char c) {
-		if (c != null) {
-			GraphicsContext context = textPage.getGraphicsContext2D();
-
-			context.setFill(c.fill);
-			context.setStroke(c.stroke);
-			font.drawTextAt(context, (x - 1) * getCharWidth(), y * getCharHeight(), c.s,
-					textMode.getCharWidth() / textMode.getCharBoxSize(), c.mode, c.bg);
-		}
 	}
 
 	private String addToCsiBuffer(String s) {
@@ -207,12 +212,38 @@ public class Printer implements IPaintLayer {
 		y = topMargin;
 	}
 
+	@Override
 	public void clear() {
 		print("\f");
 	}
 
 	public void clearAt(int x, int y) {
 		printAt(x, y, " ");
+	}
+
+	public void clearLine(int y) {
+		y = constrainY(y);
+		if (y > 0 && y <= TextMode.PAGE_HEIGHT_MAX) {
+			Arrays.fill(lineBuffer.get(y - 1), null);
+			redrawTextPage();
+		}
+	}
+
+	public void clearRegion(int x, int y, int width, int height) {
+		if (x > getLineWidth() || y > getPageHeight())
+			return;
+		int x2 = Math.min(x + width - 1, getLineWidth());
+		int y2 = Math.min(y + height - 1, getPageHeight());
+		if (x2 < 1 || y2 < 1)
+			return;
+		int x1 = Math.max(1, x);
+		int y1 = Math.max(1, y);
+		// Char fillWith = new Char("*", Color.BLACK, Color.GREEN, Color.TRANSPARENT,
+		// 0);
+		for (int i = y1; i <= y2; i++) {
+			Arrays.fill(lineBuffer.get(i - 1), x1 - 1, x2, null);
+		}
+		redrawTextPage();
 	}
 
 	private int constrainX(int x) {
@@ -249,26 +280,52 @@ public class Printer implements IPaintLayer {
 
 	public void cycleMode(boolean adjustDisplayAspect) {
 		textMode = textMode.nextMode();
-		if (adjustDisplayAspect)
+		if (adjustDisplayAspect && screen != null)
 			screen.setAspect(textMode.getAspect());
 		redrawTextPage();
 	}
 
-	public void drawCharCells() {
-		GraphicsContext context = screen.getBackgroundContext();
-		screen.clearBackground();
-		double w = getCharWidth();
-		double h = getCharHeight();
-		context.save();
-		context.setGlobalBlendMode(BlendMode.EXCLUSION);
-		context.setFill(Color.WHITE.deriveColor(0.0, 1.0, 1.0, 0.3));
-		for (int x = 0; x < getLineWidth(); x++) {
-			for (int y = 0; y < getPageHeight(); y++) {
-				if ((x + y) % 2 == 0)
-					context.fillRect(x * w, y * h, w, h);
-			}
+	private void drawChar(int x, int y, Char c) {
+		if (c != null) {
+			GraphicsContext context = textPage.getGraphicsContext2D();
+
+			context.setFill(c.fill);
+			context.setStroke(c.stroke);
+			font.drawTextAt(context, (x - 1) * getCharWidth(), y * getCharHeight(), c.s,
+					textMode.getCharWidth() / textMode.getCharBoxSize(), c.mode, c.bg);
 		}
-		context.restore();
+	}
+
+	public void drawCharCells() {
+		if (screen != null) {
+			GraphicsContext context = screen.getBackgroundContext();
+			screen.clearBackground();
+			double w = getCharWidth();
+			double h = getCharHeight();
+			context.save();
+			context.setGlobalBlendMode(BlendMode.EXCLUSION);
+			context.setFill(Color.WHITE.deriveColor(0.0, 1.0, 1.0, 0.1));
+			for (int x = 0; x < getLineWidth(); x++) {
+				for (int y = 0; y < getPageHeight(); y++) {
+					if ((x + y) % 2 == 0)
+						context.fillRect(x * w, y * h, w, h);
+				}
+			}
+			context.restore();
+		}
+	}
+
+	public Color getBackground(int x, int y) {
+		Char c = null;
+		if (x > 0 && x <= TextMode.LINE_WIDTH_MAX && y > 0 && y <= TextMode.PAGE_HEIGHT_MAX) {
+			c = lineBuffer.get(y - 1)[x - 1];
+		}
+		Color bg = Color.TRANSPARENT;
+		if (c != null && c.bg instanceof Color)
+			bg = (Color) c.bg;
+		else if (background instanceof Color)
+			bg = (Color) background;
+		return bg;
 	}
 
 	public boolean getBold() {
@@ -305,41 +362,6 @@ public class Printer implements IPaintLayer {
 			return fill;
 	}
 
-	public Color getBackground(int x, int y) {
-		Char c = null;
-		if (x > 0 && x <= TextMode.LINE_WIDTH_MAX && y > 0 && y <= TextMode.PAGE_HEIGHT_MAX) {
-			c = lineBuffer.get(y - 1)[x - 1];
-		}
-		Color bg = Color.TRANSPARENT;
-		if (c != null && c.bg instanceof Color)
-			bg = (Color) c.bg;
-		else if (background instanceof Color)
-			bg = (Color) background;
-		return bg;
-	}
-
-	public void setBackground(int x, int y, Paint bg) {
-		Char c = null;
-		if (x > 0 && x <= TextMode.LINE_WIDTH_MAX && y > 0 && y <= TextMode.PAGE_HEIGHT_MAX) {
-			c = lineBuffer.get(y - 1)[x - 1];
-		}
-		if (c != null) {
-			c.bg = bg;
-			drawChar(x, y, c);
-		}
-	}
-
-	public void setColor(int x, int y, Color fill) {
-		Char c = null;
-		if (x > 0 && x <= TextMode.LINE_WIDTH_MAX && y > 0 && y <= TextMode.PAGE_HEIGHT_MAX) {
-			c = lineBuffer.get(y - 1)[x - 1];
-		}
-		if (c != null) {
-			c.fill = fill;
-			drawChar(x, y, c);
-		}
-	}
-
 	public TextFont getFont() {
 		return font;
 	}
@@ -367,6 +389,10 @@ public class Printer implements IPaintLayer {
 		return (videoAttrs & TextFont.ATTR_INVERSE) != 0;
 	}
 
+	public TextMode getTextMode() {
+		return textMode;
+	}
+
 	/**
 	 * @return the topMargin
 	 */
@@ -388,6 +414,20 @@ public class Printer implements IPaintLayer {
 
 	public boolean isFilled(int x, int y) {
 		return !getChar(x, y).equals(" ");
+	}
+
+	@Override
+	public void layerToBack() {
+		if (screen != null) {
+			screen.moveToBack(this);
+		}
+	}
+
+	@Override
+	public void layerToFront() {
+		if (screen != null) {
+			screen.moveToFront(this);
+		}
 	}
 
 	public void move(int deltaX, int deltaY) {
@@ -550,6 +590,17 @@ public class Printer implements IPaintLayer {
 		return old;
 	}
 
+	public void setBackground(int x, int y, Paint bg) {
+		Char c = null;
+		if (x > 0 && x <= TextMode.LINE_WIDTH_MAX && y > 0 && y <= TextMode.PAGE_HEIGHT_MAX) {
+			c = lineBuffer.get(y - 1)[x - 1];
+		}
+		if (c != null) {
+			c.bg = bg;
+			drawChar(x, y, c);
+		}
+	}
+
 	public void setBackground(Paint bgColor) {
 		this.background = bgColor != null ? bgColor : DEFAULT_BACKGROUND;
 	}
@@ -568,6 +619,17 @@ public class Printer implements IPaintLayer {
 			return c;
 		}
 		return null;
+	}
+
+	public void setColor(int x, int y, Color fill) {
+		Char c = null;
+		if (x > 0 && x <= TextMode.LINE_WIDTH_MAX && y > 0 && y <= TextMode.PAGE_HEIGHT_MAX) {
+			c = lineBuffer.get(y - 1)[x - 1];
+		}
+		if (c != null) {
+			c.fill = fill;
+			drawChar(x, y, c);
+		}
 	}
 
 	public void setFill(Color fill) {
@@ -615,6 +677,19 @@ public class Printer implements IPaintLayer {
 		this.stroke = stroke != null ? stroke : DEFAULT_STROKE;
 	}
 
+	public void setTextMode(TextMode mode) {
+		setTextMode(mode, false);
+	}
+
+	public void setTextMode(TextMode mode, boolean adjustDisplayAspect) {
+		if (mode == null)
+			throw new IllegalArgumentException();
+		textMode = mode;
+		if (adjustDisplayAspect && screen != null)
+			screen.setAspect(textMode.getAspect());
+		redrawTextPage();
+	}
+
 	public void setTopMargin() {
 		this.topMargin = y;
 	}
@@ -627,10 +702,6 @@ public class Printer implements IPaintLayer {
 		this.topMargin = constrainY(topMargin);
 	}
 
-	public void setVideoAttrs(int attr) {
-		videoAttrs = attr;
-	}
-
 	public void setVideoAttrDisabled(int attr) {
 		videoAttrs &= ~attr;
 	}
@@ -639,42 +710,12 @@ public class Printer implements IPaintLayer {
 		videoAttrs |= attr;
 	}
 
-	public void setTextMode(TextMode mode) {
-		setTextMode(mode, false);
-	}
-
-	public void setTextMode(TextMode mode, boolean adjustDisplayAspect) {
-		if (mode == null)
-			throw new IllegalArgumentException();
-		textMode = mode;
-		if (adjustDisplayAspect)
-			screen.setAspect(textMode.getAspect());
-		redrawTextPage();
-	}
-
-	public TextMode getTextMode() {
-		return textMode;
+	public void setVideoAttrs(int attr) {
+		videoAttrs = attr;
 	}
 
 	public void unplot(int x, int y) {
 		plot(x, y, (a, b) -> a & ~b);
 	}
 
-	@Override
-	public void layerToFront() {
-		screen.moveToFront(this);
-	}
-
-	@Override
-	public void layerToBack() {
-		screen.moveToBack(this);
-	}
-
-	public void clearLine(int y) {
-		y = constrainY(y);
-		if (y > 0 && y <= TextMode.PAGE_HEIGHT_MAX) {
-			Arrays.fill(lineBuffer.get(y - 1), null);
-			redrawTextPage();
-		}
-	}
 }

@@ -33,6 +33,21 @@ import java.util.List;
 public interface ILocation extends IPosition {
 
 	/**
+	 * Iterate over neighbours in eight directions.
+	 * <p>
+	 * (The iterator may yield fewer than eight locations if the current location is
+	 * at the edge of its containing area.
+	 * 
+	 * @return The neighbours in the eight cardinal and intercardinal directions
+	 *         ({@link GridDirection#NORTH}, @link GridDirection#SOUTH}, @link
+	 *         GridDirection#EAST}, @link GridDirection#WEST},
+	 *         {@link GridDirection#NORTHEAST}, @link
+	 *         GridDirection#NORTHWEST}, @link GridDirection#SOUTHEAST}, @link
+	 *         GridDirection#SOUTHWEST}, )
+	 */
+	Collection<ILocation> allNeighbours();
+
+	/**
 	 * Checks whether you can go towards direction dir without going outside the
 	 * area bounds
 	 * 
@@ -40,6 +55,22 @@ public interface ILocation extends IPosition {
 	 * @return True if go(dir) will succeed
 	 */
 	boolean canGo(GridDirection dir);
+
+	/**
+	 * Iterate over north/south/east/west neighbours.
+	 * <p>
+	 * (The iterator may yield fewer than four locations if the current location is
+	 * at the edge of its containing area.
+	 * 
+	 * @return The neighbours in the four cardinal directions
+	 *         ({@link GridDirection#NORTH}, @link GridDirection#SOUTH}, @link
+	 *         GridDirection#EAST}, @link GridDirection#WEST}
+	 */
+	Collection<ILocation> cardinalNeighbours();
+
+	IArea getArea();
+
+	int getIndex();
 
 	/**
 	 * Return the next location in direction dir.
@@ -55,37 +86,6 @@ public interface ILocation extends IPosition {
 	 *             if !canGo(dir)
 	 */
 	ILocation go(GridDirection dir);
-
-	/**
-	 * Iterate over north/south/east/west neighbours.
-	 * <p>
-	 * (The iterator may yield fewer than four locations if the current location is
-	 * at the edge of its containing area.
-	 * 
-	 * @return The neighbours in the four cardinal directions
-	 *         ({@link GridDirection#NORTH}, @link GridDirection#SOUTH}, @link
-	 *         GridDirection#EAST}, @link GridDirection#WEST}
-	 */
-	Collection<ILocation> cardinalNeighbours();
-
-	/**
-	 * Iterate over neighbours in eight directions.
-	 * <p>
-	 * (The iterator may yield fewer than eight locations if the current location is
-	 * at the edge of its containing area.
-	 * 
-	 * @return The neighbours in the eight cardinal and intercardinal directions
-	 *         ({@link GridDirection#NORTH}, @link GridDirection#SOUTH}, @link
-	 *         GridDirection#EAST}, @link GridDirection#WEST},
-	 *         {@link GridDirection#NORTHEAST}, @link
-	 *         GridDirection#NORTHWEST}, @link GridDirection#SOUTHEAST}, @link
-	 *         GridDirection#SOUTHWEST}, )
-	 */
-	Collection<ILocation> allNeighbours();
-
-	IArea getArea();
-
-	int getIndex();
 
 	/**
 	 * Find the grid cells between this location (exclusive) and another location

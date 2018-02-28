@@ -19,37 +19,6 @@ public class GridRetting {
 	private IGenerator<String> strGen = new StringGenerator();
 	private IGenerator<IGrid<String>> gridGen = new GridGenerator<String>(strGen);
 
-	/** A set on (x1,y1) doesn't affect a get on a different (x2,y2) */
-	public <T> void setGetIndependentProperty(IGrid<T> grid, ILocation l1, ILocation l2, T val) {
-		if (!l1.equals(l2)) {
-			T s = grid.get(l2);
-			grid.set(l1, val);
-			assertEquals(s, grid.get(l2));
-		}
-	}
-
-	@Test
-	public void setGetIndependentTest() {
-		for (int j = 0; j < 10; j++) {
-			IGrid<String> grid = gridGen.generate();
-			IGenerator<ILocation> lGen = new LocationGenerator(grid.getArea());
-
-			for (int i = 0; i < N; i++) {
-				ILocation l1 = lGen.generate();
-				ILocation l2 = lGen.generate();
-				String s = strGen.generate();
-
-				setGetIndependentProperty(grid, l1, l2, s);
-			}
-		}
-	}
-
-	/** get(x,y) is val after set(x, y, val) */
-	public <T> void setGetProperty(IGrid<T> grid, ILocation l, T val) {
-		grid.set(l, val);
-		assertEquals(val, grid.get(l));
-	}
-
 	public <T> void fillProperty1(IGrid<T> grid, T val) {
 		grid.fill(val);
 		for (ILocation l : grid.locations()) {
@@ -83,10 +52,35 @@ public class GridRetting {
 		}
 	}
 
-	@Test
-	public void uniqueLocations() {
-		for (int i = 0; i < N / 10; i++) {
+	/** A set on (x1,y1) doesn't affect a get on a different (x2,y2) */
+	public <T> void setGetIndependentProperty(IGrid<T> grid, ILocation l1, ILocation l2, T val) {
+		if (!l1.equals(l2)) {
+			T s = grid.get(l2);
+			grid.set(l1, val);
+			assertEquals(s, grid.get(l2));
 		}
+	}
+
+	@Test
+	public void setGetIndependentTest() {
+		for (int j = 0; j < 10; j++) {
+			IGrid<String> grid = gridGen.generate();
+			IGenerator<ILocation> lGen = new LocationGenerator(grid.getArea());
+
+			for (int i = 0; i < N; i++) {
+				ILocation l1 = lGen.generate();
+				ILocation l2 = lGen.generate();
+				String s = strGen.generate();
+
+				setGetIndependentProperty(grid, l1, l2, s);
+			}
+		}
+	}
+
+	/** get(x,y) is val after set(x, y, val) */
+	public <T> void setGetProperty(IGrid<T> grid, ILocation l, T val) {
+		grid.set(l, val);
+		assertEquals(val, grid.get(l));
 	}
 
 	/** Test that get gives back the same value after set. */
@@ -102,6 +96,12 @@ public class GridRetting {
 
 				setGetProperty(grid, l, s);
 			}
+		}
+	}
+
+	@Test
+	public void uniqueLocations() {
+		for (int i = 0; i < N / 10; i++) {
 		}
 	}
 

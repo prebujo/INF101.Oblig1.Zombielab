@@ -43,17 +43,15 @@ public interface IArea extends Iterable<ILocation> {
 	boolean equals(Object other);
 
 	/**
-	 * Get a location object corresponding to (x,y)
+	 * Convert a 1D coordinate to a location
+	 * <p>
+	 * Returns a location <code>l = fromIndex(i)</code> such that
+	 * <code>toIndex(l.getX(), l.getY()) == i</code>.
 	 * 
-	 * @param x
-	 *            X-coordinate
-	 * @param y
-	 *            Y-coordinate
-	 * @return The location object associated with (x,y)
-	 * @throws IndexOutOfBoundsException
-	 *             if {@link #contains(int, int)} returns false for (x,y)
+	 * @param i
+	 * @return A location
 	 */
-	ILocation location(int x, int y);
+	ILocation fromIndex(int i);
 
 	/** @return Height of the area */
 	int getHeight();
@@ -70,6 +68,32 @@ public interface IArea extends Iterable<ILocation> {
 
 	@Override
 	int hashCode();
+
+	/**
+	 * Get a location object corresponding to (x,y)
+	 * 
+	 * @param x
+	 *            X-coordinate
+	 * @param y
+	 *            Y-coordinate
+	 * @return The location object associated with (x,y)
+	 * @throws IndexOutOfBoundsException
+	 *             if {@link #contains(int, int)} returns false for (x,y)
+	 */
+	ILocation location(int x, int y);
+
+	/**
+	 * Get all locations in area
+	 * <p>
+	 * Since IArea is @{@link Iterable}, you can also use directly in a for-loop to
+	 * iterate over the locations.
+	 * <p>
+	 * All locations in the list are guaranteed to be valid according to
+	 * {@link #isValid(ILocation)}. The returned list cannot be modified.
+	 * 
+	 * @return An unmodifiable list with all the locations in the area
+	 */
+	List<ILocation> locations();
 
 	/**
 	 * Return an object for iterating over all the neighbours of the given position,
@@ -90,6 +114,23 @@ public interface IArea extends Iterable<ILocation> {
 	 *             if !contains(pos)
 	 */
 	Iterable<ILocation> neighboursOf(ILocation pos);
+
+	/** @return A (possibly) parallel {@link Stream} of all locations in the area */
+	Stream<ILocation> parallelStream();
+
+	/** @return A {@link Stream} of all locations in the area */
+	Stream<ILocation> stream();
+
+	/**
+	 * Convert a 2D coordinate to 1D
+	 * 
+	 * @param x
+	 *            X-coordinate
+	 * @param y
+	 *            Y-coordinate
+	 * @return x + y*getWidth()
+	 */
+	int toIndex(int x, int y);
 
 	@Override
 	String toString();
@@ -117,45 +158,4 @@ public interface IArea extends Iterable<ILocation> {
 	 * @return True if the area wraps around vertically
 	 */
 	boolean wrapsVertically();
-
-	/** @return A {@link Stream} of all locations in the area */
-	Stream<ILocation> stream();
-
-	/** @return A (possibly) parallel {@link Stream} of all locations in the area */
-	Stream<ILocation> parallelStream();
-
-	/**
-	 * Convert a 2D coordinate to 1D
-	 * 
-	 * @param x
-	 *            X-coordinate
-	 * @param y
-	 *            Y-coordinate
-	 * @return x + y*getWidth()
-	 */
-	int toIndex(int x, int y);
-
-	/**
-	 * Convert a 1D coordinate to a location
-	 * <p>
-	 * Returns a location <code>l = fromIndex(i)</code> such that
-	 * <code>toIndex(l.getX(), l.getY()) == i</code>.
-	 * 
-	 * @param i
-	 * @return A location
-	 */
-	ILocation fromIndex(int i);
-
-	/**
-	 * Get all locations in area
-	 * <p>
-	 * Since IArea is @{@link Iterable}, you can also use directly in a for-loop to
-	 * iterate over the locations.
-	 * <p>
-	 * All locations in the list are guaranteed to be valid
-	 * according to {@link #isValid(ILocation)}. The returned list cannot be modified.
-	 * 
-	 * @return An unmodifiable list with all the locations in the area
-	 */
-	List<ILocation> locations();
 }

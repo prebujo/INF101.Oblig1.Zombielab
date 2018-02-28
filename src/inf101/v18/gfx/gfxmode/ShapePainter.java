@@ -7,158 +7,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Shape;
 
 public class ShapePainter implements IShape {
-	private double x = 0, y = 0, w = 0, h = 0, rot = 0, strokeWidth = 0;
-	private List<Double> lineSegments = null;
-	private Paint fill = null;
-	private Paint stroke = null;
-	private Gravity gravity = Gravity.CENTER;
-	private DrawCommand cmd = null;
-	private boolean closed = false;
-	private final GraphicsContext context;
-
-	public ShapePainter(GraphicsContext context) {
-		super();
-		this.context = context;
-	}
-
-	public ShapePainter at(Point p) {
-		if (p != null) {
-			this.x = p.getX();
-			this.y = p.getY();
-		} else {
-			this.x = 0;
-			this.y = 0;
-		}
-		return this;
-	}
-
-	public ShapePainter x(double x) {
-		this.x = x;
-		return this;
-	}
-
-	public ShapePainter y(double y) {
-		this.y = y;
-		return this;
-	}
-
-	public ShapePainter width(double w) {
-		this.w = w;
-		return this;
-	}
-
-	public ShapePainter height(double h) {
-		this.h = h;
-		return this;
-	}
-
-	public IShape ellipse() {
-		cmd = new DrawEllipse();
-		return this;
-	}
-
-	public IShape rectangle() {
-		cmd = new DrawRectangle();
-		return this;
-	}
-
-	public IShape arc() {
-		// TODO Auto-generated method stub
-		return this;
-	}
-
-	public IShape line() {
-		cmd = new DrawLine();
-		return this;
-	}
-
-	public ShapePainter length(double l) {
-		w = l;
-		h = l;
-		return this;
-	}
-
-	public ShapePainter angle(double a) {
-		return this;
-	}
-
-	public ShapePainter fill() {
-		if (cmd != null)
-			cmd.fill(context, this);
-		return this;
-	}
-
-	public ShapePainter stroke() {
-		if (cmd != null)
-			cmd.stroke(context, this);
-		return this;
-	}
-
-	public ShapePainter fillPaint(Paint p) {
-		fill = p;
-		return this;
-	}
-
-	public ShapePainter strokePaint(Paint p) {
-		stroke = p;
-		return this;
-	}
-
-	public ShapePainter gravity(Gravity g) {
-		gravity = g;
-		return this;
-	}
-
-	public ShapePainter rotation(double angle) {
-		rot = angle;
-		return this;
-	}
-
-	public void draw() {
-		draw(context);
-	}
-
-	public Shape toFXShape() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String toSvg() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	private abstract static class DrawCommand {
-		public void stroke(GraphicsContext ctx, ShapePainter p) {
-			ctx.save();
-			ctx.setStroke(p.stroke);
-			if (p.strokeWidth != 0)
-				ctx.setLineWidth(p.strokeWidth);
-			ctx.translate(p.x, p.y);
-			if (p.rot != 0)
-				ctx.rotate(-p.rot);
-			strokeIt(ctx, p);
-			ctx.restore();
-		}
-
-		public void fill(GraphicsContext ctx, ShapePainter p) {
-			ctx.save();
-			ctx.setFill(p.fill);
-			ctx.translate(p.x, p.y);
-			if (p.rot != 0)
-				ctx.rotate(-p.rot);
-			fillIt(ctx, p);
-			ctx.restore();
-		}
-
-		protected abstract void strokeIt(GraphicsContext ctx, ShapePainter p);
-
-		protected abstract void fillIt(GraphicsContext ctx, ShapePainter p);
-
-		// public abstract Shape toFXShape(DrawParams p);
-		//
-		// public abstract String toSvg(DrawParams p);
-
 		protected double calcX(Gravity g, double w) {
 			switch (g) {
 			default:
@@ -206,32 +55,70 @@ public class ShapePainter implements IShape {
 				return h / 2;
 			}
 		}
-	}
 
-	private static class DrawRectangle extends DrawCommand {
-
-		public void strokeIt(GraphicsContext ctx, ShapePainter p) {
-			ctx.strokeRect(-calcX(p.gravity, p.w), -calcY(p.gravity, p.h), p.w, p.h);
+		public void fill(GraphicsContext ctx, ShapePainter p) {
+			ctx.save();
+			ctx.setFill(p.fill);
+			ctx.translate(p.x, p.y);
+			if (p.rot != 0)
+				ctx.rotate(-p.rot);
+			fillIt(ctx, p);
+			ctx.restore();
 		}
 
-		public void fillIt(GraphicsContext ctx, ShapePainter p) {
-			ctx.fillRect(-calcX(p.gravity, p.w), -calcY(p.gravity, p.h), p.w, p.h);
+		protected abstract void fillIt(GraphicsContext ctx, ShapePainter p);
+
+		// public abstract Shape toFXShape(DrawParams p);
+		//
+		// public abstract String toSvg(DrawParams p);
+
+		public void stroke(GraphicsContext ctx, ShapePainter p) {
+			ctx.save();
+			ctx.setStroke(p.stroke);
+			if (p.strokeWidth != 0)
+				ctx.setLineWidth(p.strokeWidth);
+			ctx.translate(p.x, p.y);
+			if (p.rot != 0)
+				ctx.rotate(-p.rot);
+			strokeIt(ctx, p);
+			ctx.restore();
 		}
+
+		protected abstract void strokeIt(GraphicsContext ctx, ShapePainter p);
 	}
 
 	private static class DrawEllipse extends DrawCommand {
 
-		public void strokeIt(GraphicsContext ctx, ShapePainter p) {
-			ctx.strokeOval(-calcX(p.gravity, p.w), -calcY(p.gravity, p.h), p.w, p.h);
-		}
-
+		@Override
 		public void fillIt(GraphicsContext ctx, ShapePainter p) {
 			ctx.fillOval(-calcX(p.gravity, p.w), -calcY(p.gravity, p.h), p.w, p.h);
+		}
+
+		@Override
+		public void strokeIt(GraphicsContext ctx, ShapePainter p) {
+			ctx.strokeOval(-calcX(p.gravity, p.w), -calcY(p.gravity, p.h), p.w, p.h);
 		}
 	}
 
 	private static class DrawLine extends DrawCommand {
 
+		@Override
+		public void fillIt(GraphicsContext ctx, ShapePainter p) {
+			if (p.lineSegments != null) {
+				int nPoints = (p.lineSegments.size() / 2) + 1;
+				double xs[] = new double[nPoints];
+				double ys[] = new double[nPoints];
+				xs[0] = -calcX(p.gravity, p.w);
+				ys[0] = -calcY(p.gravity, p.h);
+				for (int i = 0; i < p.lineSegments.size(); i++) {
+					xs[i] = p.lineSegments.get(i * 2) - p.x;
+					ys[i] = p.lineSegments.get(i * 2 + 1) - p.y;
+				}
+				ctx.fillPolygon(xs, ys, nPoints);
+			}
+		}
+
+		@Override
 		public void strokeIt(GraphicsContext ctx, ShapePainter p) {
 			if (p.lineSegments == null) {
 				double x = -calcX(p.gravity, p.w);
@@ -253,37 +140,37 @@ public class ShapePainter implements IShape {
 					ctx.strokePolyline(xs, ys, nPoints);
 			}
 		}
+	}
 
+	private static class DrawRectangle extends DrawCommand {
+
+		@Override
 		public void fillIt(GraphicsContext ctx, ShapePainter p) {
-			if (p.lineSegments != null) {
-				int nPoints = (p.lineSegments.size() / 2) + 1;
-				double xs[] = new double[nPoints];
-				double ys[] = new double[nPoints];
-				xs[0] = -calcX(p.gravity, p.w);
-				ys[0] = -calcY(p.gravity, p.h);
-				for (int i = 0; i < p.lineSegments.size(); i++) {
-					xs[i] = p.lineSegments.get(i * 2) - p.x;
-					ys[i] = p.lineSegments.get(i * 2 + 1) - p.y;
-				}
-				ctx.fillPolygon(xs, ys, nPoints);
-			}
+			ctx.fillRect(-calcX(p.gravity, p.w), -calcY(p.gravity, p.h), p.w, p.h);
+		}
+
+		@Override
+		public void strokeIt(GraphicsContext ctx, ShapePainter p) {
+			ctx.strokeRect(-calcX(p.gravity, p.w), -calcY(p.gravity, p.h), p.w, p.h);
 		}
 	}
 
-	public void draw(GraphicsContext context) {
-		if (cmd != null) {
-			if (fill != null)
-				cmd.fill(context, this);
-			if (stroke != null)
-				cmd.stroke(context, this);
-		}
-	}
+	private double x = 0, y = 0, w = 0, h = 0, rot = 0, strokeWidth = 0;
+	private List<Double> lineSegments = null;
+	private Paint fill = null;
+	private Paint stroke = null;
 
-	@Override
-	public IShape addPoint(Point xy) {
-		lineSegments.add(xy.getX());
-		lineSegments.add(xy.getY());
-		return this;
+	private Gravity gravity = Gravity.CENTER;
+
+	private DrawCommand cmd = null;
+
+	private boolean closed = false;
+
+	private final GraphicsContext context;
+
+	public ShapePainter(GraphicsContext context) {
+		super();
+		this.context = context;
 	}
 
 	@Override
@@ -294,8 +181,149 @@ public class ShapePainter implements IShape {
 	}
 
 	@Override
+	public IShape addPoint(Point xy) {
+		lineSegments.add(xy.getX());
+		lineSegments.add(xy.getY());
+		return this;
+	}
+
+	@Override
+	public ShapePainter angle(double a) {
+		return this;
+	}
+
+	@Override
+	public IShape arc() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public ShapePainter at(Point p) {
+		if (p != null) {
+			this.x = p.getX();
+			this.y = p.getY();
+		} else {
+			this.x = 0;
+			this.y = 0;
+		}
+		return this;
+	}
+
+	@Override
 	public IShape close() {
 		closed = true;
+		return this;
+	}
+
+	@Override
+	public void draw() {
+		draw(context);
+	}
+
+	@Override
+	public void draw(GraphicsContext context) {
+		if (cmd != null) {
+			if (fill != null)
+				cmd.fill(context, this);
+			if (stroke != null)
+				cmd.stroke(context, this);
+		}
+	}
+
+	@Override
+	public IShape ellipse() {
+		cmd = new DrawEllipse();
+		return this;
+	}
+
+	@Override
+	public ShapePainter fill() {
+		if (cmd != null)
+			cmd.fill(context, this);
+		return this;
+	}
+
+	@Override
+	public ShapePainter fillPaint(Paint p) {
+		fill = p;
+		return this;
+	}
+
+	@Override
+	public ShapePainter gravity(Gravity g) {
+		gravity = g;
+		return this;
+	}
+
+	@Override
+	public ShapePainter height(double h) {
+		this.h = h;
+		return this;
+	}
+
+	@Override
+	public ShapePainter length(double l) {
+		w = l;
+		h = l;
+		return this;
+	}
+
+	@Override
+	public IShape line() {
+		cmd = new DrawLine();
+		return this;
+	}
+
+	@Override
+	public IShape rectangle() {
+		cmd = new DrawRectangle();
+		return this;
+	}
+
+	@Override
+	public ShapePainter rotation(double angle) {
+		rot = angle;
+		return this;
+	}
+
+	@Override
+	public ShapePainter stroke() {
+		if (cmd != null)
+			cmd.stroke(context, this);
+		return this;
+	}
+
+	@Override
+	public ShapePainter strokePaint(Paint p) {
+		stroke = p;
+		return this;
+	}
+
+	@Override
+	public Shape toFXShape() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public String toSvg() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public ShapePainter width(double w) {
+		this.w = w;
+		return this;
+	}
+
+	@Override
+	public ShapePainter x(double x) {
+		this.x = x;
+		return this;
+	}
+
+	@Override
+	public ShapePainter y(double y) {
+		this.y = y;
 		return this;
 	}
 }

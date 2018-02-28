@@ -3,6 +3,42 @@ package inf101.v18.grid;
 public interface IPosition {
 
 	/**
+	 * @param obj
+	 *            Another object
+	 * @return true if obj is also an IPosition, and the x and y coordinates are
+	 *         equal
+	 */
+	@Override
+	boolean equals(Object obj);
+
+	/**
+	 * Find the Euclidian distance between the midpoint of this position and another
+	 * position.
+	 * 
+	 * The distance is computed with the Pythagorean formula, with the assumption
+	 * that the grid cells are square shaped with <em>width</em> = <em>height</em> =
+	 * 1. For example, the distance from (0,0) to (3,5) is √(3²+5²) = 5.83.
+	 *
+	 * @param other
+	 * @return Euclidian distance between this and other's midpoints
+	 */
+	double geometricDistanceTo(IPosition other);
+
+	/**
+	 * Gets the x-coordinate
+	 * 
+	 * @return
+	 */
+	int getX();
+
+	/**
+	 * Gets the y-coordinate
+	 * 
+	 * @return
+	 */
+	int getY();
+
+	/**
 	 * Find the distance in grid cells to another location.
 	 * 
 	 * This is different from {@link #stepDistanceTo(IPosition)} in that diagonal
@@ -18,6 +54,9 @@ public interface IPosition {
 	 *         other
 	 */
 	int gridDistanceTo(IPosition other);
+
+	@Override
+	int hashCode();
 
 	/**
 	 * Find the number of non-diagonal steps needed to go from this location the
@@ -37,44 +76,8 @@ public interface IPosition {
 	 */
 	int stepDistanceTo(IPosition other);
 
-	/**
-	 * Find the Euclidian distance between the midpoint of this position and another
-	 * position.
-	 * 
-	 * The distance is computed with the Pythagorean formula, with the assumption
-	 * that the grid cells are square shaped with <em>width</em> = <em>height</em> =
-	 * 1. For example, the distance from (0,0) to (3,5) is √(3²+5²) = 5.83.
-	 *
-	 * @param other
-	 * @return Euclidian distance between this and other's midpoints
-	 */
-	double geometricDistanceTo(IPosition other);
-
-	/**
-	 * @param obj
-	 *            Another object
-	 * @return true if obj is also an IPosition, and the x and y coordinates are
-	 *         equal
-	 */
-	boolean equals(Object obj);
-
-	/**
-	 * Gets the x-coordinate
-	 * 
-	 * @return
-	 */
-	int getX();
-
-	/**
-	 * Gets the y-coordinate
-	 * 
-	 * @return
-	 */
-	int getY();
-
-	int hashCode();
-
 	/** @return Position as a string, "(x,y)" */
+	@Override
 	String toString();
 
 }

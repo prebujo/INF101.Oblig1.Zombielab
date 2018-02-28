@@ -132,6 +132,7 @@ public class Direction {
 		return Math.atan2(yDir, xDir);
 	}
 
+	@Override
 	public String toString() {
 		return String.format("%.2f", toDegrees());
 	}

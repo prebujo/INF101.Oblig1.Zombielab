@@ -18,131 +18,6 @@ import inf101.v18.rogue101.game.IGame;
  * @author anya
  */
 public interface IItem extends Comparable<IItem> {
-	/**
-	 * The defence score determines how hard an object/actor is to hit or grab.
-	 * 
-	 * @return Defence score of this object
-	 */
-	int getDefence();
-
-	/**
-	 * Get maximum health points.
-	 * 
-	 * An object's <em>health points</em> determines how much damage it can take
-	 * before it is destroyed / broken / killed.
-	 * 
-	 * @return Max health points for this item
-	 */
-	int getMaxHealth();
-
-	/**
-	 * Get current remaining health points.
-	 * <p>
-	 * An object's <em>health points</em> determines how much damage it can take
-	 * before it is destroyed / broken / killed.
-	 * 
-	 * @return Current health points for this item
-	 */
-	int getCurrentHealth();
-
-	/**
-	 * Get the size of the object.
-	 * <p>
-	 * The size determines how much space an item will use if put into a container.
-	 * 
-	 * @return Size of the item
-	 */
-	int getSize();
-
-	/**
-	 * Get the map symbol of this item.
-	 * <p>
-	 * The symbol can be used on a text-only map, or when loading a map from text.
-	 * <p>
-	 * The symbol should be a single Unicode codepoint (i.e.,
-	 * <code>getSymbol().codePointCount(0, getSymbol().length()) == 1</code>). In
-	 * most cases this means that the symbol should be a single character (i.e.,
-	 * getSymbol().length() == 1); but there are a few Unicode characters (such as
-	 * many emojis and special symbols) that require two Java <code>char</code>s.
-	 * 
-	 * @return A single-codepoint string with the item's symbol
-	 */
-	String getSymbol();
-
-	/**
-	 * Get a (user-friendly) name for the item
-	 * <p>
-	 * Used for things like <code>"You see " + getArticle() + " " + getName()</code>
-	 * 
-	 * @return Item's name
-	 */
-	String getName();
-
-	/**
-	 * @return "a" or "an", depending on the name
-	 */
-	default String getArticle() {
-		return "a";
-	}
-
-	/**
-	 * Get a map symbol used for printing this item on the screen.
-	 * <p>
-	 * This is usually the same as {@link #getSymbol()}, but could also include
-	 * special control characters for changing the text colour, for example.
-	 * 
-	 * 
-	 * @return A string to be displayed for this item on the screen (should be only
-	 *         one column wide when printed)
-	 * @see <a href="https://en.wikipedia.org/wiki/ANSI_escape_code#Colors">ANSI
-	 *      escape code (on Wikipedia)</a>
-	 */
-	default String getPrintSymbol() {
-		return getSymbol();
-	}
-
-	/**
-	 * Get item health as a 0.0..1.0 proportion.
-	 * 
-	 * <li><code>getHealth() >= 1.0</code> means perfect condition
-	 * <li><code>getHealth() <= 0.0</code> means broken or dead
-	 * <li><code>0.0 < getHealth() < 1.0</code> means partially damaged
-	 * 
-	 * @return Health, in the range 0.0 to 1.0
-	 */
-	default double getHealthStatus() {
-		return getMaxHealth() > 0 ? getCurrentHealth() / getMaxHealth() : 0;
-	}
-
-	/**
-	 * Inform the item that it has been damaged
-	 * 
-	 * @param game
-	 *            The game
-	 * @param source
-	 *            The item (usually an IActor) that caused the damage
-	 * @param amount
-	 *            How much damage the item should take
-	 * @return Amount of damage actually taken (could be less than
-	 *         <code>amount</code> due to armour/protection effects)
-	 */
-	int handleDamage(IGame game, IItem source, int amount);
-
-	/**
-	 * Inform the item that something has happened.
-	 * 
-	 * @param event
-	 *            An object describing the event.
-	 * @return
-	 */
-	default <T> T handleEvent(IEvent<T> event) {
-		return event.getData();
-	}
-
-	default boolean isDestroyed() {
-		return getCurrentHealth() < 0;
-	}
-
 	@Override
 	default int compareTo(IItem other) {
 		return Integer.compare(getSize(), other.getSize());
@@ -174,5 +49,133 @@ public interface IItem extends Comparable<IItem> {
 	 */
 	default boolean draw(ITurtle painter, double w, double h) {
 		return false;
+	}
+
+	/**
+	 * @return "a" or "an", depending on the name
+	 */
+	default String getArticle() {
+		return "a";
+	}
+
+	/**
+	 * Get current remaining health points.
+	 * <p>
+	 * An object's <em>health points</em> determines how much damage it can take
+	 * before it is destroyed / broken / killed.
+	 * 
+	 * @return Current health points for this item
+	 */
+	int getCurrentHealth();
+
+	/**
+	 * The defence score determines how hard an object/actor is to hit or grab.
+	 * 
+	 * @return Defence score of this object
+	 */
+	int getDefence();
+
+	/**
+	 * Get item health as a 0.0..1.0 proportion.
+	 * 
+	 * <li><code>getHealth() >= 1.0</code> means perfect condition
+	 * <li><code>getHealth() <= 0.0</code> means broken or dead
+	 * <li><code>0.0 < getHealth() < 1.0</code> means partially damaged
+	 * 
+	 * @return Health, in the range 0.0 to 1.0
+	 */
+	default double getHealthStatus() {
+		return getMaxHealth() > 0 ? getCurrentHealth() / getMaxHealth() : 0;
+	}
+
+	/**
+	 * Get maximum health points.
+	 * 
+	 * An object's <em>health points</em> determines how much damage it can take
+	 * before it is destroyed / broken / killed.
+	 * 
+	 * @return Max health points for this item
+	 */
+	int getMaxHealth();
+
+	/**
+	 * Get a (user-friendly) name for the item
+	 * <p>
+	 * Used for things like <code>"You see " + getArticle() + " " + getName()</code>
+	 * 
+	 * @return Item's name
+	 */
+	String getName();
+
+	/**
+	 * Get a map symbol used for printing this item on the screen.
+	 * <p>
+	 * This is usually the same as {@link #getSymbol()}, but could also include
+	 * special control characters for changing the text colour, for example.
+	 * 
+	 * 
+	 * @return A string to be displayed for this item on the screen (should be only
+	 *         one column wide when printed)
+	 * @see <a href="https://en.wikipedia.org/wiki/ANSI_escape_code#Colors">ANSI
+	 *      escape code (on Wikipedia)</a>
+	 */
+	default String getPrintSymbol() {
+		return getSymbol();
+	}
+
+	/**
+	 * Get the size of the object.
+	 * <p>
+	 * The size determines how much space an item will use if put into a container.
+	 * 
+	 * @return Size of the item
+	 */
+	int getSize();
+
+	/**
+	 * Get the map symbol of this item.
+	 * <p>
+	 * The symbol can be used on a text-only map, or when loading a map from text.
+	 * <p>
+	 * The symbol should be a single Unicode codepoint (i.e.,
+	 * <code>getSymbol().codePointCount(0, getSymbol().length()) == 1</code>). In
+	 * most cases this means that the symbol should be a single character (i.e.,
+	 * getSymbol().length() == 1); but there are a few Unicode characters (such as
+	 * many emojis and special symbols) that require two Java <code>char</code>s.
+	 * 
+	 * @return A single-codepoint string with the item's symbol
+	 */
+	String getSymbol();
+
+	/**
+	 * Inform the item that it has been damaged
+	 * 
+	 * @param game
+	 *            The game
+	 * @param source
+	 *            The item (usually an IActor) that caused the damage
+	 * @param amount
+	 *            How much damage the item should take
+	 * @return Amount of damage actually taken (could be less than
+	 *         <code>amount</code> due to armour/protection effects)
+	 */
+	int handleDamage(IGame game, IItem source, int amount);
+
+	/**
+	 * Inform the item that something has happened.
+	 * 
+	 * @param event
+	 *            An object describing the event.
+	 * @return
+	 */
+	default <T> T handleEvent(IEvent<T> event) {
+		return event.getData();
+	}
+
+	/**
+	 * @return True if this item has been destroyed, and should be removed from the map
+	 */
+	default boolean isDestroyed() {
+		return getCurrentHealth() < 0;
 	}
 }

@@ -1,13 +1,21 @@
 package inf101.v18.rogue101.examples;
 
 import inf101.v18.gfx.gfxmode.ITurtle;
-import inf101.v18.rogue101.events.GameEvent;
-import inf101.v18.rogue101.events.IEvent;
 import inf101.v18.rogue101.game.IGame;
 import inf101.v18.rogue101.objects.IItem;
 
 public class ExampleItem implements IItem {
 	private int hp = getMaxHealth();
+
+	@Override
+	public boolean draw(ITurtle painter, double w, double h) {
+		return false;
+	}
+
+	@Override
+	public int getCurrentHealth() {
+		return hp;
+	}
 
 	@Override
 	public int getDefence() {
@@ -20,8 +28,8 @@ public class ExampleItem implements IItem {
 	}
 
 	@Override
-	public int getCurrentHealth() {
-		return hp;
+	public String getName() {
+		return "strange model of an item";
 	}
 
 	@Override
@@ -33,22 +41,11 @@ public class ExampleItem implements IItem {
 	public String getSymbol() {
 		return "X";
 	}
-	
+
 	@Override
 	public int handleDamage(IGame game, IItem source, int amount) {
 		hp -= amount;
 		return amount;
-	}
-
-
-	@Override
-	public boolean draw(ITurtle painter, double w, double h) {
-		return false;
-	}
-
-	@Override
-	public String getName() {
-		return "strange model of an item";
 	}
 
 }

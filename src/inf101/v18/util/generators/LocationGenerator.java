@@ -4,7 +4,6 @@ import java.util.Random;
 
 import inf101.v18.grid.IArea;
 import inf101.v18.grid.ILocation;
-import inf101.v18.grid.IPosition;
 
 public class LocationGenerator extends AbstractGenerator<ILocation> {
 	private final IArea area;

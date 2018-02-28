@@ -7,14 +7,26 @@ import inf101.v18.gfx.Screen;
 import inf101.v18.gfx.gfxmode.ITurtle;
 import inf101.v18.gfx.textmode.Printer;
 import inf101.v18.gfx.textmode.TextMode;
-import inf101.v18.rogue101.game.IGame;
+import inf101.v18.rogue101.game.Game;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class Main extends Application {
+	// you might want to tune these options
+	public static final boolean MAIN_USE_BACKGROUND_GRID = true;
+	public static final boolean MAP_AUTO_SCALE_ITEM_DRAW = true;
+	public static final boolean MAP_DRAW_ONLY_DIRTY_CELLS = false;
+	public static final TextMode MAIN_TEXT_MODE = TextMode.MODE_80X25;
+
+	public static final boolean DEBUG_TIME = false;
+
 	public static final int LINE_MAP_BOTTOM = 20;
 	public static final int LINE_STATUS = 21;
 	public static final int LINE_MSG1 = 22;
@@ -23,14 +35,48 @@ public class Main extends Application {
 	public static final int LINE_DEBUG = 25;
 	public static final int COLUMN_MAP_END = 40;
 	public static final int COLUMN_RIGHTSIDE_START = 41;
-	private Screen screen;
-	private ITurtle painter;
-	private Printer printer;
-	private IGame game;
-	private boolean grid = true;
 
 	public static void main(String[] args) {
 		launch(args);
+	}
+
+	private Screen screen;
+	private ITurtle painter;
+	private Printer printer;
+
+	private Game game;
+
+	private boolean grid = MAIN_USE_BACKGROUND_GRID;
+	private boolean autoNextTurn = false;
+	private Timeline bigStepTimeline;
+	private Timeline smallStepTimeline;
+
+	private void setup() {
+		//
+		game = new Game(screen, painter, printer);
+		game.draw();
+
+		//
+		bigStepTimeline = new Timeline();
+		bigStepTimeline.setCycleCount(Timeline.INDEFINITE);
+		KeyFrame kf = new KeyFrame(Duration.millis(1000), (ActionEvent event) -> {
+			if (autoNextTurn) {
+				doTurn();
+			}
+		});
+		bigStepTimeline.getKeyFrames().add(kf);
+		// bigStepTimeline.playFromStart();
+
+		//
+		smallStepTimeline = new Timeline();
+		smallStepTimeline.setCycleCount(1);
+		kf = new KeyFrame(Duration.millis(1), (ActionEvent event) -> {
+			doTurn();
+		});
+		smallStepTimeline.getKeyFrames().add(kf);
+
+		// finally, start game
+		doTurn();
 	}
 
 	@Override
@@ -39,7 +85,11 @@ public class Main extends Application {
 
 		printer = screen.createPrinter();
 		painter = screen.createPainter();
-		printer.setTextMode(TextMode.MODE_80X25, true);
+		printer.setTextMode(MAIN_TEXT_MODE, true);
+		
+		// Font with emojis – need separate download
+		// printer.setFont(Printer.FONT_SYMBOLA);
+		
 		if (grid)
 			printer.drawCharCells();
 		printer.setAutoScroll(false);
@@ -52,7 +102,7 @@ public class Main extends Application {
 					printer.cycleMode(true);
 					if (grid)
 						printer.drawCharCells();
-//					game.draw();
+					game.draw();
 					return true;
 				} else if (code == KeyCode.A) {
 					screen.cycleAspect();
@@ -75,8 +125,7 @@ public class Main extends Application {
 				}
 			} else if (code == KeyCode.ENTER) {
 				try {
-					//game.doTurn();
-//					game.draw();
+					doTurn();
 				} catch (Exception e) {
 					printer.printAt(1, 25, "Exception: " + e.getMessage(), Color.RED);
 					e.printStackTrace();
@@ -84,8 +133,8 @@ public class Main extends Application {
 				return true;
 			} else {
 				try {
-//					game.keyPressed(code);
-//					game.draw();
+					game.keyPressed(code);
+					doTurn();
 				} catch (Exception e) {
 					e.printStackTrace();
 					try {
@@ -112,13 +161,24 @@ public class Main extends Application {
 		 */
 		setup();
 
-//		game = new Game(screen, painter, printer);
-//		game.draw();
 		primaryStage.show();
 
 	}
 
-	private void setup() {
+	public void doTurn() {
+		long t = System.currentTimeMillis();
+		boolean waitForPlayer = game.doTurn();
+		if (DEBUG_TIME)
+			System.out.println("doTurn() took " + (System.currentTimeMillis() - t) + "ms");
+		long t2 = System.currentTimeMillis();
+		game.draw();
+		if (DEBUG_TIME) {
+			System.out.println("draw() took " + (System.currentTimeMillis() - t2) + "ms");
+			System.out.println("doTurn()+draw() took " + (System.currentTimeMillis() - t) + "ms");
+			System.out.println("waiting for player? " + waitForPlayer);
+		}
+		if (!waitForPlayer)
+			smallStepTimeline.playFromStart(); // this will kickstart a new turn in a few milliseconds
 	}
 
 	public static String BUILTIN_MAP = "40 20\n" //

@@ -32,6 +32,8 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 	}
 
 	private final Screen screen;
+	private final double width;
+	private final double height;
 	private final GraphicsContext context;
 	private final List<TurtleState> stateStack = new ArrayList<>();
 
@@ -39,13 +41,37 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 	private final Canvas canvas;
 	private boolean path = false;
 
+	public TurtlePainter(double width, double height, Canvas canvas) {
+		screen = null;
+		if (canvas == null)
+			canvas = new Canvas(width, height);
+		this.canvas = canvas;
+		this.context = canvas.getGraphicsContext2D();
+		this.width = width;
+		this.height = height;
+		stateStack.add(new TurtleState());
+		state.dir = new Direction(1.0, 0.0);
+		state.pos = new Point(width / 2, height / 2);
+	}
+
 	public TurtlePainter(Screen screen, Canvas canvas) {
 		this.screen = screen;
 		this.canvas = canvas;
 		this.context = canvas.getGraphicsContext2D();
+		this.width = screen.getWidth();
+		this.height = screen.getHeight();
 		stateStack.add(new TurtleState());
 		state.dir = new Direction(1.0, 0.0);
 		state.pos = new Point(screen.getWidth() / 2, screen.getHeight() / 2);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T as(Class<T> clazz) {
+		if (clazz == GraphicsContext.class)
+			return (T) context;
+		else
+			return null;
 	}
 
 	@Override
@@ -54,53 +80,6 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 	}
 
 	@Override
-	public void debugTurtle() {
-		System.err.println("[" + state.pos + " " + state.dir + "]");
-	}
-
-	@Override
-	public IShape shape() {
-		ShapePainter s = new ShapePainter(context);
-		return s.at(getPos()).rotation(getAngle()).strokePaint(state.ink);
-	}
-
-	@Override
-	public ITurtle line(Point to) {
-		// context.save();
-		context.setStroke(state.ink);
-		context.setLineWidth(state.penSize);
-		context.strokeLine(state.pos.getX(), state.pos.getY(), to.getX(), to.getY());
-		// context.restore();
-		return this;
-	}
-
-	@Override
-	public double getAngle() {
-		return state.dir.toDegrees();
-	}
-
-	@Override
-	public Direction getDirection() {
-		return state.dir;
-	}
-
-	public double getHeight() {
-		return screen.getHeight();
-	}
-
-	public Screen getScreen() {
-		return screen;
-	}
-
-	@Override
-	public Point getPos() {
-		return state.pos;
-	}
-
-	public double getWidth() {
-		return screen.getWidth();
-	}
-
 	public ITurtle curveTo(Point to, double startControl, double endAngle, double endControl) {
 		Point c1 = state.pos.move(state.dir, startControl);
 		Point c2 = to.move(Direction.fromDegrees(endAngle + 180), endControl);
@@ -121,6 +100,64 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 			// context.restore();
 		}
 		return this;
+	}
+
+	@Override
+	public void debugTurtle() {
+		System.err.println("[" + state.pos + " " + state.dir + "]");
+	}
+
+	@Override
+	public ITurtle draw(double dist) {
+		Point to = state.pos.move(state.dir, dist);
+		return drawTo(to);
+	}
+
+	@Override
+	public ITurtle drawTo(double x, double y) {
+		Point to = new Point(x, y);
+		return drawTo(to);
+	}
+
+	@Override
+	public ITurtle drawTo(Point to) {
+		if (path) {
+			context.lineTo(to.getX(), to.getY());
+		} else {
+			line(to);
+		}
+		state.inDir = state.dir;
+		state.pos = to;
+		return this;
+	}
+
+	@Override
+	public double getAngle() {
+		return state.dir.toDegrees();
+	}
+
+	@Override
+	public Direction getDirection() {
+		return state.dir;
+	}
+
+	@Override
+	public double getHeight() {
+		return height;
+	}
+
+	@Override
+	public Point getPos() {
+		return state.pos;
+	}
+
+	public Screen getScreen() {
+		return screen;
+	}
+
+	@Override
+	public double getWidth() {
+		return width;
 	}
 
 	@Override
@@ -145,26 +182,24 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 	}
 
 	@Override
-	public ITurtle draw(double dist) {
-		Point to = state.pos.move(state.dir, dist);
-		return drawTo(to);
+	public void layerToBack() {
+		if (screen != null)
+			screen.moveToBack(this);
 	}
 
 	@Override
-	public ITurtle drawTo(double x, double y) {
-		Point to = new Point(x, y);
-		return drawTo(to);
+	public void layerToFront() {
+		if (screen != null)
+			screen.moveToFront(this);
 	}
 
 	@Override
-	public ITurtle drawTo(Point to) {
-		if (path) {
-			context.lineTo(to.getX(), to.getY());
-		} else {
-			line(to);
-		}
-		state.inDir = state.dir;
-		state.pos = to;
+	public ITurtle line(Point to) {
+		// context.save();
+		context.setStroke(state.ink);
+		context.setLineWidth(state.penSize);
+		context.strokeLine(state.pos.getX(), state.pos.getY(), to.getX(), to.getY());
+		// context.restore();
 		return this;
 	}
 
@@ -194,6 +229,12 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 			throw new IllegalArgumentException("Negative: " + pixels);
 		state.penSize = pixels;
 		return this;
+	}
+
+	@Override
+	public IShape shape() {
+		ShapePainter s = new ShapePainter(context);
+		return s.at(getPos()).rotation(getAngle()).strokePaint(state.ink);
 	}
 
 	@Override
@@ -246,28 +287,11 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 	}
 
 	@Override
-	public void layerToFront() {
-		screen.moveToFront(this);
-	}
-
-	@Override
-	public void layerToBack() {
-		screen.moveToBack(this);
-	}
-
-	@Override
 	public ITurtle turtle() {
-		TurtlePainter painter = new TurtlePainter(screen, canvas);
+		TurtlePainter painter = screen != null ? new TurtlePainter(screen, canvas)
+				: new TurtlePainter(width, height, canvas);
 		painter.stateStack.set(0, new TurtleState(state));
 		return painter;
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> T as(Class<T> clazz) {
-		if (clazz == GraphicsContext.class)
-			return (T) context;
-		else
-			return null;
 	}
 
 }

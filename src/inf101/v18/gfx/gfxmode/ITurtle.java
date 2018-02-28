@@ -1,36 +1,63 @@
 package inf101.v18.gfx.gfxmode;
 
-import javafx.scene.canvas.GraphicsContext;
-
 public interface ITurtle extends IPainter {
+
+	<T> T as(Class<T> class1);
+
+	/**
+	 * Move to the given position while drawing a curve
+	 * 
+	 * <p>
+	 * The resulting curve is a cubic Bézier curve with the control points located
+	 * at <code>getPos().move(getDirection, startControl)</code> and
+	 * <code>to.move(Direction.fromDegrees(endAngle+180), endControl)</code>.
+	 * <p>
+	 * The turtle is left at point <code>to</code>, facing <code>endAngle</code>.
+	 * <p>
+	 * The turtle will start out moving in its current direction, aiming for a point
+	 * <code>startControl</code> pixels away, then smoothly turning towards its
+	 * goal. It will approach the <code>to</code> point moving in the direction
+	 * <code>endAngle</code> (an absolute bearing, with 0° pointing right and 90°
+	 * pointing up).
+	 * 
+	 * @param to
+	 *            Position to move to
+	 * @param startControl
+	 *            Distance to the starting control point.
+	 * @return {@code this}, for sending more draw commands
+	 */
+	ITurtle curveTo(Point to, double startControl, double endAngle, double endControl);
 
 	void debugTurtle();
 
 	/**
-	 * Start drawing a shape at the current turtle position.
+	 * Move forward the given distance while drawing a line
 	 * 
-	 * <p>
-	 * The shape's default origin and rotation will be set to the turtle's current
-	 * position and direction, but can be modified with {@link IShape#at(Point)} and
-	 * {@link IShape#rotation(double)}.
-	 * <p>
-	 * The turtle's position and attributes are unaffected by drawing the shape.
-	 * 
-	 * @return An IDrawParams object for setting up and drawing the shape
-	 */
-	IShape shape();
-
-	/**
-	 * Draw a line from the current position to the given position.
-	 * 
-	 * <p>
-	 * This method does not change the turtle position.
-	 * 
-	 * @param to
-	 *            Other end-point of the line
+	 * @param dist
+	 *            Distance to move
 	 * @return {@code this}, for sending more draw commands
 	 */
-	ITurtle line(Point to);
+	ITurtle draw(double dist);
+
+	/**
+	 * Move to the given position while drawing a line
+	 * 
+	 * @param x
+	 *            X-position to move to
+	 * @param y
+	 *            Y-position to move to
+	 * @return {@code this}, for sending more draw commands
+	 */
+	ITurtle drawTo(double x, double y);
+
+	/**
+	 * Move to the given position while drawing a line
+	 * 
+	 * @param to
+	 *            Position to move to
+	 * @return {@code this}, for sending more draw commands
+	 */
+	ITurtle drawTo(Point to);
 
 	/**
 	 * @return The current angle of the turtle, with 0° pointing to the right and
@@ -79,57 +106,16 @@ public interface ITurtle extends IPainter {
 	ITurtle jumpTo(Point to);
 
 	/**
-	 * Move forward the given distance while drawing a line
+	 * Draw a line from the current position to the given position.
 	 * 
-	 * @param dist
-	 *            Distance to move
-	 * @return {@code this}, for sending more draw commands
-	 */
-	ITurtle draw(double dist);
-
-	/**
-	 * Move to the given position while drawing a line
-	 * 
-	 * @param x
-	 *            X-position to move to
-	 * @param y
-	 *            Y-position to move to
-	 * @return {@code this}, for sending more draw commands
-	 */
-	ITurtle drawTo(double x, double y);
-
-	/**
-	 * Move to the given position while drawing a line
+	 * <p>
+	 * This method does not change the turtle position.
 	 * 
 	 * @param to
-	 *            Position to move to
+	 *            Other end-point of the line
 	 * @return {@code this}, for sending more draw commands
 	 */
-	ITurtle drawTo(Point to);
-
-	/**
-	 * Move to the given position while drawing a curve
-	 * 
-	 * <p>
-	 * The resulting curve is a cubic Bézier curve with the control points located
-	 * at <code>getPos().move(getDirection, startControl)</code> and
-	 * <code>to.move(Direction.fromDegrees(endAngle+180), endControl)</code>.
-	 * <p>
-	 * The turtle is left at point <code>to</code>, facing <code>endAngle</code>.
-	 * <p>
-	 * The turtle will start out moving in its current direction, aiming for a point
-	 * <code>startControl</code> pixels away, then smoothly turning towards its
-	 * goal. It will approach the <code>to</code> point moving in the direction
-	 * <code>endAngle</code> (an absolute bearing, with 0° pointing right and 90°
-	 * pointing up).
-	 * 
-	 * @param to
-	 *            Position to move to
-	 * @param startControl
-	 *            Distance to the starting control point.
-	 * @return {@code this}, for sending more draw commands
-	 */
-	ITurtle curveTo(Point to, double startControl, double endAngle, double endControl);
+	ITurtle line(Point to);
 
 	/**
 	 * Set the size of the turtle's pen
@@ -140,6 +126,21 @@ public interface ITurtle extends IPainter {
 	 * @requires pixels >= 0
 	 */
 	ITurtle setPenSize(double pixels);
+
+	/**
+	 * Start drawing a shape at the current turtle position.
+	 * 
+	 * <p>
+	 * The shape's default origin and rotation will be set to the turtle's current
+	 * position and direction, but can be modified with {@link IShape#at(Point)} and
+	 * {@link IShape#rotation(double)}.
+	 * <p>
+	 * The turtle's position and attributes are unaffected by drawing the shape.
+	 * 
+	 * @return An IDrawParams object for setting up and drawing the shape
+	 */
+	@Override
+	IShape shape();
 
 	/**
 	 * Change direction the given number of degrees (relative to the current
@@ -235,6 +236,7 @@ public interface ITurtle extends IPainter {
 	 */
 	ITurtle turnTowards(double degrees, double percent);
 
-	<T> T as(Class<T> class1);
+	double getWidth();
 
+	double getHeight();
 }

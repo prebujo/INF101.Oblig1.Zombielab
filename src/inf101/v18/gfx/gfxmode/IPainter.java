@@ -5,13 +5,13 @@ import javafx.scene.paint.Paint;
 
 public interface IPainter extends IPaintLayer {
 
-	IShape shape();
-
-	ITurtle turtle();
-
 	IPainter restore();
 
 	IPainter save();
 
 	IPainter setInk(Paint ink);
+
+	IShape shape();
+
+	ITurtle turtle();
 }

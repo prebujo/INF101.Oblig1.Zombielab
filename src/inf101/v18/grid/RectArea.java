@@ -8,10 +8,164 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class RectArea implements IArea {
+	/** A class to represent an (x, y)-location on a grid. */
+	class Location implements ILocation {
+
+		/** value of the x-coordinate */
+		protected final int x;
+		/** value of the y-coordinate */
+		protected final int y;
+		protected final int idx;
+		protected final int edgeMask;
+
+		/**
+		 * Main constructor. Initializes a new {@link #Location} objects with the
+		 * corresponding values of x and y.
+		 * 
+		 * @param x
+		 *            X coordinate
+		 * @param y
+		 *            Y coordinate
+		 * @param idx
+		 *            1-dimensional index
+		 * @param edgeMask
+		 *            mask with bits {@link RectArea#N}, {@link RectArea#S},
+		 *            {@link RectArea#E}, {@link RectArea#W} set if we're on the
+		 *            corresponding edge of the area
+		 */
+		Location(int x, int y, int idx, int edgeMask) {
+			this.x = x;
+			this.y = y;
+			this.idx = idx;
+			this.edgeMask = edgeMask;
+		}
+
+		@Override
+		public Collection<ILocation> allNeighbours() {
+			Collection<ILocation> ns = new ArrayList<>(8);
+			for (GridDirection d : GridDirection.EIGHT_DIRECTIONS) {
+				if (canGo(d))
+					ns.add(go(d));
+			}
+			return ns;
+		}
+
+		@Override
+		public boolean canGo(GridDirection dir) {
+			return (edgeMask & dir.getMask()) == 0;
+		}
+
+		@Override
+		public Collection<ILocation> cardinalNeighbours() {
+			Collection<ILocation> ns = new ArrayList<>(4);
+			for (GridDirection d : GridDirection.FOUR_DIRECTIONS) {
+				if (canGo(d))
+					ns.add(go(d));
+			}
+			return ns;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (!(obj instanceof IPosition)) {
+				return false;
+			}
+			IPosition other = (IPosition) obj;
+			if (x != other.getX()) {
+				return false;
+			}
+			if (y != other.getY()) {
+				return false;
+			}
+			return true;
+		}
+
+		@Override
+		public double geometricDistanceTo(IPosition other) {
+			return Math.sqrt(Math.pow(this.x - other.getX(), 2) + Math.pow(this.y - other.getY(), 2));
+		}
+
+		@Override
+		public IArea getArea() {
+			return RectArea.this;
+		}
+
+		@Override
+		public int getIndex() {
+			return idx;
+		}
+
+		@Override
+		public int getX() {
+			return x;
+		}
+
+		@Override
+		public int getY() {
+			return y;
+		}
+
+		@Override
+		public ILocation go(GridDirection dir) {
+			return location(x + dir.getDx(), y + dir.getDy());
+		}
+
+		@Override
+		public int gridDistanceTo(IPosition other) {
+			return Math.max(Math.abs(this.x - other.getX()), Math.abs(this.y - other.getY()));
+		}
+
+		@Override
+		public List<ILocation> gridLineTo(ILocation other) {
+			if (!contains(other))
+				throw new IllegalArgumentException();
+			int distX = other.getX() - x;
+			int distY = other.getY() - y;
+			int length = Math.max(Math.abs(distX), Math.abs(distY));
+			List<ILocation> line = new ArrayList<>(length);
+			if (length == 0)
+				return line;
+			double dx = (double) distX / (double) length;
+			double dy = (double) distY / (double) length;
+			// System.out.printf("dx=%g, dy=%g, length=%d%n", dx, dy, length);
+			for (int i = 1; i <= length; i++) {
+				line.add(location(x + (int) Math.round(dx * i), y + (int) Math.round(dy * i)));
+			}
+			return line;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + x;
+			result = prime * result + y;
+			return result;
+		}
+
+		@Override
+		public int stepDistanceTo(IPosition other) {
+			return Math.abs(this.x - other.getX()) + Math.abs(this.y - other.getY());
+		}
+
+		@Override
+		public String toString() {
+			return "(x=" + x + ",y=" + y + ")";
+		}
+
+	}
+
 	protected final int width;
 	protected final int height;
 	protected final int size;
 	protected final List<ILocation> locs;
+
 	protected final boolean hWrap, vWrap;
 
 	public RectArea(int width, int height) {
@@ -86,15 +240,16 @@ public class RectArea implements IArea {
 	}
 
 	@Override
-	public int getHeight() {
-		return height;
+	public ILocation fromIndex(int i) {
+		if (i >= 0 && i < size)
+			return locs.get(i);
+		else
+			throw new IndexOutOfBoundsException("" + i);
 	}
 
 	@Override
-	public int toIndex(int x, int y) {
-		x = checkX(x);
-		y = checkY(y);
-		return y * width + x;
+	public int getHeight() {
+		return height;
 	}
 
 	@Override
@@ -110,6 +265,41 @@ public class RectArea implements IArea {
 	@Override
 	public Iterator<ILocation> iterator() {
 		return locs.iterator();
+	}
+
+	@Override
+	public ILocation location(int x, int y) {
+		if (x < 0 || x >= width || y < 0 || y >= height)
+			throw new IndexOutOfBoundsException("(" + x + "," + y + ")");
+		int i = x + y * width;
+		return locs.get(i);
+	}
+
+	@Override
+	public List<ILocation> locations() {
+		return locs; // (OK since locs has been through Collections.unmodifiableList())
+	}
+
+	@Override
+	public Iterable<ILocation> neighboursOf(ILocation pos) {
+		return pos.allNeighbours();
+	}
+
+	@Override
+	public Stream<ILocation> parallelStream() {
+		return locs.parallelStream();
+	}
+
+	@Override
+	public Stream<ILocation> stream() {
+		return locs.stream();
+	}
+
+	@Override
+	public int toIndex(int x, int y) {
+		x = checkX(x);
+		y = checkY(y);
+		return y * width + x;
 	}
 
 	@Override
@@ -152,195 +342,6 @@ public class RectArea implements IArea {
 		} else {
 			return y;
 		}
-	}
-
-	/** A class to represent an (x, y)-location on a grid. */
-	class Location implements ILocation {
-
-		/** value of the x-coordinate */
-		protected final int x;
-		/** value of the y-coordinate */
-		protected final int y;
-		protected final int idx;
-		protected final int edgeMask;
-
-		/**
-		 * Main constructor. Initializes a new {@link #Location} objects with the
-		 * corresponding values of x and y.
-		 * 
-		 * @param x
-		 *            X coordinate
-		 * @param y
-		 *            Y coordinate
-		 * @param idx
-		 *            1-dimensional index
-		 * @param edgeMask
-		 *            mask with bits {@link RectArea#N}, {@link RectArea#S},
-		 *            {@link RectArea#E}, {@link RectArea#W} set if we're on the
-		 *            corresponding edge of the area
-		 */
-		Location(int x, int y, int idx, int edgeMask) {
-			this.x = x;
-			this.y = y;
-			this.idx = idx;
-			this.edgeMask = edgeMask;
-		}
-
-		@Override
-		public int gridDistanceTo(IPosition other) {
-			return Math.max(Math.abs(this.x - other.getX()), Math.abs(this.y - other.getY()));
-		}
-
-		@Override
-		public int stepDistanceTo(IPosition other) {
-			return Math.abs(this.x - other.getX()) + Math.abs(this.y - other.getY());
-		}
-
-		@Override
-		public double geometricDistanceTo(IPosition other) {
-			return Math.sqrt(Math.pow(this.x - other.getX(), 2) + Math.pow(this.y - other.getY(), 2));
-		}
-
-		@Override
-		public List<ILocation> gridLineTo(ILocation other) {
-			if (!contains(other))
-				throw new IllegalArgumentException();
-			int distX = other.getX() - x;
-			int distY = other.getY() - y;
-			int length = Math.max(Math.abs(distX), Math.abs(distY));
-			List<ILocation> line = new ArrayList<>(length);
-			if (length == 0)
-				return line;
-			double dx = (double) distX / (double) length;
-			double dy = (double) distY / (double) length;
-			// System.out.printf("dx=%g, dy=%g, length=%d%n", dx, dy, length);
-			for (int i = 1; i <= length; i++) {
-				line.add(location(x + (int) Math.round(dx * i), y + (int) Math.round(dy * i)));
-			}
-			return line;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null) {
-				return false;
-			}
-			if (!(obj instanceof IPosition)) {
-				return false;
-			}
-			IPosition other = (IPosition) obj;
-			if (x != other.getX()) {
-				return false;
-			}
-			if (y != other.getY()) {
-				return false;
-			}
-			return true;
-		}
-
-		@Override
-		public int getX() {
-			return x;
-		}
-
-		@Override
-		public int getY() {
-			return y;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + x;
-			result = prime * result + y;
-			return result;
-		}
-
-		@Override
-		public boolean canGo(GridDirection dir) {
-			return (edgeMask & dir.getMask()) == 0;
-		}
-
-		@Override
-		public ILocation go(GridDirection dir) {
-			return location(x + dir.getDx(), y + dir.getDy());
-		}
-
-		@Override
-		public String toString() {
-			return "(x=" + x + ",y=" + y + ")";
-		}
-
-		@Override
-		public Collection<ILocation> cardinalNeighbours() {
-			Collection<ILocation> ns = new ArrayList<>(4);
-			for (GridDirection d : GridDirection.FOUR_DIRECTIONS) {
-				if (canGo(d))
-					ns.add(go(d));
-			}
-			return ns;
-		}
-
-		@Override
-		public Collection<ILocation> allNeighbours() {
-			Collection<ILocation> ns = new ArrayList<>(8);
-			for (GridDirection d : GridDirection.EIGHT_DIRECTIONS) {
-				if (canGo(d))
-					ns.add(go(d));
-			}
-			return ns;
-		}
-
-		@Override
-		public IArea getArea() {
-			return RectArea.this;
-		}
-
-		@Override
-		public int getIndex() {
-			return idx;
-		}
-
-	}
-
-	@Override
-	public ILocation location(int x, int y) {
-		if (x < 0 || x >= width || y < 0 || y >= height)
-			throw new IndexOutOfBoundsException("(" + x + "," + y + ")");
-		int i = x + y * width;
-		return locs.get(i);
-	}
-
-	@Override
-	public Stream<ILocation> stream() {
-		return locs.stream();
-	}
-
-	@Override
-	public Stream<ILocation> parallelStream() {
-		return locs.parallelStream();
-	}
-
-	@Override
-	public Iterable<ILocation> neighboursOf(ILocation pos) {
-		return pos.allNeighbours();
-	}
-
-	@Override
-	public ILocation fromIndex(int i) {
-		if (i >= 0 && i < size)
-			return locs.get(i);
-		else
-			throw new IndexOutOfBoundsException("" + i);
-	}
-
-	@Override
-	public List<ILocation> locations() {
-		return locs; // (OK since locs has been through Collections.unmodifiableList())
 	}
 
 }

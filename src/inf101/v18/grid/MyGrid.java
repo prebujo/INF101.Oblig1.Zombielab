@@ -13,18 +13,6 @@ public class MyGrid<T> implements IGrid<T> {
 
 	/**
 	 * Construct a grid with the given dimensions.
-	 *
-	 * @param width
-	 * @param height
-	 * @param initElement
-	 *            What the cells should initially hold (possibly null)
-	 */
-	public MyGrid(int width, int height, T initElement) {
-		this(new RectArea(width, height), initElement);
-	}
-
-	/**
-	 * Construct a grid with the given dimensions.
 	 * 
 	 * The initialiser function will be called with the (x,y) position of an
 	 * element, and is expected to return the element to place at that position. For
@@ -40,8 +28,16 @@ public class MyGrid<T> implements IGrid<T> {
 	 * @param initialiser
 	 *            The initialiser function
 	 */
-	public MyGrid(int width, int height, Function<ILocation, T> initialiser) {
-		this(new RectArea(width, height), initialiser);
+	public MyGrid(IArea area, Function<ILocation, T> initialiser) {
+		if (area == null || initialiser == null) {
+			throw new IllegalArgumentException();
+		}
+
+		this.area = area;
+		this.cells = new ArrayList<T>(area.getSize());
+		for (ILocation loc : area) {
+			cells.add(initialiser.apply(loc));
+		}
 	}
 
 	/**
@@ -81,16 +77,20 @@ public class MyGrid<T> implements IGrid<T> {
 	 * @param initialiser
 	 *            The initialiser function
 	 */
-	public MyGrid(IArea area, Function<ILocation, T> initialiser) {
-		if (area == null || initialiser == null) {
-			throw new IllegalArgumentException();
-		}
+	public MyGrid(int width, int height, Function<ILocation, T> initialiser) {
+		this(new RectArea(width, height), initialiser);
+	}
 
-		this.area = area;
-		this.cells = new ArrayList<T>(area.getSize());
-		for (ILocation loc : area) {
-			cells.add(initialiser.apply(loc));
-		}
+	/**
+	 * Construct a grid with the given dimensions.
+	 *
+	 * @param width
+	 * @param height
+	 * @param initElement
+	 *            What the cells should initially hold (possibly null)
+	 */
+	public MyGrid(int width, int height, T initElement) {
+		this(new RectArea(width, height), initElement);
 	}
 
 	@Override
@@ -101,79 +101,13 @@ public class MyGrid<T> implements IGrid<T> {
 	}
 
 	@Override
-	public T get(int x, int y) {
-		return cells.get(area.toIndex(x, y));
+	public Stream<T> elementParallelStream() {
+		return cells.parallelStream();
 	}
 
 	@Override
-	public int getHeight() {
-		return area.getHeight();
-	}
-
-	@Override
-	public int getWidth() {
-		return area.getWidth();
-	}
-
-	@Override
-	public void set(int x, int y, T elem) {
-		cells.set(area.toIndex(x, y), elem);
-	}
-
-	@Override
-	public Iterator<T> iterator() {
-		return cells.iterator();
-	}
-
-	@Override
-	public T get(ILocation loc) {
-		if (loc.getArea() == area)
-			return cells.get(loc.getIndex());
-		else
-			return cells.get(area.toIndex(loc.getX(), loc.getY()));
-	}
-
-	@Override
-	public T getOrDefault(int x, int y, T defaultResult) {
-		T r = null;
-		if (isValid(x, y))
-			r = get(x, y);
-		if (r != null)
-			return r;
-		else
-			return defaultResult;
-	}
-
-	@Override
-	public T getOrDefault(ILocation loc, T defaultResult) {
-		if (loc.getArea() == area) {
-			T r = cells.get(loc.getIndex());
-			if (r != null)
-				return r;
-			else
-				return defaultResult;
-		} else {
-			return getOrDefault(loc.getX(), loc.getY(), defaultResult);
-		}
-	}
-
-	@Override
-	public boolean isValid(ILocation loc) {
-		return loc.getArea() == area || area.contains(loc.getX(), loc.getY());
-	}
-
-	@Override
-	public boolean isValid(int x, int y) {
-		return area.contains(x, y);
-	}
-
-	@Override
-	public void set(ILocation loc, T element) {
-		if (loc.getArea() == area) {
-			cells.set(loc.getIndex(), element);
-		} else {
-			set(loc.getX(), loc.getY(), element);
-		}
+	public Stream<T> elementStream() {
+		return cells.stream();
 	}
 
 	@Override
@@ -194,6 +128,78 @@ public class MyGrid<T> implements IGrid<T> {
 	}
 
 	@Override
+	public T get(ILocation loc) {
+		if (loc.getArea() == area)
+			return cells.get(loc.getIndex());
+		else
+			return cells.get(area.toIndex(loc.getX(), loc.getY()));
+	}
+
+	@Override
+	public T get(int x, int y) {
+		return cells.get(area.toIndex(x, y));
+	}
+
+	@Override
+	public IArea getArea() {
+		return area;
+	}
+
+	@Override
+	public int getHeight() {
+		return area.getHeight();
+	}
+
+	@Override
+	public T getOrDefault(ILocation loc, T defaultResult) {
+		if (loc.getArea() == area) {
+			T r = cells.get(loc.getIndex());
+			if (r != null)
+				return r;
+			else
+				return defaultResult;
+		} else {
+			return getOrDefault(loc.getX(), loc.getY(), defaultResult);
+		}
+	}
+
+	@Override
+	public T getOrDefault(int x, int y, T defaultResult) {
+		T r = null;
+		if (isValid(x, y))
+			r = get(x, y);
+		if (r != null)
+			return r;
+		else
+			return defaultResult;
+	}
+
+	@Override
+	public int getWidth() {
+		return area.getWidth();
+	}
+
+	@Override
+	public boolean isValid(ILocation loc) {
+		return loc.getArea() == area || area.contains(loc.getX(), loc.getY());
+	}
+
+	@Override
+	public boolean isValid(int x, int y) {
+		return area.contains(x, y);
+	}
+
+	@Override
+	public Iterator<T> iterator() {
+		return cells.iterator();
+	}
+
+	@Override
+	public Stream<ILocation> locationParallelStream() {
+		return area.parallelStream();
+	}
+
+	@Override
 	public Iterable<ILocation> locations() {
 		return area;
 	}
@@ -204,22 +210,16 @@ public class MyGrid<T> implements IGrid<T> {
 	}
 
 	@Override
-	public Stream<T> elementStream() {
-		return cells.stream();
+	public void set(ILocation loc, T element) {
+		if (loc.getArea() == area) {
+			cells.set(loc.getIndex(), element);
+		} else {
+			set(loc.getX(), loc.getY(), element);
+		}
 	}
 
 	@Override
-	public IArea getArea() {
-		return area;
-	}
-
-	@Override
-	public Stream<ILocation> locationParallelStream() {
-		return area.parallelStream();
-	}
-
-	@Override
-	public Stream<T> elementParallelStream() {
-		return cells.parallelStream();
+	public void set(int x, int y, T elem) {
+		cells.set(area.toIndex(x, y), elem);
 	}
 }

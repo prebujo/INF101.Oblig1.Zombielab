@@ -9,7 +9,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class TextFontAdjuster extends Application {
-	private static final String FONT_NAME = "PetMe64.ttf";
+	// private static final String FONT_NAME = "PetMe64.ttf";
 	// new TextFont(FONT_NAME, 22.2, TextModes.CHAR_BOX_SIZE, 0.0, 0.0, 1.0, 1.0);
 	private static TextFontAdjuster demo;
 
@@ -21,8 +21,9 @@ public class TextFontAdjuster extends Application {
 		launch(args);
 	}
 
-	private TextFont textFont = new TextFont("ZXSpectrum-7.otf", 22.00, TextMode.CHAR_BOX_SIZE, 3.1000, -3.8000, 1.0000,
-			1.0000, true);
+	private TextFont textFont = Printer.FONT_SYMBOLA;//
+	// new TextFont("ZXSpectrum-7.otf", 22.00, TextMode.CHAR_BOX_SIZE, 3.1000,
+	// -3.8000, 1.0000, 1.0000, true);
 	private Screen screen;
 
 	private boolean paused;
@@ -107,11 +108,9 @@ public class TextFontAdjuster extends Application {
 				textFont.getFont().getSize()));
 		printer.println(String.format("  xTr=%-1.1f yTr=%-1.1f xSc=%-1.1f ySc=%-1.1f    ", textFont.getxTranslate(),
 				textFont.getyTranslate(), textFont.getxScale(), textFont.getyScale()));
-		// System.out.printf("new TextFont(\"%s\", %1.2f, Printer.CHAR_HEIGHT, %1.4f,
-		// %1.4f, %1.4f, %1.4f)%n", FONT_NAME,
-		// textFont.getSize(), textFont.getxTranslate(), textFont.getyTranslate(),
-		// textFont.getxScale(),
-		// textFont.getyScale());
+		System.out.printf("new TextFont(\"%s\", %1.2f, Printer.CHAR_HEIGHT, %1.4f, %1.4f, %1.4f, %1.4f)%n",
+				textFont.getFont().getName(), textFont.getSize(), textFont.getxTranslate(), textFont.getyTranslate(),
+				textFont.getxScale(), textFont.getyScale());
 
 		printer.moveTo(1, 15);
 	}

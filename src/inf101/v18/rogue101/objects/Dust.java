@@ -2,10 +2,19 @@ package inf101.v18.rogue101.objects;
 
 import inf101.v18.gfx.gfxmode.ITurtle;
 import inf101.v18.gfx.textmode.BlocksAndBoxes;
-import inf101.v18.rogue101.events.IEvent;
 import inf101.v18.rogue101.game.IGame;
 
 public class Dust implements IItem {
+
+	@Override
+	public boolean draw(ITurtle painter, double w, double h) {
+		return false;
+	}
+
+	@Override
+	public int getCurrentHealth() {
+		return 0;
+	}
 
 	@Override
 	public int getDefence() {
@@ -18,8 +27,8 @@ public class Dust implements IItem {
 	}
 
 	@Override
-	public int getCurrentHealth() {
-		return 0;
+	public String getName() {
+		return "thick layer of dust";
 	}
 
 	@Override
@@ -32,21 +41,9 @@ public class Dust implements IItem {
 		return BlocksAndBoxes.BLOCK_HALF;
 	}
 
-	
 	@Override
 	public int handleDamage(IGame game, IItem source, int amount) {
 		return 0;
-	}
-
-
-	@Override
-	public boolean draw(ITurtle painter, double w, double h) {
-		return false;
-	}
-
-	@Override
-	public String getName() {
-		return "thick layer of dust";
 	}
 
 }

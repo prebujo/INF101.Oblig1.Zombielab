@@ -19,6 +19,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Affine;
+import javafx.scene.transform.Transform;
 
 /**
  * TextFont – for grid-based text / character graphics
@@ -935,7 +936,7 @@ public class TextFont {
 			target.save(); // save 3
 			if ((mode & ATTR_ITALIC) != 0) {
 				target.translate(-0.2, 0);
-				target.transform(new Affine(Affine.shear(-0.2, 0)));
+				target.transform(new Affine(Transform.shear(-0.2, 0)));
 			}
 			setGraphicsContext(target, xScaleFactor);
 			if (fill != null)

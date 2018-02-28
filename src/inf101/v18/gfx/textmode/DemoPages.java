@@ -19,7 +19,6 @@ public class DemoPages {
 				printer.println(s);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

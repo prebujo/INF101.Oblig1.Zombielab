@@ -6,8 +6,6 @@ import java.util.List;
 
 import inf101.v18.gfx.gfxmode.ITurtle;
 import inf101.v18.grid.GridDirection;
-import inf101.v18.rogue101.events.GameEvent;
-import inf101.v18.rogue101.events.IEvent;
 import inf101.v18.rogue101.game.IGame;
 import inf101.v18.rogue101.objects.IItem;
 import inf101.v18.rogue101.objects.INonPlayer;
@@ -32,13 +30,13 @@ public class Rabbit implements INonPlayer {
 				if (eaten > 0) {
 					System.out.println("ate carrot worth " + eaten + "!");
 					food += eaten;
-					game.displayMessage("You hear a faint crunching (" + getName() + " eats " + item.getArticle() + " " + item.getName() + ")");
+					game.displayMessage("You hear a faint crunching (" + getName() + " eats " + item.getArticle() + " "
+							+ item.getName() + ")");
 					return;
 				}
 			}
 		}
-
-		// TODO:
+		// TODO: prøv forskjellige varianter her
 		List<GridDirection> possibleMoves = new ArrayList<>();
 		for (GridDirection dir : GridDirection.FOUR_DIRECTIONS) {
 			if (game.canGo(dir))
@@ -51,8 +49,18 @@ public class Rabbit implements INonPlayer {
 	}
 
 	@Override
+	public boolean draw(ITurtle painter, double w, double h) {
+		return false;
+	}
+
+	@Override
 	public int getAttack() {
 		return 1000;
+	}
+
+	@Override
+	public int getCurrentHealth() {
+		return hp;
 	}
 
 	@Override
@@ -71,8 +79,8 @@ public class Rabbit implements INonPlayer {
 	}
 
 	@Override
-	public int getCurrentHealth() {
-		return hp;
+	public String getName() {
+		return "rabbit";
 	}
 
 	@Override
@@ -89,16 +97,6 @@ public class Rabbit implements INonPlayer {
 	public int handleDamage(IGame game, IItem source, int amount) {
 		hp -= amount;
 		return amount;
-	}
-
-	@Override
-	public boolean draw(ITurtle painter, double w, double h) {
-		return false;
-	}
-
-	@Override
-	public String getName() {
-		return "rabbit";
 	}
 
 }

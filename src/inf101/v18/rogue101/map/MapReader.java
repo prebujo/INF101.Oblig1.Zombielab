@@ -1,7 +1,5 @@
 package inf101.v18.rogue101.map;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
@@ -37,50 +35,6 @@ import inf101.v18.grid.MyGrid;
  */
 public class MapReader {
 	/**
-	 * Load map from file.
-	 * <p>
-	 * Files are search for relative to the folder containing the MapReader class.
-	 * 
-	 * @return the dungeon map as a grid of characters read from the file, or null
-	 *         if it failed
-	 */
-	public static IGrid<String> readFile(String path) {
-		IGrid<String> symbolMap = null;
-		InputStream stream = MapReader.class.getResourceAsStream(path);
-		if(stream == null)
-			return null;
-		try (Scanner in = new Scanner(stream, "UTF-8")) {
-			int width = in.nextInt();
-			int height = in.nextInt();
-//			System.out.println(width + " " + height);
-			symbolMap = new MyGrid<String>(width, height, " ");
-			in.nextLine();
-			fillMap(symbolMap, in);
-		}
-		try {
-			stream.close();
-		} catch (IOException e) {
-		}
-		return symbolMap;
-	}
-
-	/**
-	 * @return the dungeon map as a grid of characters read from the input string, or null
-	 *         if it failed
-	 */
-	public static IGrid<String> readString(String input) {
-		IGrid<String> symbolMap = null;
-		try (Scanner in = new Scanner(input)) {
-			int width = in.nextInt();
-			int height = in.nextInt();
-			symbolMap = new MyGrid<String>(width, height, " ");
-			in.nextLine();
-			fillMap(symbolMap, in);
-		} 
-		return symbolMap;
-	}
-
-	/**
 	 * This method fills the previously initialized {@link #symbolMap} with the
 	 * characters read from the file.
 	 */
@@ -97,5 +51,49 @@ public class MapReader {
 			});
 			xy[1]++;
 		}
+	}
+
+	/**
+	 * Load map from file.
+	 * <p>
+	 * Files are search for relative to the folder containing the MapReader class.
+	 * 
+	 * @return the dungeon map as a grid of characters read from the file, or null
+	 *         if it failed
+	 */
+	public static IGrid<String> readFile(String path) {
+		IGrid<String> symbolMap = null;
+		InputStream stream = MapReader.class.getResourceAsStream(path);
+		if (stream == null)
+			return null;
+		try (Scanner in = new Scanner(stream, "UTF-8")) {
+			int width = in.nextInt();
+			int height = in.nextInt();
+			// System.out.println(width + " " + height);
+			symbolMap = new MyGrid<String>(width, height, " ");
+			in.nextLine();
+			fillMap(symbolMap, in);
+		}
+		try {
+			stream.close();
+		} catch (IOException e) {
+		}
+		return symbolMap;
+	}
+
+	/**
+	 * @return the dungeon map as a grid of characters read from the input string,
+	 *         or null if it failed
+	 */
+	public static IGrid<String> readString(String input) {
+		IGrid<String> symbolMap = null;
+		try (Scanner in = new Scanner(input)) {
+			int width = in.nextInt();
+			int height = in.nextInt();
+			symbolMap = new MyGrid<String>(width, height, " ");
+			in.nextLine();
+			fillMap(symbolMap, in);
+		}
+		return symbolMap;
 	}
 }

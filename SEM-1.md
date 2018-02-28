@@ -1,10 +1,10 @@
 # [Semesteroppgave 1: “Rogue One Oh One”](https://retting.ii.uib.no/inf101.v18.sem1/blob/master/SEM-1.md)
 
-* [Oversikt](SEM-1.md)
-* [Praktisk informasjon](SEM-1.md#praktisk-informasjon)
-* [Del A: Bakgrunn, modellering og utforskning](SEM-1_DEL-A.md)
-* [Del B: Gjør ferdig nødvendige komponenter](SEM-1_DEL-B.md)
-* [Del C: Selvvalgt del](SEM-1_DEL-C.md)
+* **Oversikt**
+* [Praktisk informasjon 5%](SEM-1.md#praktisk-informasjon)
+* [Del A: Bakgrunn, modellering og utforskning 15%](SEM-1_DEL-A.md)
+* [Del B: Fullfør basisimplementasjonen 40%](SEM-1_DEL-B.md)
+* [Del C: Videreutvikling 40%](SEM-1_DEL-C.md)
 
 
 # Praktisk informasjon

@@ -88,6 +88,7 @@ public class Point {
 		return new Point(newX, newY);
 	}
 
+	@Override
 	public String toString() {
 		return String.format("(%.2f,%.2f)", x, y);
 	}

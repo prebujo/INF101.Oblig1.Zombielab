@@ -10,11 +10,6 @@ public interface IPaintLayer {
 	void clear();
 
 	/**
-	 * Send this layer to the front, so it will be drawn on top of any other layers.
-	 */
-	void layerToFront();
-
-	/**
 	 * Send this layer to the back, so it will be drawn behind any other layers.
 	 * 
 	 * <p>
@@ -24,4 +19,10 @@ public interface IPaintLayer {
 	 * {@link Screen#getBackgroundContext()}.
 	 */
 	void layerToBack();
+
+	/**
+	 * Send this layer to the front, so it will be drawn on top of any other layers.
+	 */
+	void layerToFront();
+
 }

@@ -108,330 +108,15 @@ public class Screen {
 	public static final int CONFIG_FLAG_NO_AUTOHIDE_MOUSE = 2 << CONFIG_FLAG_SHIFT;
 	public static final int CONFIG_FLAG_DEBUG = 4 << CONFIG_FLAG_SHIFT;
 	private static final int CONFIG_FLAG_MASK = 7;
-	private final double rawCanvasWidth;
-	private final double rawCanvasHeight;
-	private boolean logKeyEvents = false;
-	private final SubScene subScene;
-	private final List<Canvas> canvases = new ArrayList<>();
-	private final Map<IPaintLayer, Canvas> layerCanvases = new IdentityHashMap<>();
-	private final Canvas background;
-	private final Group root;
-	private Paint bgColor = Color.CORNFLOWERBLUE;
-	private int aspect = 0;
-	private double scaling = 0;
-	private double currentScale = 1.0;
-	private double currentFit = 1.0;
-	private double resolutionScale = 1.0;
-	private int maxScale = 1;
-	private Predicate<KeyEvent> keyOverride = null;
-	private Predicate<KeyEvent> keyPressedHandler = null;
-	private Predicate<KeyEvent> keyTypedHandler = null;
-	private Predicate<KeyEvent> keyReleasedHandler = null;
-	private boolean debug = true;
-	private List<Double> aspects;
-	private boolean hideFullScreenMouseCursor = true;
-	private Cursor oldCursor;
-
-	/** @return the keyTypedHandler */
-	public Predicate<KeyEvent> getKeyTypedHandler() {
-		return keyTypedHandler;
-	}
 
 	/**
-	 * @param keyTypedHandler
-	 *            the keyTypedHandler to set
-	 */
-	public void setKeyTypedHandler(Predicate<KeyEvent> keyTypedHandler) {
-		this.keyTypedHandler = keyTypedHandler;
-	}
-
-	/** @return the keyReleasedHandler */
-	public Predicate<KeyEvent> getKeyReleasedHandler() {
-		return keyReleasedHandler;
-	}
-
-	/**
-	 * @param keyReleasedHandler
-	 *            the keyReleasedHandler to set
-	 */
-	public void setKeyReleasedHandler(Predicate<KeyEvent> keyReleasedHandler) {
-		this.keyReleasedHandler = keyReleasedHandler;
-	}
-
-	/** @return the keyOverride */
-	public Predicate<KeyEvent> getKeyOverride() {
-		return keyOverride;
-	}
-
-	/**
-	 * @param keyOverride
-	 *            the keyOverride to set
-	 */
-	public void setKeyOverride(Predicate<KeyEvent> keyOverride) {
-		this.keyOverride = keyOverride;
-	}
-
-	/** @return the keyHandler */
-	public Predicate<KeyEvent> getKeyPressedHandler() {
-		return keyPressedHandler;
-	}
-
-	/**
-	 * @param keyHandler
-	 *            the keyHandler to set
-	 */
-	public void setKeyPressedHandler(Predicate<KeyEvent> keyHandler) {
-		this.keyPressedHandler = keyHandler;
-	}
-
-	public Screen(double width, double height, double pixWidth, double pixHeight, double canvasWidth,
-			double canvasHeight) {
-		root = new Group();
-		subScene = new SubScene(root, Math.floor(width), Math.floor(height));
-		resolutionScale = pixWidth / canvasWidth;
-		this.rawCanvasWidth = Math.floor(pixWidth);
-		this.rawCanvasHeight = Math.floor(pixHeight);
-		double aspectRatio = width / height;
-		aspect = 0;
-		for (double a : STD_ASPECTS)
-			if (Math.abs(aspectRatio - a) < 0.01) {
-				break;
-			} else {
-				aspect++;
-			}
-		aspects = new ArrayList<>(STD_ASPECTS);
-		if (aspect >= STD_ASPECTS.size()) {
-			aspects.add(aspectRatio);
-		}
-		background = new Canvas(rawCanvasWidth, rawCanvasHeight);
-		background.getGraphicsContext2D().scale(resolutionScale, resolutionScale);
-		setBackground(bgColor);
-		clearBackground();
-		root.getChildren().add(background);
-		subScene.layoutBoundsProperty()
-				.addListener((ObservableValue<? extends Bounds> observable, Bounds oldBounds, Bounds bounds) -> {
-					recomputeLayout(false);
-				});
-	}
-
-	public void clearBackground() {
-		getBackgroundContext().setFill(bgColor);
-		getBackgroundContext().fillRect(0.0, 0.0, background.getWidth(), background.getHeight());
-	}
-
-	public void cycleAspect() {
-		aspect = (aspect + 1) % aspects.size();
-		recomputeLayout(false);
-	}
-
-	public void zoomCycle() {
-		scaling++;
-		if (scaling > maxScale)
-			scaling = ((int) scaling) % maxScale;
-		recomputeLayout(true);
-	}
-
-	public void zoomIn() {
-		scaling = Math.min(10, currentScale + 0.2);
-		recomputeLayout(false);
-	}
-
-	public void zoomOut() {
-		scaling = Math.max(0.1, currentScale - 0.2);
-		recomputeLayout(false);
-	}
-
-	public void zoomFit() {
-		scaling = 0;
-		recomputeLayout(false);
-	}
-
-	public void zoomOne() {
-		scaling = 1;
-		recomputeLayout(false);
-	}
-
-	public void fitScaling() {
-		scaling = 0;
-		recomputeLayout(true);
-	}
-
-	public int getAspect() {
-		return aspect;
-	}
-
-	public GraphicsContext getBackgroundContext() {
-		return background.getGraphicsContext2D();
-	}
-
-	public TurtlePainter createPainter() {
-		Canvas canvas = new Canvas(rawCanvasWidth, rawCanvasHeight);
-		canvas.getGraphicsContext2D().scale(resolutionScale, resolutionScale);
-		canvases.add(canvas);
-		root.getChildren().add(canvas);
-		return new TurtlePainter(this, canvas);
-	}
-
-	public Printer createPrinter() {
-		Canvas canvas = new Canvas(rawCanvasWidth, rawCanvasHeight);
-		canvas.getGraphicsContext2D().scale(resolutionScale, resolutionScale);
-		canvases.add(canvas);
-		root.getChildren().add(canvas);
-		return new Printer(this, canvas);
-	}
-
-	private void recomputeLayout(boolean resizeWindow) {
-		double xScale = subScene.getWidth() / getRawWidth();
-		double yScale = subScene.getHeight() / getRawHeight();
-		double xMaxScale = getDisplayWidth() / getRawWidth();
-		double yMaxScale = getDisplayHeight() / getRawHeight();
-		currentFit = Math.min(xScale, yScale);
-		maxScale = (int) Math.max(1, Math.ceil(Math.min(xMaxScale, yMaxScale)));
-		currentScale = scaling == 0 ? currentFit : scaling;
-
-		if (resizeWindow) {
-			Scene scene = subScene.getScene();
-			Window window = scene.getWindow();
-			double hBorder = window.getWidth() - scene.getWidth();
-			double vBorder = window.getHeight() - scene.getHeight();
-			double myWidth = getRawWidth() * currentScale;
-			double myHeight = getRawHeight() * currentScale;
-			if (debug)
-				System.out.printf(
-						"Resizing before: screen: %1.0fx%1.0f, screen: %1.0fx%1.0f, scene: %1.0fx%1.0f, window: %1.0fx%1.0f,%n border: %1.0fx%1.0f, new window size: %1.0fx%1.0f, canvas size: %1.0fx%1.0f%n", //
-						javafx.stage.Screen.getPrimary().getVisualBounds().getWidth(),
-						javafx.stage.Screen.getPrimary().getVisualBounds().getHeight(), subScene.getWidth(),
-						subScene.getHeight(), scene.getWidth(), scene.getHeight(), window.getWidth(),
-						window.getHeight(), hBorder, vBorder, myWidth, myHeight, getRawWidth(), getRawHeight());
-			// this.setWidth(myWidth);
-			// this.setHeight(myHeight);
-			window.setWidth(myWidth + hBorder);
-			window.setHeight(myHeight + vBorder);
-			if (debug)
-				System.out.printf(
-						"Resizing after : screen: %1.0fx%1.0f, screen: %1.0fx%1.0f, scene: %1.0fx%1.0f, window: %1.0fx%1.0f,%n border: %1.0fx%1.0f, new window size: %1.0fx%1.0f, canvas size: %1.0fx%1.0f%n",
-						javafx.stage.Screen.getPrimary().getVisualBounds().getWidth(),
-						javafx.stage.Screen.getPrimary().getVisualBounds().getHeight(), subScene.getWidth(),
-						subScene.getHeight(), scene.getWidth(), scene.getHeight(), window.getWidth(),
-						window.getHeight(), hBorder, vBorder, myWidth, myHeight, getRawWidth(), getRawHeight());
-		}
-
-		if (debug)
-			System.out.printf("Rescaling: subscene %1.2fx%1.2f, scale %1.2f, aspect %.4f (%d), canvas %1.0fx%1.0f%n",
-					subScene.getWidth(), subScene.getHeight(), currentScale, aspects.get(aspect), aspect, getRawWidth(),
-					getRawHeight());
-		for (Node n : root.getChildren()) {
-			n.relocate(Math.floor(subScene.getWidth() / 2),
-					Math.floor(subScene.getHeight() / 2 + (rawCanvasHeight - getRawHeight()) * currentScale / 2));
-			n.setTranslateX(-Math.floor(rawCanvasWidth / 2));
-			n.setTranslateY(-Math.floor(rawCanvasHeight / 2));
-			if (debug)
-				System.out.printf(" *  layout %1.2fx%1.2f, translate %1.2fx%1.2f%n", n.getLayoutX(), n.getLayoutY(),
-						n.getTranslateX(), n.getTranslateY());
-			n.setScaleX(currentScale);
-			n.setScaleY(currentScale);
-		}
-	}
-
-	public void setAspect(int aspect) {
-		this.aspect = (aspect) % aspects.size();
-		recomputeLayout(false);
-	}
-
-	public void setBackground(Paint bgColor) {
-		this.bgColor = bgColor;
-		subScene.setFill(bgColor instanceof Color ? ((Color) bgColor).darker() : bgColor);
-	}
-
-	public boolean minimalKeyHandler(KeyEvent event) {
-		KeyCode code = event.getCode();
-		if (event.isShortcutDown()) {
-			if (code == KeyCode.Q) {
-				System.exit(0);
-			} else if (code == KeyCode.PLUS) {
-				zoomIn();
-				return true;
-			} else if (code == KeyCode.MINUS) {
-				zoomOut();
-				return true;
-			}
-		} else if (!(event.isAltDown() || event.isControlDown() || event.isMetaDown() || event.isShiftDown())) {
-			if (code == KeyCode.F11) {
-				setFullScreen(!isFullScreen());
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	public boolean isFullScreen() {
-		Window window = subScene.getScene().getWindow();
-		if (window instanceof Stage)
-			return ((Stage) window).isFullScreen();
-		else
-			return false;
-	}
-
-	public void setFullScreen(boolean fullScreen) {
-		Window window = subScene.getScene().getWindow();
-		if (window instanceof Stage) {
-			((Stage) window).setFullScreenExitHint("");
-			((Stage) window).setFullScreen(fullScreen);
-			if (hideFullScreenMouseCursor) {
-				if (fullScreen) {
-					oldCursor = subScene.getScene().getCursor();
-					subScene.getScene().setCursor(Cursor.NONE);
-				} else if (oldCursor != null) {
-					subScene.getScene().setCursor(oldCursor);
-					oldCursor = null;
-				} else {
-					subScene.getScene().setCursor(Cursor.DEFAULT);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Get the native physical width of the screen, in pixels.
+	 * Get the resolution of this screen, in DPI (pixels per inch).
 	 * 
-	 * <p>
-	 * This will not include such things as toolbars, menus and such (on a desktop),
-	 * or take pixel density into account (e.g., on high resolution mobile devices).
-	 * 
-	 * @return Raw width of the display
-	 * @see javafx.stage.Screen#getBounds()
+	 * @return The primary display's DPI
+	 * @see javafx.stage.Screen#getDpi()
 	 */
-	public static double getRawDisplayWidth() {
-		return javafx.stage.Screen.getPrimary().getBounds().getWidth();
-	}
-
-	/**
-	 * Get the native physical height of the screen, in pixels.
-	 * 
-	 * <p>
-	 * This will not include such things as toolbars, menus and such (on a desktop),
-	 * or take pixel density into account (e.g., on high resolution mobile devices).
-	 * 
-	 * @return Raw width of the display
-	 * @see javafx.stage.Screen#getBounds()
-	 */
-	public static double getRawDisplayHeight() {
-		return javafx.stage.Screen.getPrimary().getBounds().getHeight();
-	}
-
-	/**
-	 * Get the width of the display, in pixels.
-	 * 
-	 * <p>
-	 * This takes into account such things as toolbars, menus and such (on a
-	 * desktop), and pixel density (e.g., on high resolution mobile devices).
-	 * 
-	 * @return Width of the display
-	 * @see javafx.stage.Screen#getVisualBounds()
-	 */
-	public static double getDisplayWidth() {
-		return javafx.stage.Screen.getPrimary().getVisualBounds().getWidth();
+	public static double getDisplayDpi() {
+		return javafx.stage.Screen.getPrimary().getDpi();
 	}
 
 	/**
@@ -449,13 +134,45 @@ public class Screen {
 	}
 
 	/**
-	 * Get the resolution of this screen, in DPI (pixels per inch).
+	 * Get the width of the display, in pixels.
 	 * 
-	 * @return The primary display's DPI
-	 * @see javafx.stage.Screen#getDpi()
+	 * <p>
+	 * This takes into account such things as toolbars, menus and such (on a
+	 * desktop), and pixel density (e.g., on high resolution mobile devices).
+	 * 
+	 * @return Width of the display
+	 * @see javafx.stage.Screen#getVisualBounds()
 	 */
-	public static double getDisplayDpi() {
-		return javafx.stage.Screen.getPrimary().getDpi();
+	public static double getDisplayWidth() {
+		return javafx.stage.Screen.getPrimary().getVisualBounds().getWidth();
+	}
+
+	/**
+	 * Get the native physical height of the screen, in pixels.
+	 * 
+	 * <p>
+	 * This will not include such things as toolbars, menus and such (on a desktop),
+	 * or take pixel density into account (e.g., on high resolution mobile devices).
+	 * 
+	 * @return Raw width of the display
+	 * @see javafx.stage.Screen#getBounds()
+	 */
+	public static double getRawDisplayHeight() {
+		return javafx.stage.Screen.getPrimary().getBounds().getHeight();
+	}
+
+	/**
+	 * Get the native physical width of the screen, in pixels.
+	 * 
+	 * <p>
+	 * This will not include such things as toolbars, menus and such (on a desktop),
+	 * or take pixel density into account (e.g., on high resolution mobile devices).
+	 * 
+	 * @return Raw width of the display
+	 * @see javafx.stage.Screen#getBounds()
+	 */
+	public static double getRawDisplayWidth() {
+		return javafx.stage.Screen.getPrimary().getBounds().getWidth();
 	}
 
 	/**
@@ -607,27 +324,174 @@ public class Screen {
 		return pScene;
 	}
 
-	public double getRawWidth() {
-		return rawCanvasWidth;
+	private final double rawCanvasWidth;
+	private final double rawCanvasHeight;
+	private boolean logKeyEvents = false;
+	private final SubScene subScene;
+	private final List<Canvas> canvases = new ArrayList<>();
+	private final Map<IPaintLayer, Canvas> layerCanvases = new IdentityHashMap<>();
+	private final Canvas background;
+	private final Group root;
+	private Paint bgColor = Color.CORNFLOWERBLUE;
+	private int aspect = 0;
+	private double scaling = 0;
+	private double currentScale = 1.0;
+	private double currentFit = 1.0;
+	private double resolutionScale = 1.0;
+	private int maxScale = 1;
+	private Predicate<KeyEvent> keyOverride = null;
+
+	private Predicate<KeyEvent> keyPressedHandler = null;
+
+	private Predicate<KeyEvent> keyTypedHandler = null;
+
+	private Predicate<KeyEvent> keyReleasedHandler = null;
+
+	private boolean debug = true;
+
+	private List<Double> aspects;
+
+	private boolean hideFullScreenMouseCursor = true;
+
+	private Cursor oldCursor;
+
+	public Screen(double width, double height, double pixWidth, double pixHeight, double canvasWidth,
+			double canvasHeight) {
+		root = new Group();
+		subScene = new SubScene(root, Math.floor(width), Math.floor(height));
+		resolutionScale = pixWidth / canvasWidth;
+		this.rawCanvasWidth = Math.floor(pixWidth);
+		this.rawCanvasHeight = Math.floor(pixHeight);
+		double aspectRatio = width / height;
+		aspect = 0;
+		for (double a : STD_ASPECTS)
+			if (Math.abs(aspectRatio - a) < 0.01) {
+				break;
+			} else {
+				aspect++;
+			}
+		aspects = new ArrayList<>(STD_ASPECTS);
+		if (aspect >= STD_ASPECTS.size()) {
+			aspects.add(aspectRatio);
+		}
+		background = new Canvas(rawCanvasWidth, rawCanvasHeight);
+		background.getGraphicsContext2D().scale(resolutionScale, resolutionScale);
+		setBackground(bgColor);
+		clearBackground();
+		root.getChildren().add(background);
+		subScene.layoutBoundsProperty()
+				.addListener((ObservableValue<? extends Bounds> observable, Bounds oldBounds, Bounds bounds) -> {
+					recomputeLayout(false);
+				});
 	}
 
-	public double getRawHeight() {
-		return Math.floor(rawCanvasWidth / aspects.get(aspect));
+	public void clearBackground() {
+		getBackgroundContext().setFill(bgColor);
+		getBackgroundContext().fillRect(0.0, 0.0, background.getWidth(), background.getHeight());
 	}
 
-	public double getWidth() {
-		return Math.floor(getRawWidth() / resolutionScale);
+	public TurtlePainter createPainter() {
+		Canvas canvas = new Canvas(rawCanvasWidth, rawCanvasHeight);
+		canvas.getGraphicsContext2D().scale(resolutionScale, resolutionScale);
+		canvases.add(canvas);
+		root.getChildren().add(canvas);
+		return new TurtlePainter(this, canvas);
+	}
+
+	public Printer createPrinter() {
+		Canvas canvas = new Canvas(rawCanvasWidth, rawCanvasHeight);
+		canvas.getGraphicsContext2D().scale(resolutionScale, resolutionScale);
+		canvases.add(canvas);
+		root.getChildren().add(canvas);
+		return new Printer(this, canvas);
+	}
+
+	public void cycleAspect() {
+		aspect = (aspect + 1) % aspects.size();
+		recomputeLayout(false);
+	}
+
+	public void fitScaling() {
+		scaling = 0;
+		recomputeLayout(true);
+	}
+
+	public int getAspect() {
+		return aspect;
+	}
+
+	public GraphicsContext getBackgroundContext() {
+		return background.getGraphicsContext2D();
 	}
 
 	public double getHeight() {
 		return Math.floor(getRawHeight() / resolutionScale);
 	}
 
-	public void moveToFront(IPaintLayer layer) {
-		Canvas canvas = layerCanvases.get(layer);
-		if (canvas != null) {
-			canvas.toFront();
+	/** @return the keyOverride */
+	public Predicate<KeyEvent> getKeyOverride() {
+		return keyOverride;
+	}
+
+	/** @return the keyHandler */
+	public Predicate<KeyEvent> getKeyPressedHandler() {
+		return keyPressedHandler;
+	}
+
+	/** @return the keyReleasedHandler */
+	public Predicate<KeyEvent> getKeyReleasedHandler() {
+		return keyReleasedHandler;
+	}
+
+	/** @return the keyTypedHandler */
+	public Predicate<KeyEvent> getKeyTypedHandler() {
+		return keyTypedHandler;
+	}
+
+	public double getRawHeight() {
+		return Math.floor(rawCanvasWidth / aspects.get(aspect));
+	}
+
+	public double getRawWidth() {
+		return rawCanvasWidth;
+	}
+
+	public double getWidth() {
+		return Math.floor(getRawWidth() / resolutionScale);
+	}
+
+	public void hideMouseCursor() {
+		subScene.getScene().setCursor(Cursor.NONE);
+	}
+
+	public boolean isFullScreen() {
+		Window window = subScene.getScene().getWindow();
+		if (window instanceof Stage)
+			return ((Stage) window).isFullScreen();
+		else
+			return false;
+	}
+
+	public boolean minimalKeyHandler(KeyEvent event) {
+		KeyCode code = event.getCode();
+		if (event.isShortcutDown()) {
+			if (code == KeyCode.Q) {
+				System.exit(0);
+			} else if (code == KeyCode.PLUS) {
+				zoomIn();
+				return true;
+			} else if (code == KeyCode.MINUS) {
+				zoomOut();
+				return true;
+			}
+		} else if (!(event.isAltDown() || event.isControlDown() || event.isMetaDown() || event.isShiftDown())) {
+			if (code == KeyCode.F11) {
+				setFullScreen(!isFullScreen());
+				return true;
+			}
 		}
+
+		return false;
 	}
 
 	public void moveToBack(IPaintLayer layer) {
@@ -638,16 +502,93 @@ public class Screen {
 		}
 	}
 
-	public void hideMouseCursor() {
-		subScene.getScene().setCursor(Cursor.NONE);
+	public void moveToFront(IPaintLayer layer) {
+		Canvas canvas = layerCanvases.get(layer);
+		if (canvas != null) {
+			canvas.toFront();
+		}
 	}
 
-	public void showMouseCursor() {
-		subScene.getScene().setCursor(Cursor.DEFAULT);
+	private void recomputeLayout(boolean resizeWindow) {
+		double xScale = subScene.getWidth() / getRawWidth();
+		double yScale = subScene.getHeight() / getRawHeight();
+		double xMaxScale = getDisplayWidth() / getRawWidth();
+		double yMaxScale = getDisplayHeight() / getRawHeight();
+		currentFit = Math.min(xScale, yScale);
+		maxScale = (int) Math.max(1, Math.ceil(Math.min(xMaxScale, yMaxScale)));
+		currentScale = scaling == 0 ? currentFit : scaling;
+
+		if (resizeWindow) {
+			Scene scene = subScene.getScene();
+			Window window = scene.getWindow();
+			double hBorder = window.getWidth() - scene.getWidth();
+			double vBorder = window.getHeight() - scene.getHeight();
+			double myWidth = getRawWidth() * currentScale;
+			double myHeight = getRawHeight() * currentScale;
+			if (debug)
+				System.out.printf(
+						"Resizing before: screen: %1.0fx%1.0f, screen: %1.0fx%1.0f, scene: %1.0fx%1.0f, window: %1.0fx%1.0f,%n border: %1.0fx%1.0f, new window size: %1.0fx%1.0f, canvas size: %1.0fx%1.0f%n", //
+						javafx.stage.Screen.getPrimary().getVisualBounds().getWidth(),
+						javafx.stage.Screen.getPrimary().getVisualBounds().getHeight(), subScene.getWidth(),
+						subScene.getHeight(), scene.getWidth(), scene.getHeight(), window.getWidth(),
+						window.getHeight(), hBorder, vBorder, myWidth, myHeight, getRawWidth(), getRawHeight());
+			// this.setWidth(myWidth);
+			// this.setHeight(myHeight);
+			window.setWidth(myWidth + hBorder);
+			window.setHeight(myHeight + vBorder);
+			if (debug)
+				System.out.printf(
+						"Resizing after : screen: %1.0fx%1.0f, screen: %1.0fx%1.0f, scene: %1.0fx%1.0f, window: %1.0fx%1.0f,%n border: %1.0fx%1.0f, new window size: %1.0fx%1.0f, canvas size: %1.0fx%1.0f%n",
+						javafx.stage.Screen.getPrimary().getVisualBounds().getWidth(),
+						javafx.stage.Screen.getPrimary().getVisualBounds().getHeight(), subScene.getWidth(),
+						subScene.getHeight(), scene.getWidth(), scene.getHeight(), window.getWidth(),
+						window.getHeight(), hBorder, vBorder, myWidth, myHeight, getRawWidth(), getRawHeight());
+		}
+
+		if (debug)
+			System.out.printf("Rescaling: subscene %1.2fx%1.2f, scale %1.2f, aspect %.4f (%d), canvas %1.0fx%1.0f%n",
+					subScene.getWidth(), subScene.getHeight(), currentScale, aspects.get(aspect), aspect, getRawWidth(),
+					getRawHeight());
+		for (Node n : root.getChildren()) {
+			n.relocate(Math.floor(subScene.getWidth() / 2),
+					Math.floor(subScene.getHeight() / 2 + (rawCanvasHeight - getRawHeight()) * currentScale / 2));
+			n.setTranslateX(-Math.floor(rawCanvasWidth / 2));
+			n.setTranslateY(-Math.floor(rawCanvasHeight / 2));
+			if (debug)
+				System.out.printf(" *  layout %1.2fx%1.2f, translate %1.2fx%1.2f%n", n.getLayoutX(), n.getLayoutY(),
+						n.getTranslateX(), n.getTranslateY());
+			n.setScaleX(currentScale);
+			n.setScaleY(currentScale);
+		}
 	}
 
-	public void setMouseCursor(Cursor cursor) {
-		subScene.getScene().setCursor(cursor);
+	public void setAspect(int aspect) {
+		this.aspect = (aspect) % aspects.size();
+		recomputeLayout(false);
+	}
+
+	public void setBackground(Paint bgColor) {
+		this.bgColor = bgColor;
+		subScene.setFill(bgColor instanceof Color ? ((Color) bgColor).darker() : bgColor);
+	}
+
+	public void setFullScreen(boolean fullScreen) {
+		Window window = subScene.getScene().getWindow();
+		if (window instanceof Stage) {
+			((Stage) window).setFullScreenExitHint("");
+			((Stage) window).setFullScreen(fullScreen);
+			if (hideFullScreenMouseCursor) {
+				if (fullScreen) {
+					oldCursor = subScene.getScene().getCursor();
+					subScene.getScene().setCursor(Cursor.NONE);
+				} else if (oldCursor != null) {
+					subScene.getScene().setCursor(oldCursor);
+					oldCursor = null;
+				} else {
+					subScene.getScene().setCursor(Cursor.DEFAULT);
+				}
+			}
+		}
 	}
 
 	public void setHideFullScreenMouseCursor(boolean hideIt) {
@@ -663,5 +604,72 @@ public class Screen {
 			}
 		}
 		hideFullScreenMouseCursor = hideIt;
+	}
+
+	/**
+	 * @param keyOverride
+	 *            the keyOverride to set
+	 */
+	public void setKeyOverride(Predicate<KeyEvent> keyOverride) {
+		this.keyOverride = keyOverride;
+	}
+
+	/**
+	 * @param keyHandler
+	 *            the keyHandler to set
+	 */
+	public void setKeyPressedHandler(Predicate<KeyEvent> keyHandler) {
+		this.keyPressedHandler = keyHandler;
+	}
+
+	/**
+	 * @param keyReleasedHandler
+	 *            the keyReleasedHandler to set
+	 */
+	public void setKeyReleasedHandler(Predicate<KeyEvent> keyReleasedHandler) {
+		this.keyReleasedHandler = keyReleasedHandler;
+	}
+
+	/**
+	 * @param keyTypedHandler
+	 *            the keyTypedHandler to set
+	 */
+	public void setKeyTypedHandler(Predicate<KeyEvent> keyTypedHandler) {
+		this.keyTypedHandler = keyTypedHandler;
+	}
+
+	public void setMouseCursor(Cursor cursor) {
+		subScene.getScene().setCursor(cursor);
+	}
+
+	public void showMouseCursor() {
+		subScene.getScene().setCursor(Cursor.DEFAULT);
+	}
+
+	public void zoomCycle() {
+		scaling++;
+		if (scaling > maxScale)
+			scaling = ((int) scaling) % maxScale;
+		recomputeLayout(true);
+	}
+
+	public void zoomFit() {
+		scaling = 0;
+		recomputeLayout(false);
+	}
+
+	public void zoomIn() {
+		scaling = Math.min(10, currentScale + 0.2);
+		recomputeLayout(false);
+	}
+
+	public void zoomOne() {
+		scaling = 1;
+		recomputeLayout(false);
+	}
+
+	public void zoomOut() {
+		scaling = Math.max(0.1, currentScale - 0.2);
+		recomputeLayout(false);
 	}
 }

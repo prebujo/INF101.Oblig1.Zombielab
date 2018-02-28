@@ -6,10 +6,26 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 public class BlocksAndBoxes {
+	public enum PixelOrder implements Iterable<Integer> {
+		LEFT_TO_RIGHT(8, 4, 2, 1), RIGHT_TO_LEFT(4, 8, 1, 2), LEFT_TO_RIGHT_UPWARDS(2, 1, 8,
+				4), RIGHT_TO_LEFT_UPWARDS(1, 2, 4, 8);
+
+		private List<Integer> order;
+
+		private PixelOrder(int a, int b, int c, int d) {
+			order = Arrays.asList(a, b, c, d);
+		}
+
+		@Override
+		public Iterator<Integer> iterator() {
+			return order.iterator();
+		}
+	}
+
 	public static final String[] unicodeBlocks = { " ", "▗", "▖", "▄", "▝", "▐", "▞", "▟", "▘", "▚", "▌", "▙", "▀", "▜",
 			"▛", "█", "▒" };
-	public static final int[] unicodeBlocks_NumPixels = { 0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4, 2 };
 
+	public static final int[] unicodeBlocks_NumPixels = { 0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4, 2 };
 	public static final String unicodeBlocksString = String.join("", unicodeBlocks);
 	public static final String BLOCK_EMPTY = " ";
 	public static final String BLOCK_BOTTOM_RIGHT = "▗";
@@ -27,7 +43,19 @@ public class BlocksAndBoxes {
 	public static final String BLOCK_REVERSE_BOTTOM_LEFT = "▜";
 	public static final String BLOCK_REVERSE_BOTTOM_RIGHT = "▛";
 	public static final String BLOCK_FULL = "█";
-	public static final String BLOCK_HALF = "▒";
+
+	public static final String BLOCK_HALF = "▒";;
+
+	public static String blockAddOne(String s, PixelOrder order) {
+		int i = BlocksAndBoxes.unicodeBlocksString.indexOf(s);
+		if (i >= 0) {
+			for (int bit : order) {
+				if ((i & bit) == 0)
+					return unicodeBlocks[i | bit];
+			}
+		}
+		return s;
+	}
 
 	/**
 	 * Convert a string into a Unicode block graphics character.
@@ -122,7 +150,20 @@ public class BlocksAndBoxes {
 		}
 		throw new IllegalArgumentException(
 				"Expected length 4 string of \" \" and \"*\", or \"++++\", got \"" + s + "\"");
-	};
+	}
+
+	public static String blockCompact(String s) {
+		int i = BlocksAndBoxes.unicodeBlocksString.indexOf(s);
+		if (i > 0) {
+			int lower = i & 3;
+			int upper = (i >> 2) & 3;
+			i = (lower | upper) | ((lower & upper) << 2);
+			// System.out.println("Compact: " + s + " -> " + BlocksAndBoxes.unicodeBlocks[i]
+			// + "\n");
+			return BlocksAndBoxes.unicodeBlocks[i];
+		}
+		return s;
+	}
 
 	public static String blockCompose(String b1, String b2, BiFunction<Integer, Integer, Integer> op) {
 		int i1 = unicodeBlocksString.indexOf(b1);
@@ -146,33 +187,6 @@ public class BlocksAndBoxes {
 			return unicodeBlocks[op.apply(i1, i2)];
 	}
 
-	public enum PixelOrder implements Iterable<Integer> {
-		LEFT_TO_RIGHT(8, 4, 2, 1), RIGHT_TO_LEFT(4, 8, 1, 2), LEFT_TO_RIGHT_UPWARDS(2, 1, 8,
-				4), RIGHT_TO_LEFT_UPWARDS(1, 2, 4, 8);
-
-		private List<Integer> order;
-
-		private PixelOrder(int a, int b, int c, int d) {
-			order = Arrays.asList(a, b, c, d);
-		}
-
-		@Override
-		public Iterator<Integer> iterator() {
-			return order.iterator();
-		}
-	}
-
-	public static String blockAddOne(String s, PixelOrder order) {
-		int i = BlocksAndBoxes.unicodeBlocksString.indexOf(s);
-		if (i >= 0) {
-			for (int bit : order) {
-				if ((i & bit) == 0)
-					return unicodeBlocks[i | bit];
-			}
-		}
-		return s;
-	}
-
 	public static String blockRemoveOne(String s, PixelOrder order) {
 		int i = BlocksAndBoxes.unicodeBlocksString.indexOf(s);
 		if (i >= 0) {
@@ -180,19 +194,6 @@ public class BlocksAndBoxes {
 				if ((i & bit) != 0)
 					return unicodeBlocks[i & ~bit];
 			}
-		}
-		return s;
-	}
-
-	public static String blockCompact(String s) {
-		int i = BlocksAndBoxes.unicodeBlocksString.indexOf(s);
-		if (i > 0) {
-			int lower = i & 3;
-			int upper = (i >> 2) & 3;
-			i = (lower | upper) | ((lower & upper) << 2);
-			// System.out.println("Compact: " + s + " -> " + BlocksAndBoxes.unicodeBlocks[i]
-			// + "\n");
-			return BlocksAndBoxes.unicodeBlocks[i];
 		}
 		return s;
 	}
