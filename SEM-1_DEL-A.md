@@ -98,6 +98,12 @@ Vi har også et par andre mer abstrakte ting vi bør tenke på – f.eks. koordi
 * [IArea](src/inf101/v18/grid/IArea.java) – et rektangulært sett med ILocations. Brukes f.eks. av spillkartet for å lettvint gå gjennom alle cellene/rutene i kartet.
 * ([IGrid<T>](src/inf101/v18/grid/IGrid.java) og [IMultiGrid<T>](src/inf101/v18/grid/IMultiGrid.java) – IGrid<T> er tilsvarende til den du har brukt i labbene tidligere; IMultiGrid<T> er et grid der hver celle er en liste av T-er. Den blir brukt av spillkartet, men du trenger neppe bruke den selv.)
 
+UML:  
+<a href="https://retting.ii.uib.no/inf101/inf101.v18/wikis/img/RogueInterface.png">
+<img src="https://retting.ii.uib.no/inf101/inf101.v18/wikis/img/RogueInterface.png" width="200">
+</a>
+
+
 ### *(4%)* Deloppgave A1: Tilstand, oppførsel og grensesnitt for objektene
 *Du vil sikkert finne på lurere svar på spørsmålene etterhvert som du jobber med oppgaven. Det er fint om du lar de opprinnelige svarene stå (det er helt OK om de er totalt feil eller helt på jordet) og heller gjør tilføyelser. Du kan evt. bruke ~~overstryking~~ (putt dobbel tilde rundt teksten, `~~Rabbit.java funker fordi det bor en liten kanin inni datamaskinen~~`) for å markere det du ikke lenger synes er like lurt.*
 
