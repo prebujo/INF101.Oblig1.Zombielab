@@ -151,7 +151,7 @@ Hvis du ser på koden for [Rabbit.java](src/inf101/v18/rogue101/examples/Rabbit.
     * du kan finne ut hva som ligger i nabofeltet ved hjelp av kartet (`game.getMap()`); f.eks. med metoden `getItems()`.
     * kaninen har allerede kode for å sjekke gjennom tingene og se om den finner en `Carrot` – du kan kopiere og tilpasse denne
     * hvis kaninen finner en gulrot kan den gjøre `game.move(...)` og så returnere med en gang
-** *e)** Kaninens jobb blir litt enklere om den får litt hjelp fra `Game` med å finne ut hvor den kan gå. Implementer metoden `getPossibleMoves()` i `Game`.
+* **e)** Kaninens jobb blir litt enklere om den får litt hjelp fra `Game` med å finne ut hvor den kan gå. Implementer metoden `getPossibleMoves()` i `Game`.
 
 #### Bedre gulrøtter
 
