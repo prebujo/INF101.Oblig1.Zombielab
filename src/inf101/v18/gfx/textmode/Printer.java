@@ -718,4 +718,14 @@ public class Printer implements IPaintLayer {
 		plot(x, y, (a, b) -> a & ~b);
 	}
 
+	@Override
+	public double getWidth() {
+		return textPage.getWidth();
+	}
+
+	@Override
+	public double getHeight() {
+		return textPage.getHeight();
+	}
+
 }

@@ -2,7 +2,18 @@ package inf101.v18.gfx.gfxmode;
 
 public interface ITurtle extends IPainter {
 
-	<T> T as(Class<T> class1);
+	/**
+	 * This method is used to convert the turtle to an other type, determined by the
+	 * class object given as an argument.
+	 * <p>
+	 * This can be used to access extra functionality not provided by this
+	 * interface, such as direct access to the underlying graphics context.
+	 * 
+	 * @param clazz
+	 * @return This object or an appropriate closely related object of the given
+	 *         time; or <code>null</code> if no appropriate object can be found
+	 */
+	<T> T as(Class<T> clazz);
 
 	/**
 	 * Move to the given position while drawing a curve
@@ -236,7 +247,24 @@ public interface ITurtle extends IPainter {
 	 */
 	ITurtle turnTowards(double degrees, double percent);
 
-	double getWidth();
+	/**
+	 * Jump (without drawing) to the given relative position.
+	 * <p>
+	 * The new position will be equal to getPos().move(relPos).
+	 * 
+	 * @param relPos
+	 *            A position, interpreted relative to current position
+	 * @return {@code this}, for sending more draw commands
+	 */
+	ITurtle jump(Point relPos);
 
-	double getHeight();
+	/**
+	 * Move to the given relative position while drawing a line
+	 * <p>
+	 * The new position will be equal to getPos().move(relPos).
+	 * 
+	 * @return {@code this}, for sending more draw commands
+	 */
+	ITurtle draw(Point relPos);
+
 }

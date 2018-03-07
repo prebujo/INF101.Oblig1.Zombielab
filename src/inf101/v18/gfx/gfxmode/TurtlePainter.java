@@ -9,6 +9,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.StrokeLineJoin;
 
 public class TurtlePainter implements IPaintLayer, ITurtle {
 
@@ -63,6 +65,8 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 		stateStack.add(new TurtleState());
 		state.dir = new Direction(1.0, 0.0);
 		state.pos = new Point(screen.getWidth() / 2, screen.getHeight() / 2);
+		context.setLineJoin(StrokeLineJoin.BEVEL);
+		context.setLineCap(StrokeLineCap.SQUARE);
 	}
 
 	@Override
@@ -70,6 +74,8 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 	public <T> T as(Class<T> clazz) {
 		if (clazz == GraphicsContext.class)
 			return (T) context;
+		if (clazz == getClass())
+			return (T) this;
 		else
 			return null;
 	}
@@ -114,6 +120,12 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 	}
 
 	@Override
+	public ITurtle draw(Point relPos) {
+		Point to = state.pos.move(relPos);
+		return drawTo(to);
+	}
+
+	@Override
 	public ITurtle drawTo(double x, double y) {
 		Point to = new Point(x, y);
 		return drawTo(to);
@@ -122,6 +134,8 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 	@Override
 	public ITurtle drawTo(Point to) {
 		if (path) {
+			context.setStroke(state.ink);
+			context.setLineWidth(state.penSize);
 			context.lineTo(to.getX(), to.getY());
 		} else {
 			line(to);
@@ -164,6 +178,18 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 	public ITurtle jump(double dist) {
 		state.inDir = state.dir;
 		state.pos = state.pos.move(state.dir, dist);
+		if (path)
+			context.moveTo(state.pos.getX(), state.pos.getY());
+		return this;
+	}
+
+	@Override
+	public ITurtle jump(Point relPos) {
+		// TODO: state.inDir = state.dir;
+		state.pos = state.pos.move(relPos);
+		if (path)
+			context.moveTo(state.pos.getX(), state.pos.getY());
+
 		return this;
 	}
 
@@ -294,4 +320,44 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 		return painter;
 	}
 
+	public ITurtle beginPath() {
+		if (path)
+			throw new IllegalStateException("beginPath() after beginPath()");
+		path = true;
+		context.setStroke(state.ink);
+		context.beginPath();
+		context.moveTo(state.pos.getX(), state.pos.getY());
+		return this;
+	}
+
+	public ITurtle closePath() {
+		if (!path)
+			throw new IllegalStateException("closePath() without beginPath()");
+		context.closePath();
+		return this;
+	}
+
+	public ITurtle endPath() {
+		if (!path)
+			throw new IllegalStateException("endPath() without beginPath()");
+		path = false;
+		context.stroke();
+		return this;
+	}
+
+	public ITurtle fillPath() {
+		if (!path)
+			throw new IllegalStateException("fillPath() without beginPath()");
+		path = false;
+		context.save();
+		context.setFill(state.ink);
+		context.fill();
+		context.restore();
+		return this;
+	}
+
+	@Override
+	public Paint getInk() {
+		return state.ink;
+	}
 }

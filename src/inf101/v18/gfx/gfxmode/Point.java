@@ -92,4 +92,25 @@ public class Point {
 	public String toString() {
 		return String.format("(%.2f,%.2f)", x, y);
 	}
+
+	/**
+	 * Multiply this point by a scale factor.
+	 * 
+	 * @param factor A scale factor
+	 * @return A new Point, (getX()*factor, getY()*factor)
+	 */
+	public Point scale(double factor) {
+		return new Point(x*factor, y*factor);
+	}
+
+	/**
+	 * Find difference between points.
+	 * <p>
+	 * The returned value will be such that <code>this.move(deltaTo(point)).equals(point)</code>.
+	 * @param point Another point
+	 * @return A new Point, (point.getX()-getX(), point.getY()-getY())
+	 */
+	public Point deltaTo(Point point) {
+		return new Point(point.x-x, point.y-y);
+	}
 }
