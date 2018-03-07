@@ -43,12 +43,10 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 	private final Canvas canvas;
 	private boolean path = false;
 
-	public TurtlePainter(double width, double height, Canvas canvas) {
-		screen = null;
-		if (canvas == null)
-			canvas = new Canvas(width, height);
-		this.canvas = canvas;
-		this.context = canvas.getGraphicsContext2D();
+	public TurtlePainter(double width, double height) {
+		this.screen = null;
+		this.canvas = null;
+		this.context = null;
 		this.width = width;
 		this.height = height;
 		stateStack.add(new TurtleState());
@@ -57,6 +55,8 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 	}
 
 	public TurtlePainter(Screen screen, Canvas canvas) {
+		if (screen == null || canvas == null)
+			throw new IllegalArgumentException();
 		this.screen = screen;
 		this.canvas = canvas;
 		this.context = canvas.getGraphicsContext2D();
@@ -82,26 +82,29 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 
 	@Override
 	public void clear() {
-		context.clearRect(0, 0, getWidth(), getHeight());
+		if (context != null)
+			context.clearRect(0, 0, getWidth(), getHeight());
 	}
 
 	@Override
 	public ITurtle curveTo(Point to, double startControl, double endAngle, double endControl) {
 		Point c1 = state.pos.move(state.dir, startControl);
 		Point c2 = to.move(Direction.fromDegrees(endAngle + 180), endControl);
-		if (!path) {
-			// context.save();
-			context.setStroke(state.ink);
-			context.setLineWidth(state.penSize);
-			context.beginPath();
-			context.moveTo(state.pos.getX(), state.pos.getY());
+		if (context != null) {
+			if (!path) {
+				// context.save();
+				context.setStroke(state.ink);
+				context.setLineWidth(state.penSize);
+				context.beginPath();
+				context.moveTo(state.pos.getX(), state.pos.getY());
+			}
+			context.bezierCurveTo(c1.getX(), c1.getY(), c2.getX(), c2.getY(), to.getX(), to.getY());
 		}
-		context.bezierCurveTo(c1.getX(), c1.getY(), c2.getX(), c2.getY(), to.getX(), to.getY());
 		state.inDir = state.dir;
 		state.pos = to;
 		state.dir = Direction.fromDegrees(endAngle);
 
-		if (!path) {
+		if (!path && context != null) {
 			context.stroke();
 			// context.restore();
 		}
@@ -133,7 +136,7 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 
 	@Override
 	public ITurtle drawTo(Point to) {
-		if (path) {
+		if (path && context != null) {
 			context.setStroke(state.ink);
 			context.setLineWidth(state.penSize);
 			context.lineTo(to.getX(), to.getY());
@@ -178,7 +181,7 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 	public ITurtle jump(double dist) {
 		state.inDir = state.dir;
 		state.pos = state.pos.move(state.dir, dist);
-		if (path)
+		if (path && context != null)
 			context.moveTo(state.pos.getX(), state.pos.getY());
 		return this;
 	}
@@ -187,7 +190,7 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 	public ITurtle jump(Point relPos) {
 		// TODO: state.inDir = state.dir;
 		state.pos = state.pos.move(relPos);
-		if (path)
+		if (path && context != null)
 			context.moveTo(state.pos.getX(), state.pos.getY());
 
 		return this;
@@ -221,11 +224,13 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 
 	@Override
 	public ITurtle line(Point to) {
-		// context.save();
-		context.setStroke(state.ink);
-		context.setLineWidth(state.penSize);
-		context.strokeLine(state.pos.getX(), state.pos.getY(), to.getX(), to.getY());
-		// context.restore();
+		if (context != null) {
+			// context.save();
+			context.setStroke(state.ink);
+			context.setLineWidth(state.penSize);
+			context.strokeLine(state.pos.getX(), state.pos.getY(), to.getX(), to.getY());
+			// context.restore();
+		}
 		return this;
 	}
 
@@ -314,8 +319,7 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 
 	@Override
 	public ITurtle turtle() {
-		TurtlePainter painter = screen != null ? new TurtlePainter(screen, canvas)
-				: new TurtlePainter(width, height, canvas);
+		TurtlePainter painter = screen != null ? new TurtlePainter(screen, canvas) : new TurtlePainter(width, height);
 		painter.stateStack.set(0, new TurtleState(state));
 		return painter;
 	}
@@ -324,16 +328,19 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 		if (path)
 			throw new IllegalStateException("beginPath() after beginPath()");
 		path = true;
-		context.setStroke(state.ink);
-		context.beginPath();
-		context.moveTo(state.pos.getX(), state.pos.getY());
+		if (context != null) {
+			context.setStroke(state.ink);
+			context.beginPath();
+			context.moveTo(state.pos.getX(), state.pos.getY());
+		}
 		return this;
 	}
 
 	public ITurtle closePath() {
 		if (!path)
 			throw new IllegalStateException("closePath() without beginPath()");
-		context.closePath();
+		if (context != null)
+			context.closePath();
 		return this;
 	}
 
@@ -341,7 +348,8 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 		if (!path)
 			throw new IllegalStateException("endPath() without beginPath()");
 		path = false;
-		context.stroke();
+		if (context != null)
+			context.stroke();
 		return this;
 	}
 
@@ -349,10 +357,12 @@ public class TurtlePainter implements IPaintLayer, ITurtle {
 		if (!path)
 			throw new IllegalStateException("fillPath() without beginPath()");
 		path = false;
-		context.save();
-		context.setFill(state.ink);
-		context.fill();
-		context.restore();
+		if (context != null) {
+			context.save();
+			context.setFill(state.ink);
+			context.fill();
+			context.restore();
+		}
 		return this;
 	}
 

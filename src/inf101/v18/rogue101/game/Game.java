@@ -91,7 +91,7 @@ public class Game implements IGame {
 
 	public Game(String mapString) {
 		printer = new Printer(1280, 720);
-		painter = new TurtlePainter(1280, 720, null);
+		painter = new TurtlePainter(1280, 720);
 		IGrid<String> inputGrid = MapReader.readString(mapString);
 		this.map = new GameMap(inputGrid.getArea());
 		for (ILocation loc : inputGrid.locations()) {
