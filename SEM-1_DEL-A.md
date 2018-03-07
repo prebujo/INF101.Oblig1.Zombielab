@@ -159,7 +159,7 @@ Prøv også å justere gulrøttene litt ([Carrot](src/inf101/v18/rogue101/exampl
 
 * **a)** Gulrøttene får helsen satt til -1 når de blir spist – etter helsereglene våre vil de derfor bli fjernet fra kartet. Prøv å sette helsen til 0 i stedet. Hvorfor går det ikke bedre med kaninene selv om gulrøttene nå blir værende på kartet?
 * **b)** Det hadde kanskje vært praktisk (ihvertfall for kaninene) om gulrøttene vokste seg store og fine igjen etter en stund; for eksempel ved at de “helbreder” ett helsepoeng for hver runde som går – men `Carrot` har ingen `doTurn()` metode slik `Rabbit` har, så den får ikke med seg at rundene går eller at kaninene hopper rundt (rent bortsett fra at det går an å “jukse” ved å regne med / håpe på at `draw()` blir kalt en gang per runde).
-   * Lag en `doTurn()`-metode i `Carrot` som øker `hp` med 1 for hver runde (opp til `getMaxHealth()`).
+   * ~~Lag en `doTurn()`-metode i `Carrot` som øker `hp` med 1 for hver runde (opp til `getMaxHealth()`).~~ (Denne fulgte med fra før.)
    * Hva skjer, ser det ut til å virke?
    * Hvis det ikke virker, hva må du eventuelt gjøre for å få `Carrot` til å gjøre noe hver runde?
 * **c)** Du kan også prøve å la `Game` legge til nye, tilfeldig plasserte gulrøtter av og til:
