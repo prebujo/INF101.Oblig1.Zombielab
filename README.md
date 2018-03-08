@@ -31,6 +31,31 @@ Dette prosjektet inneholder [Semesteroppgave 1](SEM-1.md). Du kan også [lese op
 # Del A
 ## Svar på spørsmål
 * ...
+*Deloppg. A1
+*a) Tilstander 
+*IGame - Et IGameobjekt virker som den må ha en tilstand som vet om/er koblet til et IMapView objekt og har dermed tilgang til alt som er på kartet. Den virker også å *utgjøre/være koblet til det grafiske grensesnittet. 
+*IMapView - Et IMapView objekt virker som den utgjør kartet i spillet og har tilgang til om alle items på kartet, kartets størrelse etc. 
+*IGameMap - tilstanden til et IGameMap vil ha de samme som IMapView og i tillegg ha en liste over items som kan endres.
+*IItem - Tilstanden til et IItemobjekt virker som det utgjør alle egenskaper til et item, navn, hit points, maks hitpoints til objektet, defence, størrelse og informasjon om symbolet. De må også vite hvordan de håndterer et event siden de virker som de er koblet til Event. 
+*ILocation - se oppgavetekst.
+*IActor - Tilstanden til IActor vil utgjøre det samme som IItem pluss at en Actor vil ha informasjon om Attack og Damage.
+*INonPlayer - Samme tilstand som IActor men kan også interagere med IGame.
+*IPlayer - Samme som IActor men vil også kunne håndtere et tastetrykk og er dermed koblet til IGame.
+
+*b) Sammenhenger
+*IGame - Mottar objekter fra IMapView og IGameMap
+*IMapView - Henger sammen med IGrid 
+*IGameMap - Utvidet fra IMapView og har tar imot Items fra 
+*IItem - 
+*ILocation - 
+*IActor - Utvidet fra IItem og har dermed samme grensesnitt som IItem med noen tillegg.
+*INonPlayer - Utvidet fra IActor og kan i tillegg utføre en turn fra Game.
+*IPlayer - Utvidet fra IActor og kan i tillegg reagere på et tastetrykk.
+
+*c) Dette er separert sannsynligvis fordi IGameMap kan gjøre endringer på kartet mens IMapView kun kan returnere info om kartet og dets tilstand. Det gir mening *å holde dette separat slik at man kan bruke grensesnittet IMapView i andre sammenhenger enn spill. 
+
+*d) Disse er forskjellig sannsynligvis da en non-player kun skal reagere på en turn mens en player må kunne reagere på input fra brukeren (tastaturet). Etter *min mening gir det mening å separere disse. Evtl kunne man sagt at alle IActors kan reagere på en turn. Da kunne man også implementere endringer for en Player *for hver turn (f.eks. at han får mer hit points etter hver turn eller lignende) og dermed ikke ha noen NonPlayer grensesnitt. 
+
 
 # Del B
 ## Svar på spørsmål
