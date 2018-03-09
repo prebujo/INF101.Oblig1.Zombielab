@@ -34,27 +34,31 @@ Dette prosjektet inneholder [Semesteroppgave 1](SEM-1.md). Du kan også [lese op
 *Deloppg. A1
 *a) Tilstander 
 *IGame - Et IGameobjekt virker som den må ha en tilstand som vet om/er koblet til et IMapView objekt og har dermed tilgang til alt som er på kartet. Den virker også å *utgjøre/være koblet til det grafiske grensesnittet. 
-*IMapView - Et IMapView objekt virker som den utgjør kartet i spillet og har tilgang til om alle items på kartet, kartets størrelse etc. 
+*IMapView - Et IMapView objekt virker som den utgjør kartet i spillet og har tilgang til alle items på kartet, kartets størrelse etc. 
 *IGameMap - tilstanden til et IGameMap vil ha de samme som IMapView og i tillegg ha en liste over items som kan endres.
-*IItem - Tilstanden til et IItemobjekt virker som det utgjør alle egenskaper til et item, navn, hit points, maks hitpoints til objektet, defence, størrelse og informasjon om symbolet. De må også vite hvordan de håndterer et event siden de virker som de er koblet til Event. 
+*IItem - Tilstanden til et IItemobjekt virker som, utifra UML, at det må inneholde alle egenskapene til et item, som navn, helse, maks hitpoints til objektet, defence, størrelse og informasjon om symbolet. Objektet må også vite hvordan de håndterer et event, og dermed endrer tilstand, og reagere ift hva som skjer i IGame..
 *ILocation - se oppgavetekst.
 *IActor - Tilstanden til IActor vil utgjøre det samme som IItem pluss at en Actor vil ha informasjon om Attack og Damage.
-*INonPlayer - Samme tilstand som IActor men kan også interagere med IGame.
-*IPlayer - Samme som IActor men vil også kunne håndtere et tastetrykk og er dermed koblet til IGame.
+*INonPlayer - Virker som den vil ha samme tilstand som IActor må sikkert kunne endre tilstand ift spillets gang.
+*IPlayer - Ser ut til å være samme tilstand som IActor må kunne reagere på tastetrykk og da endre tilstand.
 
 *b) Sammenhenger
-*IGame - Mottar objekter fra IMapView og IGameMap
-*IMapView - Henger sammen med IGrid 
-*IGameMap - Utvidet fra IMapView og har tar imot Items fra 
-*IItem - 
-*ILocation - 
-*IActor - Utvidet fra IItem og har dermed samme grensesnitt som IItem med noen tillegg.
-*INonPlayer - Utvidet fra IActor og kan i tillegg utføre en turn fra Game.
-*IPlayer - Utvidet fra IActor og kan i tillegg reagere på et tastetrykk.
+*IGame - Mottar sannsynligvis objekter fra IMapView og IGameMap men også sikkert IItems og IActor objekter for å kunne sjekke om spillet oppfører seg ihht gitte regler i spillet, samt utføre eventuelle hendelser i spillet.
+*IMapView - Mottar sannsynligvis ILocation objekter fra IGame for å kunne returnere ILocation Objekter med hvor ting befinner seg ift IArea objektet el.l.
+*IGameMap - Er nok utvidet fra ImapView for å kunne utføre handlinger på objektet som ellers i andre sammenhenger ikke er ønskelig.
+*IItem - Er basis for et Item i spillet og må sannsynligvis motta objekter fra IGame objektet for å kunne endre tilstanden til et IItem objekt.
+*ILocation - Mottar sannsynligvis objekter fra IMapView for å kunne returnere en ny ILocation. Evtl si hvor noe befinner seg ift IArea.
+*IActor - Er utvidet fra IItem og vil anta at den mottar og returnerer samme objekter som IItem men vil også kunne returnere noen utvidede tilstander.
+*INonPlayer - Utvidet fra IActor og burde kunne endre tilstand ved spillets gang.
+*IPlayer - Utvidet fra IActor og burde i tillegg kunne reagere på et tastetrykk.
 
-*c) Dette er separert sannsynligvis fordi IGameMap kan gjøre endringer på kartet mens IMapView kun kan returnere info om kartet og dets tilstand. Det gir mening *å holde dette separat slik at man kan bruke grensesnittet IMapView i andre sammenhenger enn spill. 
+*c) Dette er separert sannsynligvis fordi IGameMap har visse metoder som IMapView ikke har. IMapView kan sannsynligvis bare returnere info om objektet mens IGameMap kanskje i tillegg kan endre på objektet el. l. info om kartet og dets tilstand. Det er sannsynligvis gjort slik for å kunne bruke grensesnittet IMapView i andre sammenhenger enn i spill sammenheng. 
 
-*d) Disse er forskjellig sannsynligvis da en non-player kun skal reagere på en turn mens en player må kunne reagere på input fra brukeren (tastaturet). Etter *min mening gir det mening å separere disse. Evtl kunne man sagt at alle IActors kan reagere på en turn. Da kunne man også implementere endringer for en Player *for hver turn (f.eks. at han får mer hit points etter hver turn eller lignende) og dermed ikke ha noen NonPlayer grensesnitt. 
+*d) Disse er forskjellig sannsynligvis da en non-player kun skal reagere på spillets gang mens en player må kunne reagere på input fra brukeren (tastaturet). Etter *min mening gir det mening å separere disse slik at man kun må bestemme reaksjonene på spillet/tastatur der hvor det er nødvendig og ikke for alle objekter som blir opprettet.
+
+*Deloppg. A2
+*e) Det virker som mine antakelser av IItem var noenlunde riktig selv om de fleste feltvariablene for Carrot er definert inni metodene, (f.eks. navn returnerer alltid "carrot" og er ikke definert som en egen felvariabel navn). hp er definert som helsen til en carrot som privat feltvariabel da denne endres ift. handleDamage metoden som vi også antok. Rabbit er en NonPlayer som har veldig lik tilstand som vi nevnte over, navn, hp, osv. I tillegg har Rabbit en feltvariabel for food som har en inflytelse på helse feltvariabelen over tid. Det finnes ingen metode for getHunger da dette ikke er del av interface over og man kan selvsagt innføre mange flere feltvariabler som påvirker tilstanden for hver IItem/IActor/INonPlayer som thirst, tiredness etc. her er det bare fantasien som begrenser.  
+*f) Slik som jeg forstår det finner ikke Rabbit ut selv hvor den er, det er det Game som gjør med currentlocation doTurn blir kalt på av Game   
 
 
 # Del B
