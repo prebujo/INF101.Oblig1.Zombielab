@@ -31,9 +31,9 @@ Dette prosjektet inneholder [Semesteroppgave 1](SEM-1.md). Du kan også [lese op
 # Del A
 ## Svar på spørsmål
 
-   **Deloppg. A1 **
+   **Deloppg. A1**
 
-**a) Tilstander **
+**a) Tilstander**
  
 * IGame - Et IGameobjekt virker som den må ha en tilstand som vet om/er koblet til et IMapView objekt og har dermed tilgang til alt som er på kartet. Den virker også å *utgjøre/være koblet til det grafiske grensesnittet. 
 
@@ -48,7 +48,7 @@ Dette prosjektet inneholder [Semesteroppgave 1](SEM-1.md). Du kan også [lese op
 * INonPlayer - Virker som den vil ha samme tilstand som IActor må sikkert kunne endre tilstand ift spillets gang.
 * IPlayer - Ser ut til å være samme tilstand som IActor må kunne reagere på tastetrykk og da endre tilstand.
 
-**b) Sammenhenger **r
+**b) Sammenhenger**r
 * IGame - Mottar sannsynligvis objekter fra IMapView og IGameMap men også sikkert IItems og IActor objekter for å kunne sjekke om spillet oppfører seg ihht gitte regler i spillet, samt utføre eventuelle hendelser i spillet.
 * IMapView - Mottar sannsynligvis ILocation objekter fra IGame for å kunne returnere ILocation Objekter med hvor ting befinner seg ift IArea objektet el.l.
 * IGameMap - Er nok utvidet fra ImapView for å kunne utføre handlinger på objektet som ellers i andre sammenhenger ikke er ønskelig.
@@ -63,7 +63,7 @@ Dette er separert sannsynligvis fordi IGameMap har visse metoder som IMapView ik
 **d)** 
 Disse er forskjellig sannsynligvis da en non-player kun skal reagere på spillets gang mens en player må kunne reagere på input fra brukeren (tastaturet). Etter *min mening gir det mening å separere disse slik at man kun må bestemme reaksjonene på spillet/tastatur der hvor det er nødvendig og ikke for alle objekter som blir opprettet.
 
-   **Deloppg. A2 **
+   **Deloppg. A2**
    
 
 **e)** 
@@ -74,7 +74,8 @@ Slik som jeg forstår det finner ikke Rabbit ut selv hvor den er, det er det Gam
 **g)** 
 Se utfyllende svar over. Game har en liste over Actors som har noe igjen å gjøre denne "turnen" og utfører doTurn og getLocation for hver av disse med feltvariabelen currentActor. Dermed er det Game som utfører getLocation og ikke Rabbit. getLocation blir utført av Game for enhver Actor som har noe igjen å gjøre denne turnen. Rabbit spør aldri om sin location fra Game da Rabbit ikke trenger sin location til noe i sine metoder derimot spør Game GameMap on location til currentActor. (etter min mening er dette spørsmålet litt feil formulert ift objektene men kanskje jeg missforstår??)
 
-   **Deloppg A3 **
+   **Deloppg A3**
+   
 
 **Smart kanin** 
 
@@ -94,6 +95,7 @@ Denne gangen ble alle glurøttene spist opp. Implementerte at hvis kaninen ser e
 
 **e)** 
 Implementerte getPossibleMoves i Game omtrent slik som det var løst i Rabbit. Denne kan man endre slik at possiblemoves også inkluderer diagonale bevegelser hvis man ønsker. getPossibleMoves kan nå også brukes av andre Actors. 
+
 **Bedre Gulrøtter**
 
 **a)** 
@@ -107,20 +109,25 @@ Det ser ikke ut til at helsen blir økt for hver runde. Dette er nok fordi Carro
 # Del B
 ## Svar på spørsmål
 
-   **Deloppg. B1 **
+   **Deloppg. B1**
    
-**a)** Metoden som lager nye objekter heter createItem.
-**b)-d)** Lagde en klasse Apple som er noenlunde lik carrot. endret fargen til rød og stilk fargen til brun. Det tegnes nå en litt avlangt rødt eple i tillegg til carrots. La til et par A'er i kartet slik at det nå blir tegnet noen (litt avlange) røde epler i kartet. Disse blir foreløpig ikke spist av kaninene desverre.
+**a)** 
+Metoden som lager nye objekter heter createItem.
+
+**b)-d)** 
+Lagde en klasse Apple som er noenlunde lik carrot. endret fargen til rød og stilk fargen til brun. Det tegnes nå en litt avlangt rødt eple i tillegg til carrots. La til et par A'er i kartet slik at det nå blir tegnet noen (litt avlange) røde epler i kartet. Disse blir foreløpig ikke spist av kaninene desverre.
 
 Kommentar til avansert del: vil prøve meg på denne når jeg er ferdig med hele* oppgaven hvis jeg får tid til det.
 
-   **Deloppg. B2 **
+   **Deloppg. B2**
    
-**a)-e)** Implementerte Player i en ny pakke player med symbolet @ slik at spilleren kan bevege seg rundt på kartet og mister 1 hit point hvis den treffer en vegg. Hver gang man trykker en tast blir også "Player hit points: X" vist som status i spillskjermen. Se kode for implementasjon med kommentarer. 
+**a)-e)** 
+Implementerte Player i en ny pakke player med symbolet @ slik at spilleren kan bevege seg rundt på kartet og mister 1 hit point hvis den treffer en vegg. Hver gang man trykker en tast blir også "Player hit points: X" vist som status i spillskjermen. Se kode for implementasjon med kommentarer. 
 
-**f)** Implementerte tester i klassen PlayerTest for å bevege seg i forskjellige retninger og for å bevege seg i retning en vegg. Alle testene blir godkjent.
+**f)** 
+Implementerte tester i klassen PlayerTest for å bevege seg i forskjellige retninger og for å bevege seg i retning en vegg. Alle testene blir godkjent.
 
-Kommentar til oppg. Jeg vil utvide/gjøre nødvendige endringer når jeg kommer videre i utviklingen av spillet...
+Kommentar til oppg: Jeg vil utvide/gjøre nødvendige endringer når jeg kommer videre i utviklingen av spillet...
 
 # Del C
 ## Oversikt over designvalg og hva du har gjort
