@@ -31,7 +31,7 @@ Dette prosjektet inneholder [Semesteroppgave 1](SEM-1.md). Du kan også [lese op
 # Del A
 ## Svar på spørsmål
 
-** Deloppg. A1**
+    **Deloppg. A1**
 
 **a) Tilstander**
  
@@ -61,13 +61,13 @@ Dette prosjektet inneholder [Semesteroppgave 1](SEM-1.md). Du kan også [lese op
 
 **d)** Disse er forskjellig sannsynligvis da en non-player kun skal reagere på spillets gang mens en player må kunne reagere på input fra brukeren (tastaturet). Etter *min mening gir det mening å separere disse slik at man kun må bestemme reaksjonene på spillet/tastatur der hvor det er nødvendig og ikke for alle objekter som blir opprettet.
 
-** Deloppg. A2**2
+    **Deloppg. A2**2
 **e)** Det virker som mine antakelser av IItem var noenlunde riktig selv om de fleste feltvariablene for Carrot er definert inni metodene, (f.eks. navn returnerer alltid "carrot" og er ikke definert som en egen felvariabel navn). hp er definert som helsen til en carrot som privat feltvariabel da denne endres ift. handleDamage metoden som vi også antok. Rabbit er en NonPlayer som har veldig lik tilstand som vi nevnte over, navn, hp, osv. I tillegg har Rabbit en feltvariabel for food som har en inflytelse på helse feltvariabelen over tid. Det finnes ingen metode for getHunger da dette ikke er del av interface over og man kan selvsagt innføre mange flere feltvariabler som påvirker tilstanden for hver IItem/IActor/INonPlayer som thirst, tiredness etc. her er det bare fantasien som begrenser.  
 **f)** Slik som jeg forstår det finner ikke Rabbit ut selv hvor den er, det er det Game som gjør med currentLocation når doTurn blir kalt på. Game gjennomgår for hver Actor i spillet og henter da ut fra map (et GameMAp object) location til en actor og kaller deretter på getLocation for Rabbit og lagrer denne i sin currentlocation feltvariabel. Senere kaller den på doTurn for en Actor (f.eks. Rabbit) og da utfører rabbit sin doTurn handling. Rabbit kaller da på getLocalItems fra Game for å finne ut hvilke Items som er i nærheten. getLocalItems fra Game kaller på getItems med currentLocation fra GameMap som returnerer en liste med objekter først til Game som returnerer det videre til Rabbit. Deretter gjennomgår Rabbit alle Items for å sjekke om det er en carrot å spise. Hvis ikke går den i en tilfeldig retning ved å kalle på canGo fra Game for hver mulige retning (North south east west). Game kaller videre på canGo fra GameMap ved hjelp av currentlocation og direction som den fikk av Rabbit og returnerer en boolsk verdi som den får fra GameMap ihht om det er et lovlig trekk eller ikke. Rabbit velger deretter en tilfeldig lovlig retning og beveger seg dit ved å kalle på move fra Game. 
 
 **g)** Se utfyllende svar over. Game har en liste over Actors som har noe igjen å gjøre denne "turnen" og utfører doTurn og getLocation for hver av disse med feltvariabelen currentActor. Dermed er det Game som utfører getLocation og ikke Rabbit. getLocation blir utført av Game for enhver Actor som har noe igjen å gjøre denne turnen. Rabbit spør aldri om sin location fra Game da Rabbit ikke trenger sin location til noe i sine metoder derimot spør Game GameMap on location til currentActor. (etter min mening er dette spørsmålet litt feil formulert ift objektene men kanskje jeg missforstår??)
 
-** Deloppg A3**
+    **Deloppg A3**
 
 
 **Smart kanin**
@@ -92,13 +92,13 @@ Dette prosjektet inneholder [Semesteroppgave 1](SEM-1.md). Du kan også [lese op
 # Del B
 ## Svar på spørsmål
 
-** Deloppg. B1**
+    **Deloppg. B1**
 **a)** Metoden som lager nye objekter heter createItem.
 **b)-d)** Lagde en klasse Apple som er noenlunde lik carrot. endret fargen til rød og stilk fargen til brun. Det tegnes nå en litt avlangt rødt eple i tillegg til carrots. La til et par A'er i kartet slik at det nå blir tegnet noen (litt avlange) røde epler i kartet. Disse blir foreløpig ikke spist av kaninene desverre.
 
 Kommentar til avansert del: vil prøve meg på denne når jeg er ferdig med hele* oppgaven hvis jeg får tid til det.
 
- ** Deloppg. B2**
+    **Deloppg. B2**
 **a)-e)** Implementerte Player i en ny pakke player med symbolet @ slik at spilleren kan bevege seg rundt på kartet og mister 1 hit point hvis den treffer en vegg. Hver gang man trykker en tast blir også "Player hit points: X" vist som status i spillskjermen. Se kode for implementasjon med kommentarer. 
 
 **f)** Implementerte tester i klassen PlayerTest for å bevege seg i forskjellige retninger og for å bevege seg i retning en vegg. Alle testene blir godkjent.
