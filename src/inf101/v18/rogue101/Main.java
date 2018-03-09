@@ -176,7 +176,7 @@ public class Main extends Application {
 			System.out.println("draw() took " + (System.currentTimeMillis() - t2) + "ms");
 			System.out.println("doTurn()+draw() took " + (System.currentTimeMillis() - t) + "ms");
 			System.out.println("waiting for player? " + waitForPlayer);
-		}
+		}	
 		if (!waitForPlayer)
 			smallStepTimeline.playFromStart(); // this will kickstart a new turn in a few milliseconds
 	}

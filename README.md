@@ -86,7 +86,13 @@ Dette prosjektet inneholder [Semesteroppgave 1](SEM-1.md). Du kan også [lese op
 
 # Del B
 ## Svar på spørsmål
-* ...
+* Deloppg B1
+* a) Metoden som lager nye objekter heter createItem.
+* b)-d) Lagde en klasse Apple som er noenlunde lik carrot. endret fargen til rød og stilk fargen til brun. Det tegnes nå en litt avlangt rødt eple i tillegg til carrots. La til et par A'er i kartet slik at det nå blir tegnet noen (litt avlange) røde epler i kartet. Disse blir foreløpig ikke spist av kaninene desverre.
+
+*Kommentar til avansert del: vil prøve meg på denne når jeg er ferdig med hele* oppgaven hvis jeg får tid til det..
+*Deloppg. B2
+* a) ..
 
 # Del C
 ## Oversikt over designvalg og hva du har gjort
