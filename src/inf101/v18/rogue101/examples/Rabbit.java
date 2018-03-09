@@ -6,6 +6,7 @@ import java.util.List;
 
 import inf101.v18.gfx.gfxmode.ITurtle;
 import inf101.v18.grid.GridDirection;
+import inf101.v18.grid.ILocation;
 import inf101.v18.rogue101.game.IGame;
 import inf101.v18.rogue101.objects.IItem;
 import inf101.v18.rogue101.objects.INonPlayer;
@@ -37,15 +38,23 @@ public class Rabbit implements INonPlayer {
 			}
 		}
 		// TODO: prøv forskjellige varianter her
-		List<GridDirection> possibleMoves = new ArrayList<>();
-		for (GridDirection dir : GridDirection.FOUR_DIRECTIONS) {
-			if (game.canGo(dir))
-				possibleMoves.add(dir);
+		List<GridDirection> possibleMoves = game.getPossibleMoves();
+		
+		if (!possibleMoves.isEmpty()) { //hvis det ikke er noen possible moves skal objektet ikke gjøre noe
+			for(GridDirection dir : possibleMoves) { //gjennomgår for hver direction i possibleMoves
+				ILocation loc = game.getLocation(dir); //henter Location i hver lovlige retning
+				for(IItem neighb_item : game.getMap().getItems(loc)) // henter items i hver location
+					if(neighb_item instanceof Carrot) { //hvis det finnes en carrot skal jeg bevege meg dit
+						game.move(dir);
+						return;
+					}						
+			}
+			Collections.shuffle(possibleMoves); //Hvis jeg har gjennomgått alle possibleMoves uten å gjøre noe 
+			game.move(possibleMoves.get(0));    //skal jeg gå i en tilfeldig retning.
 		}
-		if (!possibleMoves.isEmpty()) {
-			Collections.shuffle(possibleMoves);
-			game.move(possibleMoves.get(0));
-		}
+		/*if(game.canGo(GridDirection.NORTH))
+			game.move(GridDirection.NORTH);
+		*/
 	}
 
 	@Override

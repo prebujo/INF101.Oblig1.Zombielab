@@ -356,8 +356,18 @@ public class Game implements IGame {
 
 	@Override
 	public List<GridDirection> getPossibleMoves() {
-		// TODO
-		throw new UnsupportedOperationException();
+		// Lagde denne metoden omtrent slik som den var i Rabbit. Gjennomgår hver av de fire retningene man kan bevege seg (North, south, east, west)
+		//og returnerer en liste med GridDirection-
+		
+		//throw new UnsupportedOperationException();
+		
+		List<GridDirection> possibleMoves = new ArrayList<>();
+		for (GridDirection dir : GridDirection.FOUR_DIRECTIONS) {
+			if (canGo(dir))
+				possibleMoves.add(dir);
+		}
+
+		return possibleMoves;
 	}
 
 	@Override
