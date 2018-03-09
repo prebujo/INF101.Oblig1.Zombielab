@@ -75,13 +75,20 @@ public class Player implements IPlayer {
         else if(key == KeyCode.DOWN) {
         	tryToMove(game,GridDirection.SOUTH);
         }
-        else
+        showStatus(game);
     }
 	private void tryToMove(IGame game, GridDirection dir) {
 		if(game.canGo(dir)) {
 			game.move(dir);
 		}
+		else
+			hp--;
+			game.displayMessage("Ouch!");
 		
+	}
+	
+	private void showStatus(IGame game) {
+			game.displayStatus("Player hit points: " + hp);		
 	}
 
 
