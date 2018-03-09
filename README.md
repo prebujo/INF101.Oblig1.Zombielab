@@ -80,8 +80,9 @@ Dette prosjektet inneholder [Semesteroppgave 1](SEM-1.md). Du kan også [lese op
 *Bedre Gulrøtter
 *a) Endret gulrøtter sin hp til å bli 0 istedet for -1 når de blir skadet. Dette gjør fortsatt ikke at food øker for kaninene. handleDamage returnerer nå 0 og dermed blir ikke food økt med eat lenger. Hvis vi hadde satt hp til 1 ville kaninene holdt ut lengre da de kunen i teorien spist en gulrot for alltid. Kaninene er desuten skjult av gulrøttene mens gulrøttene blir spist og når gulrøttene ikke forsvinner vil kaninene for alltid være skjult av gulrøttene på kartet.
 
-*b)  
+*b) Det ser ikke ut til at helsen blir økt for hver runde. Dette er nok fordi Carrot er en IItem og ikke en IActor. Game kjører doTurn kun for hver INonPlayer. Hvis vi endrer grensesnittet til Carrot til INonPlayer burde det fungere. Evtl kan vi endre metoden til Game til å gjennomgå do Turn for alle IItems men dette vil kanskje få større implikasjoner senere hvis vi ønsker å skille mellom Actors, IItems og INonplayers. Jeg har valgt å ikke gjøre dette her men heller gjøre oppg. c) for å generere nye gulrøtter. 
 
+*c) Jeg satte gulrøttene tilbake til -1 slik at de blir borte og dermed at kaninene får en sjanse til å bevege seg igjen og kanskje finne en ny generert gulrot. * Legger nå til en ny carrot med 20% sannsynlighet inni doTurn i Game, før man begynner gjennomgangen av hvert IItem. Se kildekode for kommentarer/forklaring.
 
 # Del B
 ## Svar på spørsmål

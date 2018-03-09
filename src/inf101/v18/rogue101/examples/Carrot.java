@@ -74,7 +74,7 @@ public class Carrot implements IItem {
 
 		if (hp < 0) {
 			// we're all eaten!
-			hp = 0;
+			hp = -1;
 		}
 		return amount;
 	}

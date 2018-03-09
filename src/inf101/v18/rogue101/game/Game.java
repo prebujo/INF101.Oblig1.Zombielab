@@ -139,7 +139,36 @@ public class Game implements IGame {
 	 * @return True if the game should wait for more user input
 	 */
 	public boolean doTurn() {
+		//OPPG A3 c)
+		//genererer nye carrots med 20% sannsynlighet her. Gjør det altså kun hvis det fortsatt er spillere altså kaniner
+		//tilstede som kan spise de.
+		boolean adding = random.nextInt(100) < 20; //gjennomfører med 20% sannsynlighet
+		if(adding) {
+			List<IItem> items;  //liste over items
+			ILocation location; //location hvor jeg evtl legger til en gulrot.
+			do {	//gjennomgår minst en gang og 
+			int x = random.nextInt(map.getWidth());//genererer tilfeldig x og			
+			int y = random.nextInt(map.getHeight()); //y koordinater for en location
+			
+			location = map.getLocation(x, y); //henter ut ved hjelp av x og y
+
+			items = map.getItems(location); //liste over items på location
+			
+			}while (!(items.isEmpty())); //gjennomgår så lenge items ikke er tom
+			map.add(location, new Carrot()); //når jeg har funnet en tom location legger jeg til en ny carrot her.
+			//OBS bør egentlig endre metoden slik at det kommer en feilmelding hvis man ikke finner en location som er ledig. Da vil sannsynligvis 
+			//denne løkken aldri avslutte. Kunne lagt til at jeg prøver bare et visst antall ganger f.esk. ved å iterere en variabel hver gang og
+			//når dette er tilfelle kunne jeg gått videre uten å legge til nye gulrøtter evtl. tillatt å legge til flere gulrøtter i samme location. 
+			//Evtl kunne jeg lagt inn en kontroll på at det fortsatt finnes kaniner som kan spise gulrøtter og hvis ikke slutte å gro gulrøtter.
+			//Størrelsen på nåværende spill gjør at det først blir et problem etter veldig mange runder så ser det ikke som nødvendig.
+		}
+		
+			
 		do {
+
+				
+			
+			
 			if (actors.isEmpty()) {
 				// System.err.println("new turn!");
 
