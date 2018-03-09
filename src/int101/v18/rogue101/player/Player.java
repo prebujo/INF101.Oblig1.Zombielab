@@ -8,7 +8,7 @@ import inf101.v18.rogue101.objects.IPlayer;
 import javafx.scene.input.KeyCode;
 
 public class Player implements IPlayer {
-	private int hp = getMaxHealth();
+	private int hp = getMaxHealth(); //lager en feltvariabel for hp slik som rabbit
 
 	@Override
 	public boolean draw(ITurtle painter, double w, double h) {
@@ -16,12 +16,12 @@ public class Player implements IPlayer {
 	}
 
 	@Override
-	public int getAttack() {
+	public int getAttack() {  //setter attack slik som rabbit
 		return 1000;
 	}
 
 	@Override
-	public int getCurrentHealth() {
+	public int getCurrentHealth() { //returnerer spillerens hp
 		return hp;
 	}
 
@@ -36,12 +36,12 @@ public class Player implements IPlayer {
 	}
 
 	@Override
-	public int getMaxHealth() {
+	public int getMaxHealth() { //satt spillerens helse lik 50
 		return 50;
 	}
 
 	@Override
-	public String getName() {
+	public String getName() { //satt spillerens navn lik player
 		return "player";
 	}
 
@@ -52,7 +52,7 @@ public class Player implements IPlayer {
 
 	@Override
 	public String getSymbol() {
-		return hp > 0 ? "@" : "¤";
+		return hp > 0 ? "@" : "*"; //satt spillerens symbol til @ og * hvis man dør
 	}
 
 	@Override
@@ -62,8 +62,8 @@ public class Player implements IPlayer {
 	}
 
 	@Override
-	public void keyPressed(IGame game, KeyCode key) {
-        if (key == KeyCode.LEFT) {
+	public void keyPressed(IGame game, KeyCode key) { //fullførte keyPressed klassen slik at den håndtere enhver KeyCode
+        if (key == KeyCode.LEFT) {				//kan vurdere å endre til switch
             tryToMove(game, GridDirection.WEST);
         }
         else if(key == KeyCode.RIGHT) {
@@ -74,20 +74,20 @@ public class Player implements IPlayer {
         }
         else if(key == KeyCode.DOWN) {
         	tryToMove(game,GridDirection.SOUTH);
-        }
-        showStatus(game);
+        }					//man kan også legge til på slutten her en måte å håndtere ikke godkjente keys men jeg så ikke det som nødvendig enda
+        showStatus(game);  //viser status for hver gang spilleren beveger seg.
     }
 	private void tryToMove(IGame game, GridDirection dir) {
-		if(game.canGo(dir)) {
+		if(game.canGo(dir)) {		//bruker canGo for å sjekke om spilleren kan gå i retningen
 			game.move(dir);
 		}
-		else
-			hp--;
+		else		//hvis spilleren ikke kan gå der (feltet er en wall eller Rabbit)
+			hp--;	//blir spilleren pittelitt skadet og beskjeden Ouch! blir skrevet ut
 			game.displayMessage("Ouch!");
 		
 	}
 	
-	private void showStatus(IGame game) {
+	private void showStatus(IGame game) {		//showStatus viser spilleres hp sammen med beskrivende tekst.
 			game.displayStatus("Player hit points: " + hp);		
 	}
 

@@ -92,7 +92,11 @@ Dette prosjektet inneholder [Semesteroppgave 1](SEM-1.md). Du kan også [lese op
 
 *Kommentar til avansert del: vil prøve meg på denne når jeg er ferdig med hele* oppgaven hvis jeg får tid til det..
 *Deloppg. B2
-* a) ..
+* a)-e) Implementerte Player i en ny pakke player med symbolet @ slik at spilleren kan bevege seg rundt på kartet og mister 1 hit point hvis den treffer en vegg. Hver gang man trykker en tast blir også "Player hit points: X" vist som status i spillskjermen. Se kode for implementasjon med kommentarer. 
+
+* f) Implementerte tester i klassen PlayerTest for å bevege seg i forskjellige retninger og for å bevege seg i retning en vegg. Alle testene blir godkjent.
+
+*Kommentar til oppg. Jeg vil utvide/gjøre nødvendige endringer når jeg kommer videre i utviklingen av spillet....
 
 # Del C
 ## Oversikt over designvalg og hva du har gjort
