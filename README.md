@@ -90,7 +90,8 @@ Dette prosjektet inneholder [Semesteroppgave 1](SEM-1.md). Du kan også [lese op
 * a) Metoden som lager nye objekter heter createItem.
 * b)-d) Lagde en klasse Apple som er noenlunde lik carrot. endret fargen til rød og stilk fargen til brun. Det tegnes nå en litt avlangt rødt eple i tillegg til carrots. La til et par A'er i kartet slik at det nå blir tegnet noen (litt avlange) røde epler i kartet. Disse blir foreløpig ikke spist av kaninene desverre.
 
-*Kommentar til avansert del: vil prøve meg på denne når jeg er ferdig med hele* oppgaven hvis jeg får tid til det..
+*Kommentar til avansert del: vil prøve meg på denne når jeg er ferdig med hele* oppgaven hvis jeg får tid til det.
+.
 *Deloppg. B2
 * a)-e) Implementerte Player i en ny pakke player med symbolet @ slik at spilleren kan bevege seg rundt på kartet og mister 1 hit point hvis den treffer en vegg. Hver gang man trykker en tast blir også "Player hit points: X" vist som status i spillskjermen. Se kode for implementasjon med kommentarer. 
 
