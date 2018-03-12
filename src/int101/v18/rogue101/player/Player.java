@@ -74,7 +74,15 @@ public class Player implements IPlayer {
         }
         else if(key == KeyCode.DOWN) {
         	tryToMove(game,GridDirection.SOUTH);
-        }					//man kan også legge til på slutten her en måte å håndtere ikke godkjente keys men jeg så ikke det som nødvendig enda
+        }
+        else if (key == KeyCode.P) {
+        	
+        }
+        else if(key == KeyCode.D) {
+        	
+        }
+        
+        //man kan også legge til på slutten her en måte å håndtere ikke godkjente keys men jeg så ikke det som nødvendig enda
         showStatus(game);  //viser status for hver gang spilleren beveger seg.
     }
 	private void tryToMove(IGame game, GridDirection dir) {
