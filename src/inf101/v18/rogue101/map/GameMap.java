@@ -55,8 +55,22 @@ public class GameMap implements IGameMap {
 
 		// do the actual adding
 		List<IItem> list = grid.get(loc);
-		list.add(item);
-		// TODO: should be sorted!
+		
+		//DELOPPG B3 b)
+		//Løkke for å legge til item i sortert rekkefølge
+		for(int i = 0;i<=list.size();i++) { //gjennomgår fra null til størrelsen på listen
+			if(i == list.size()) {	//hvis jeg er kommet til slutten av listen 
+				list.add(i, item);	//legger jeg til item her
+				break;		//og avslutter løkken
+			}
+			if(item.compareTo(list.get(i))>=0) {	//hvis jeg ikke er på slutten sjekker jeg om item er større enn item som befinner seg der i listen
+				list.add(i, item);						// hvis det er tilfelle skal jeg legge det til.
+				break;						//og avslutte løkken.
+			}
+		}
+
+
+
 	}
 
 	@Override

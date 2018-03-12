@@ -129,6 +129,14 @@ Implementerte tester i klassen PlayerTest for å bevege seg i forskjellige retni
 
 Kommentar til oppg: Jeg vil utvide/gjøre nødvendige endringer når jeg kommer videre i utviklingen av spillet...
 
+   **Deloppg. B3**
+
+a) La til return new Dust() i createItem metoden
+
+b) La til en for-løkke som gjennomgår indeksene i listen av items i en location og setter inn item i riktig rekkefølge etter størrelse. Hvis man kommer til enden av løkken setter man item bare inn i listen på siste posisjon.
+
+c) 
+
 # Del C
 ## Oversikt over designvalg og hva du har gjort
 * ... blah, blah, er implementert i klassen [KurtMario](src/inf101/v18/rogue101/player/KurtMario.java), blah, blah `ITurtleShell` ...

@@ -159,10 +159,7 @@ public class Game implements IGame {
 			}while (!(items.isEmpty())); //gjennomgår så lenge items ikke er tom
 			map.add(location, new Carrot()); //når jeg har funnet en tom location legger jeg til en ny carrot her.
 			//OBS bør egentlig endre metoden slik at det kommer en feilmelding hvis man ikke finner en location som er ledig. Da vil sannsynligvis 
-			//denne løkken aldri avslutte. Kunne lagt til at jeg prøver bare et visst antall ganger f.esk. ved å iterere en variabel hver gang og
-			//når dette er tilfelle kunne jeg gått videre uten å legge til nye gulrøtter evtl. tillatt å legge til flere gulrøtter i samme location. 
-			//Evtl kunne jeg lagt inn en kontroll på at det fortsatt finnes kaniner som kan spise gulrøtter og hvis ikke slutte å gro gulrøtter.
-			//Størrelsen på nåværende spill gjør at det først blir et problem etter veldig mange runder så ser det ikke som nødvendig.
+			//denne løkken aldri avslutte. Antar for enkelhets skyld at man aldri vil lage et kart som er så lite og fyllt med så mange kaniner/vegger
 		}
 		
 			
@@ -277,9 +274,8 @@ public class Game implements IGame {
 		switch (sym) {
 		case "#":
 			return new Wall();
-		case ".":
-			// TODO: add Dust
-			return null;
+		case ".":				//DELOPPG B3 a)
+			return new Dust(); //legger til nytt dust hvis symbolet er .
 		case "R":
 			return new Rabbit();
 		case "C":
