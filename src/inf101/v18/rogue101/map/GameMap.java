@@ -46,7 +46,7 @@ public class GameMap implements IGameMap {
 		grid = new MultiGrid<>(width, height);
 	}
 
-	@Override
+	@Override  //DELOPPG B3 b)
 	public void add(ILocation loc, IItem item) {
 		// keep track of location of all items
 		items.put(item, loc);
@@ -255,14 +255,42 @@ public class GameMap implements IGameMap {
 		dirtyLocs.add(loc);
 	}
 
-	@Override
+	@Override //DELOPPG B5 a) 
 	public List<ILocation> getNeighbourhood(ILocation loc, int dist) {
+		List<ILocation> list = new ArrayList<>();
 		if (dist < 0 || loc == null)
 			throw new IllegalArgumentException();
 		else if (dist == 0)
 			return new ArrayList<>(); // empty!
+		else if(dist > 0) {
+			
+			for(ILocation neighb:loc.allNeighbours()) //legger først til de nærmeste naboene
+				list.add(neighb);			
+			
+			int n = dist-1; //hvis dist er 1 gjør while loopen ingenting altså er kun de nærmeste naboene lagt til
+			int distance = 2;
+			while (n>0) { //for dist > 2 skal jeg gjennomgå naboene til naboene
+				int size = list.size();
+				for(int i = 0;i<size;i++) { //for hver nabo frem til slutten av listen (size)
+					for(ILocation neighNeigh: list.get(i).allNeighbours()) { //skal jeg legge til naboer hvis 
+						if(neighNeigh.gridDistanceTo(loc) == distance && !(list.contains(neighNeigh))) { //de ikke finnes fra før (dette passer på at naboer kun blir lagt til en gang
+							list.add(neighNeigh); //siden add legger til på slutten av listen blir resultatet dermed sortert	
+						}
+					}
+				}
+			distance++; //inkrementerer distance	
+			n--; //dekrementerer n 	
+			}				
+			return list; //returnerer listen når jeg er ferdig å gjennomgå naboer.					
+		}
 
+		
+		if(dist > 3)
+			throw new UnsupportedOperationException();
+		return list;
+		
+		
 		// TODO: implement this!
-		throw new UnsupportedOperationException();
+
 	}
 }

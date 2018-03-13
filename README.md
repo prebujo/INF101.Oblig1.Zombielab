@@ -115,14 +115,14 @@ Det ser ikke ut til at helsen blir økt for hver runde. Dette er nok fordi Carro
 Metoden som lager nye objekter heter createItem.
 
 **b)-d)** 
-Lagde en klasse Apple som er noenlunde lik carrot. endret fargen til rød og stilk fargen til brun. Det tegnes nå en litt avlangt rødt eple i tillegg til carrots. La til et par A'er i kartet slik at det nå blir tegnet noen (litt avlange) røde epler i kartet. Disse blir foreløpig ikke spist av kaninene desverre.
+Lagde en klasse Apple.java som er noenlunde lik carrot. endret fargen til rød og stilk fargen til brun. Det tegnes nå et rødt eple i tillegg til carrots. La til et par A'er i kartet slik at det nå blir tegnet noen (litt avlange) røde epler i kartet. Disse blir foreløpig ikke spist av kaninene desverre.
 
 Kommentar til avansert del: vil prøve meg på denne når jeg er ferdig med hele* oppgaven hvis jeg får tid til det.
 
    **Deloppg. B2**
    
 **a)-e)** 
-Implementerte Player i en ny pakke player med symbolet @ slik at spilleren kan bevege seg rundt på kartet og mister 1 hit point hvis den treffer en vegg. Hver gang man trykker en tast blir også "Player hit points: X" vist som status i spillskjermen. Se kode for implementasjon med kommentarer. 
+Implementerte Player i en ny pakke "int101.v18.rogue101.player" med symbolet @ slik at spilleren kan bevege seg rundt på kartet og mister 1 hit point hvis den treffer en vegg. Hver gang man trykker en tast blir også "Player hit points: X" vist som status i spillskjermen. Se kode for implementasjon med kommentarer. 
 
 **f)** 
 Implementerte tester i klassen PlayerTest for å bevege seg i forskjellige retninger og for å bevege seg i retning en vegg. Alle testene blir godkjent.
@@ -135,7 +135,34 @@ a) La til return new Dust() i createItem metoden
 
 b) La til en for-løkke som gjennomgår indeksene i listen av items i en location og setter inn item i riktig rekkefølge etter størrelse. Hvis man kommer til enden av løkken setter man item bare inn i listen på siste posisjon.
 
-c) 
+c) Fullførte testSortedAdd ved å generere tilfeldige items og legge til 5 stk på en location og sjekke om hvert element har size som er mindre enn det etter i listen av items.
+
+Kommentar til avansert: Vil komme tilbake til implementasjonen av sortedList hvis jeg får tid til dette.
+
+   **Deloppg. B4**
+   
+a) La til keys P og D i keypressed.
+
+b) implementerte metodene pickup og drop i Player for å håndtere dette spilleren kan foreløpig bare plukke opp et item av gangen. man plukker også opp det største elementet på hver location og må da droppe et item i en annen location for å plukke opp items som befinner seg under dette. implementerte også at spilleren ikke kan plukke opp flere ting samtidig.
+
+c) implementerte drop med passende beskjed hvis spilleren ikke holder noe item. 
+
+d) la til Item i status bar
+
+   **Deloppg. B5**
+   
+a) implementerte først for dist = 1.
+
+b) deretter la jeg til mulighet for å hente ut naboer for dist > 1 Dette løste jeg med en while loop som gjennomgår for alle naboer til hver nabo i listen og legger de til listen hvis de ikke allerede eksisterer.
+
+c) La til tester for å teste at gridDistance alltid er mindre enn dist og i tillegg metoder som sjekker størrelsen på listen for en location midt i et kart, på kanten og i hjørnet. 
+
+d) la også til en metode som sjekker rekkefølgen på location. gridDistance må da alltid være mindre eller lik den neste location i listen.
+
+   **Deloppg. B6**
+
+a) 
+
 
 # Del C
 ## Oversikt over designvalg og hva du har gjort

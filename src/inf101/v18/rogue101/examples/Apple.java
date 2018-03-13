@@ -1,3 +1,5 @@
+//DELOPPG B1
+//Kopierte her funksjonaliteten fra Carrot som beskrevet i oppgaven og gjorde noen små endringer ( bl.a. er farge nå RED)
 package inf101.v18.rogue101.examples;
 
 import inf101.v18.gfx.gfxmode.ITurtle;
@@ -17,12 +19,12 @@ public class Apple implements IItem {
 		painter.save();
 		painter.turn(75);
 		double size = ((double) hp + getMaxHealth()) / (2.0 * getMaxHealth());
-		double carrotLength = size * h * .6;
-		double carrotWidth = size * h * .6;
+		double carrotLength = size * h * .4;  //endret størrelsen til et mer passende eple størrelse
+		double carrotWidth = size * h * .7; //samme som over
 		painter.jump(-carrotLength / 6);
-		painter.shape().ellipse().width(carrotLength).height(carrotWidth).fillPaint(Color.RED).fill();
+		painter.shape().ellipse().width(carrotLength).height(carrotWidth).fillPaint(Color.RED).fill(); //endret farge
 		painter.jump(carrotLength / 2);
-		painter.setInk(Color.BROWN);
+		painter.setInk(Color.BROWN);  //endret farge på stilken
 		for (int i = -1; i < 2; i++) {
 			painter.save();
 			painter.turn(20 * i);
@@ -54,8 +56,8 @@ public class Apple implements IItem {
 	}
 
 	@Override
-	public String getName() {
-		return "carrot";
+	public String getName() { //endret navn
+		return "apple";
 	}
 
 	@Override
@@ -64,7 +66,7 @@ public class Apple implements IItem {
 	}
 
 	@Override
-	public String getSymbol() {
+	public String getSymbol() {  //endret symbol til A
 		return "A";
 	}
 

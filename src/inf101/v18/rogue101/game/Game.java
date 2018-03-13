@@ -280,10 +280,10 @@ public class Game implements IGame {
 			return new Rabbit();
 		case "C":
 			return new Carrot();
-		case "A":
-			return new Apple();
-		case "@":
-			return new Player();
+		case "A":			//DELOPPG B1 c)
+			return new Apple();  //la til Apple som item på kartet
+		case "@":			//DELOPPG B2 b)
+			return new Player();  //legger til player for symbolet @
 		case " ":
 			return null;
 		default:
