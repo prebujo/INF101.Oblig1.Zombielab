@@ -25,4 +25,14 @@ public interface IPaintLayer {
 	 */
 	void layerToFront();
 
+	/**
+	 * @return Width (in pixels) of graphics layer
+	 */
+	double getWidth();
+
+	/**
+	 * @return Height (in pixels) of graphics layer
+	 */
+	double getHeight();
+
 }

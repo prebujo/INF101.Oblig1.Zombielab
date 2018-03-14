@@ -222,7 +222,7 @@ public class ShapePainter implements IShape {
 
 	@Override
 	public void draw(GraphicsContext context) {
-		if (cmd != null) {
+		if (cmd != null && context != null) {
 			if (fill != null)
 				cmd.fill(context, this);
 			if (stroke != null)
@@ -238,7 +238,7 @@ public class ShapePainter implements IShape {
 
 	@Override
 	public ShapePainter fill() {
-		if (cmd != null)
+		if (cmd != null && context != null)
 			cmd.fill(context, this);
 		return this;
 	}
@@ -288,7 +288,7 @@ public class ShapePainter implements IShape {
 
 	@Override
 	public ShapePainter stroke() {
-		if (cmd != null)
+		if (cmd != null && context != null)
 			cmd.stroke(context, this);
 		return this;
 	}
