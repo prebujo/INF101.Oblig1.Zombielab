@@ -30,7 +30,7 @@ import inf101.v18.rogue101.objects.IItem;
 import inf101.v18.rogue101.objects.INonPlayer;
 import inf101.v18.rogue101.objects.IPlayer;
 import inf101.v18.rogue101.objects.Wall;
-import int101.v18.rogue101.player.Player;
+import inf101.v18.rogue101.player.Player;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -60,6 +60,9 @@ public class Game implements IGame {
 	private final ITurtle painter;
 	private final Printer printer;
 	private int numPlayers = 0;
+	private List<String> lastMessages = new ArrayList<>();
+	private List<String> lastActions = new ArrayList<>();
+
 
 	public Game(Screen screen, ITurtle painter, Printer printer) {
 		this.painter = painter;
@@ -118,6 +121,7 @@ public class Game implements IGame {
 
 	@Override
 	public ILocation attack(GridDirection dir, IItem target) {
+		lastActions.add("ATTACK: " + currentActor + " -> " + target);
 		ILocation loc = currentLocation.go(dir);
 		if (!(map.has(loc, target)))
 			throw new IllegalMoveException("Target isn't there!");
@@ -315,10 +319,30 @@ public class Game implements IGame {
 		// it should be safe to print to lines Main.LINE_MSG1, Main.LINE_MSG2,
 		// Main.LINE_MSG3
 		// TODO: you can save the last three lines, and display/scroll them
+		lastMessages .add(s);
+		while (lastMessages.size() > 20)
+			lastMessages.remove(0);
+
 		printer.clearLine(Main.LINE_MSG1);
 		printer.printAt(1, Main.LINE_MSG1, s);
-		System.out.println("Message: «" + s + "»");
+		printer.clearLine(Main.LINE_MSG2);
+		printer.printAt(2, Main.LINE_MSG2, "Message2");
+		System.out.println("Message: «" + s + "»");	
+
 	}
+	
+	@Override
+	public String getLastMessage() {
+		if (lastMessages.isEmpty())
+			return "";
+		else
+			return lastMessages.get(lastMessages.size() - 1);
+	}
+
+	public List<String> getLastMessages() {
+		return lastMessages;
+	}
+
 
 	@Override
 	public void displayStatus(String s) {
@@ -326,6 +350,15 @@ public class Game implements IGame {
 		printer.printAt(1, Main.LINE_STATUS, s);
 		System.out.println("Status: «" + s + "»");
 	}
+	
+	@Override
+	public String getLastAction() {
+		if (lastActions.isEmpty())
+			return "";
+		else
+			return lastActions.get(lastActions.size() - 1);
+	}
+
 
 	public void draw() {
 		map.draw(painter, printer);
@@ -421,9 +454,10 @@ public class Game implements IGame {
 		// turn
 		if (currentActor instanceof IPlayer) {
 			((IPlayer) currentActor).keyPressed(this, code); // do your thing
-			return (movePoints > 0);// proceed with turn if we're out of moves
+			return movePoints > 0;// proceed with turn if we're out of moves
 		}
-		return false;
+		else {
+		return false;}
 	}
 
 	@Override

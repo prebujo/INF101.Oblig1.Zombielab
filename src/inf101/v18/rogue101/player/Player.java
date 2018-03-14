@@ -1,5 +1,5 @@
 //DELOPPG B2
-package int101.v18.rogue101.player;
+package inf101.v18.rogue101.player;
 
 import java.util.List;
 
@@ -20,8 +20,8 @@ public class Player implements IPlayer {
 	}
 
 	@Override
-	public int getAttack() {  //setter attack slik som rabbit
-		return 1000;
+	public int getAttack() {  //setter attack slik at player stort sett vinner over Rabbit (logisk!:)
+		return 50;
 	}
 
 	@Override
@@ -31,12 +31,12 @@ public class Player implements IPlayer {
 
 	@Override
 	public int getDamage() {
-		return 1000;
+		return 50;
 	}
 
 	@Override
 	public int getDefence() {
-		return 1000;
+		return 50;
 	}
 
 	@Override
@@ -67,9 +67,9 @@ public class Player implements IPlayer {
 	
 
 	
-	@Override //DELOPPG B2 c)
-	public void keyPressed(IGame game, KeyCode key) { //fullførte keyPressed klassen slik at den håndtere enhver KeyCode
-        if (key == KeyCode.LEFT) {				//kan vurdere å endre til switch
+	@Override //DELOPPG B2 c) //fullførte keyPressed klassen slik at den håndtere enhver KeyCode
+	public void keyPressed(IGame game, KeyCode key) { 
+        if (key == KeyCode.LEFT) {
             tryToMove(game, GridDirection.WEST);
         }
         else if(key == KeyCode.RIGHT) {
@@ -99,10 +99,10 @@ public class Player implements IPlayer {
 		if(game.canGo(dir)) {		//bruker canGo for å sjekke om spilleren kan gå i retningen
 			game.move(dir);
 		}
-		else		//hvis spilleren ikke kan gå der (feltet er en wall eller Rabbit)
-			hp--;	//blir spilleren pittelitt skadet og beskjeden Ouch! blir skrevet ut
-			game.displayMessage("Ouch!");
-		
+		else {		//tidligere skrev jeg ut Outch! og mistet hp når spilleren ikke kunne gå i denne retningen
+			//Nå angriper jeg det første Item/Actor som finnes i den retningen. Dette gir mulighet for å angripe vegger/andre ting
+			game.attack(dir, game.getMap().getAll(game.getLocation(dir)).get(0));	
+		}		
 	}
 	
 	//DELOPPG B2 e)

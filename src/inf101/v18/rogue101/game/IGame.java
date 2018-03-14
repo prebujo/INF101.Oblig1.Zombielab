@@ -317,4 +317,15 @@ public interface IGame {
 	 * @return A random generator
 	 */
 	Random getRandom();
+	
+	/**
+	 * @return The last message printed to the display
+	 */
+	String getLastMessage();
+
+	/**
+	 * @return The last action from the log of actions
+	 */
+	String getLastAction();
+
 }

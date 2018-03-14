@@ -11,7 +11,7 @@ import inf101.v18.rogue101.game.IGame;
 import inf101.v18.rogue101.objects.IActor;
 import inf101.v18.rogue101.objects.IItem;
 import inf101.v18.rogue101.objects.INonPlayer;
-import int101.v18.rogue101.player.Player;
+import inf101.v18.rogue101.player.Player;
 
 public class Rabbit implements INonPlayer {
 	private int food = 0;
@@ -71,8 +71,8 @@ public class Rabbit implements INonPlayer {
 	}
 
 	@Override
-	public int getAttack() {
-		return 1000;
+	public int getAttack() {  //endret rabbit til å blir litt mer realistisk svak
+		return 10;
 	}
 
 	@Override
@@ -82,12 +82,12 @@ public class Rabbit implements INonPlayer {
 
 	@Override
 	public int getDamage() {
-		return 1000;
+		return 10;
 	}
 
 	@Override
-	public int getDefence() {
-		return 1000;
+	public int getDefence() { //endret til mer realistisk rabbit så spilleren overlever og Player Test funker
+		return 10;
 	}
 
 	@Override

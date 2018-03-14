@@ -10,10 +10,11 @@ import org.junit.jupiter.api.Test;
 import inf101.v18.grid.ILocation;
 import inf101.v18.rogue101.examples.Apple;
 import inf101.v18.rogue101.examples.Carrot;
+import inf101.v18.rogue101.examples.Rabbit;
 import inf101.v18.rogue101.map.GameMap;
 import inf101.v18.rogue101.objects.Dust;
 import inf101.v18.rogue101.objects.IItem;
-import int101.v18.rogue101.player.Player;
+import inf101.v18.rogue101.player.Player;
 
 class GameMapTest {
 
@@ -122,7 +123,74 @@ class GameMapTest {
 			assertEquals(location.gridDistanceTo(list.get(i))<=location.gridDistanceTo(list.get(i+1)), true);
 			//ethvert element i listen må ha gridDistance mindre eller lik den som kommer etter.
 		}
-	}	
+	}
+	
+	//TESTER FRA FORELESNING:
+	@Test
+	void testAddContains1() {
+		// test with rabbit first then carrot
+		GameMap gameMap = new GameMap(20, 20);
+		ILocation location = gameMap.getLocation(10, 10);
+		addContainsProperty(gameMap, location, new Rabbit());
+		addContainsProperty(gameMap, location, new Carrot());
+	}
+
+	@Test
+	void testAddContains2() {
+		// test with carrot first then rabbit
+		GameMap gameMap = new GameMap(20, 20);
+		ILocation location = gameMap.getLocation(10, 10);
+		addContainsProperty(gameMap, location, new Carrot());
+		addContainsProperty(gameMap, location, new Rabbit());
+	}
+
+	/**
+	 * After adding an item, that location in the map should contain the item.
+	 * 
+	 * @param map
+	 * @param loc
+	 * @param item
+	 */
+	void addContainsProperty(GameMap map, ILocation loc, IItem item) {
+		map.add(loc, item);
+		assertTrue(map.getAll(loc).contains(item));
+	}
+
+	@Test
+	void testAddAddsOne() {
+		GameMap gameMap = new GameMap(20, 20);
+		// add stuff at various locations, see that size of item list increases by one
+		
+		// (Dette kan gå galt både ved at tingen ikke ble lagt til, og ved at den
+		// blir lagt til flere ganger, og oppførselen kan avhenge av hva som er på stedet fra
+		// så vi bør prøve med mange varianter.)
+		
+		ILocation location = gameMap.getLocation(10, 10);
+		addSizeProperty(gameMap, location, new Rabbit());
+
+		location = gameMap.getLocation(8, 10);
+		gameMap.add(location, new Carrot()/* erstatt med noe som er større enn rabbit */);
+		addSizeProperty(gameMap, location, new Rabbit());
+
+		location = gameMap.getLocation(9, 10);
+		gameMap.add(location, new Carrot() /* mindre enn rabbit */);
+		addSizeProperty(gameMap, location, new Rabbit());
+	}
+
+	/**
+	 * After adding an item to the map, the list of items on that location should
+	 * increase by one.
+	 * 
+	 * @param map
+	 * @param loc
+	 * @param item
+	 */
+	void addSizeProperty(GameMap map, ILocation loc, IItem item) {
+		int size = map.getAll(loc).size();
+		map.add(loc, item);
+		assertEquals(size + 1, map.getAll(loc).size());
+	}
+
 	
 	
 

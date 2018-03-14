@@ -147,7 +147,8 @@ public class Main extends Application {
 					} catch (Exception e2) {
 						System.err.println("Also got this exception trying to display the previous one");
 						e2.printStackTrace();
-						game.displayDebug("Exception: " + e.getMessage());
+						System.exit(1);
+						//game.displayDebug("Exception: " + e.getMessage());
 					}
 				}
 				return true;
@@ -167,16 +168,21 @@ public class Main extends Application {
 
 	public void doTurn() {
 		long t = System.currentTimeMillis();
+		
 		boolean waitForPlayer = game.doTurn();
+		
 		if (DEBUG_TIME)
 			System.out.println("doTurn() took " + (System.currentTimeMillis() - t) + "ms");
 		long t2 = System.currentTimeMillis();
+		
 		game.draw();
+		
 		if (DEBUG_TIME) {
 			System.out.println("draw() took " + (System.currentTimeMillis() - t2) + "ms");
 			System.out.println("doTurn()+draw() took " + (System.currentTimeMillis() - t) + "ms");
 			System.out.println("waiting for player? " + waitForPlayer);
 		}	
+		
 		if (!waitForPlayer)
 			smallStepTimeline.playFromStart(); // this will kickstart a new turn in a few milliseconds
 	}
