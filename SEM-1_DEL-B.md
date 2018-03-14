@@ -72,8 +72,8 @@ For å fikse dette vil vi at kartet skal ha tingene liggende i sortert rekkeføl
    * Du må sette opp et test-scenario:
       * du trenger et nytt GameMap (det trenger ikke være fylt med noe)
       * du trenger også en ILocation, siden de fleste kart-metodene bruker det (kall `getLocation(x,y)` med en kjent, lovlig posisjon)
-      * så må du opprette noen IItems og legge dem til på kartposisjonen ved å kalle `GameMap.add()`
-   * Til slutt kan du teste at tingene ligger i den rekkefølgen du forventer (`GameMap.getAll()`, og sjekk listeelementene med `get()`)
+      * så må du opprette noen IItems og legge dem til på kartposisjonen ved å kalle `add()` på kartet
+   * Til slutt kan du teste at tingene ligger i den rekkefølgen du forventer (`getAll()`, og sjekk listeelementene med `get()`)
    * *(Litt mer avansert:)* Hvis du vil teste med litt større mengder data er det gjerne upraktisk å sjekke nøyaktig hvordan elementene er plassert – da kan du i stedet gå gjennom listen og sjekke at `list.get(i).compareTo(list.get(i+1)) >= 0` for `0 <= i < list.size()-1`. Et godt utvalg data kan du få ved å lage deg en metode som lager tilfeldige IItems – den kan uansett være nyttig for å lage tilfeldige kart og slikt. (Du skal lære dette mer grundig i neste lab-oppgave.)
 
 *(Avansert mulighet (ikke del av oppgaven): En mer generell løsning er å lage en sortert liste (kanskje helst `IList/MyList` fra Lab 2/3/4, men evt `List/ArrayList`) og så bruke den i stedet for vanlig liste i `IMultiGrid` og `MultiGrid`. Du trenger litt mer avansert Java-kunnskap for å få det til å funke, du må bla. si at elementtypen er sammenliknbar (f.eks. `ISortedList<T extends Comparable<T>>`) – vi ser mer på dette senere i semesteret. )*

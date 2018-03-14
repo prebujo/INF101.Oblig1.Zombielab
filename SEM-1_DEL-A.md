@@ -98,6 +98,12 @@ Vi har også et par andre mer abstrakte ting vi bør tenke på – f.eks. koordi
 * [IArea](src/inf101/v18/grid/IArea.java) – et rektangulært sett med ILocations. Brukes f.eks. av spillkartet for å lettvint gå gjennom alle cellene/rutene i kartet.
 * ([IGrid<T>](src/inf101/v18/grid/IGrid.java) og [IMultiGrid<T>](src/inf101/v18/grid/IMultiGrid.java) – IGrid<T> er tilsvarende til den du har brukt i labbene tidligere; IMultiGrid<T> er et grid der hver celle er en liste av T-er. Den blir brukt av spillkartet, men du trenger neppe bruke den selv.)
 
+UML:  
+<a href="https://retting.ii.uib.no/inf101/inf101.v18/wikis/img/RogueInterface.png">
+<img src="https://retting.ii.uib.no/inf101/inf101.v18/wikis/img/RogueInterface.png" width="200">
+</a>
+
+
 ### *(4%)* Deloppgave A1: Tilstand, oppførsel og grensesnitt for objektene
 *Du vil sikkert finne på lurere svar på spørsmålene etterhvert som du jobber med oppgaven. Det er fint om du lar de opprinnelige svarene stå (det er helt OK om de er totalt feil eller helt på jordet) og heller gjør tilføyelser. Du kan evt. bruke ~~overstryking~~ (putt dobbel tilde rundt teksten, `~~Rabbit.java funker fordi det bor en liten kanin inni datamaskinen~~`) for å markere det du ikke lenger synes er like lurt.*
 
@@ -145,7 +151,7 @@ Hvis du ser på koden for [Rabbit.java](src/inf101/v18/rogue101/examples/Rabbit.
     * du kan finne ut hva som ligger i nabofeltet ved hjelp av kartet (`game.getMap()`); f.eks. med metoden `getItems()`.
     * kaninen har allerede kode for å sjekke gjennom tingene og se om den finner en `Carrot` – du kan kopiere og tilpasse denne
     * hvis kaninen finner en gulrot kan den gjøre `game.move(...)` og så returnere med en gang
-** *e)** Kaninens jobb blir litt enklere om den får litt hjelp fra `Game` med å finne ut hvor den kan gå. Implementer metoden `getPossibleMoves()` i `Game`.
+* **e)** Kaninens jobb blir litt enklere om den får litt hjelp fra `Game` med å finne ut hvor den kan gå. Implementer metoden `getPossibleMoves()` i `Game`.
 
 #### Bedre gulrøtter
 
@@ -153,7 +159,7 @@ Prøv også å justere gulrøttene litt ([Carrot](src/inf101/v18/rogue101/exampl
 
 * **a)** Gulrøttene får helsen satt til -1 når de blir spist – etter helsereglene våre vil de derfor bli fjernet fra kartet. Prøv å sette helsen til 0 i stedet. Hvorfor går det ikke bedre med kaninene selv om gulrøttene nå blir værende på kartet?
 * **b)** Det hadde kanskje vært praktisk (ihvertfall for kaninene) om gulrøttene vokste seg store og fine igjen etter en stund; for eksempel ved at de “helbreder” ett helsepoeng for hver runde som går – men `Carrot` har ingen `doTurn()` metode slik `Rabbit` har, så den får ikke med seg at rundene går eller at kaninene hopper rundt (rent bortsett fra at det går an å “jukse” ved å regne med / håpe på at `draw()` blir kalt en gang per runde).
-   * Lag en `doTurn()`-metode i `Carrot` som øker `hp` med 1 for hver runde (opp til `getMaxHealth()`).
+   * ~~Lag en `doTurn()`-metode i `Carrot` som øker `hp` med 1 for hver runde (opp til `getMaxHealth()`).~~ (Denne fulgte med fra før.)
    * Hva skjer, ser det ut til å virke?
    * Hvis det ikke virker, hva må du eventuelt gjøre for å få `Carrot` til å gjøre noe hver runde?
 * **c)** Du kan også prøve å la `Game` legge til nye, tilfeldig plasserte gulrøtter av og til:

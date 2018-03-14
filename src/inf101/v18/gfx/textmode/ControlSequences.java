@@ -14,6 +14,8 @@ import java.util.regex.Pattern;
 import javafx.scene.paint.Color;
 
 public class ControlSequences {
+	private static final boolean DEBUG = false;
+	
 	public static class CsiPattern {
 		public static CsiPattern compile0(String pat, String desc, Consumer<Printer> handler) {
 			CsiPattern csiPattern = new CsiPattern(pat, 0, 0, desc, handler, null, null);
@@ -73,10 +75,12 @@ public class ControlSequences {
 				String argStr = matcher.groupCount() > 0 ? matcher.group(1) : "";
 				String[] args = argStr.split(";");
 				if (handler0 != null) {
+					if(DEBUG)
 					System.out.println("Handling " + getDescription() + ".");
 					handler0.accept(printer);
 				} else if (handler1 != null) {
 					int arg = args.length > 0 && !args[0].equals("") ? Integer.valueOf(args[0]) : defaultArg;
+					if(DEBUG)
 					System.out.println("Handling " + getDescription() + ": " + arg);
 					handler1.accept(printer, arg);
 				} else if (handlerN != null) {
@@ -90,7 +94,8 @@ public class ControlSequences {
 					while (argList.size() < numArgs) {
 						argList.add(defaultArg);
 					}
-					System.out.println("Handling " + getDescription() + ": " + argList);
+					if(DEBUG)
+System.out.println("Handling " + getDescription() + ": " + argList);
 					handlerN.accept(printer, argList);
 				}
 				return true;

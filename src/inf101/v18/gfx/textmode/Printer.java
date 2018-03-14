@@ -100,13 +100,25 @@ public class Printer implements IPaintLayer {
 
 	private int csiMode = 0;
 
+	private final double width;
+	private final double height;
+	
 	public Printer(double width, double height) {
-		this(null, new Canvas(width, height));
+		this.screen = null;
+		this.textPage = null;
+		this.width = width;
+		this.height = height;
+		for (int i = 0; i < TextMode.PAGE_HEIGHT_MAX; i++) {
+			lineBuffer.add(new Char[TextMode.LINE_WIDTH_MAX]);
+		}
+		resetFull();
 	}
 
 	public Printer(Screen screen, Canvas page) {
 		this.screen = screen;
 		this.textPage = page;
+		this.width = page.getWidth();
+		this.height = page.getHeight();
 		for (int i = 0; i < TextMode.PAGE_HEIGHT_MAX; i++) {
 			lineBuffer.add(new Char[TextMode.LINE_WIDTH_MAX]);
 		}
@@ -126,15 +138,17 @@ public class Printer implements IPaintLayer {
 				moveTo(leftMargin, y + 1);
 				break;
 			case "\f":
-				GraphicsContext context = textPage.getGraphicsContext2D();
 				moveTo(leftMargin, topMargin);
 				for (Char[] line : lineBuffer)
 					Arrays.fill(line, null);
+				if(textPage != null) {
+				GraphicsContext context = textPage.getGraphicsContext2D();
 				if (background != null && background != Color.TRANSPARENT) {
 					context.setFill(background);
 					context.fillRect(0.0, 0.0, textPage.getWidth(), textPage.getHeight());
 				} else
 					context.clearRect(0.0, 0.0, textPage.getWidth(), textPage.getHeight());
+				}
 				break;
 			case "\b":
 				moveHoriz(-1);
@@ -286,7 +300,7 @@ public class Printer implements IPaintLayer {
 	}
 
 	private void drawChar(int x, int y, Char c) {
-		if (c != null) {
+		if (c != null && textPage != null) {
 			GraphicsContext context = textPage.getGraphicsContext2D();
 
 			context.setFill(c.fill);
@@ -502,6 +516,8 @@ public class Printer implements IPaintLayer {
 		 * "ms/char", "mode", "indir", "inv", "fake"); for (int m = -1; m < 8; m++) {
 		 * long t0 = System.currentTimeMillis(); int n = 0;
 		 */
+		if(textPage == null)
+			return;
 		GraphicsContext context = textPage.getGraphicsContext2D();
 
 		if (background != null && background != Color.TRANSPARENT) {
@@ -716,6 +732,16 @@ public class Printer implements IPaintLayer {
 
 	public void unplot(int x, int y) {
 		plot(x, y, (a, b) -> a & ~b);
+	}
+
+	@Override
+	public double getWidth() {
+		return width;
+	}
+
+	@Override
+	public double getHeight() {
+		return height;
 	}
 
 }
