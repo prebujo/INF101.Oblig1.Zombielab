@@ -76,7 +76,7 @@ public class Game implements IGame {
 		// inputGrid will be filled with single-character strings indicating what (if
 		// anything)
 		// should be placed at that map square
-		IGrid<String> inputGrid = MapReader.readFile("maps/level1.txt");
+		IGrid<String> inputGrid = MapReader.readFile("maps/level2.txt");
 		if (inputGrid == null) {
 			System.err.println("Map not found – falling back to builtin map");
 			inputGrid = MapReader.readString(Main.BUILTIN_MAP);
@@ -118,12 +118,17 @@ public class Game implements IGame {
 
 	@Override
 	public ILocation attack(GridDirection dir, IItem target) {
-		ILocation loc = map.go(currentLocation, dir);
-		if (map.has(loc, target))
+		ILocation loc = currentLocation.go(dir);
+		if (!(map.has(loc, target)))
 			throw new IllegalMoveException("Target isn't there!");
 
 		// TODO: implement attack
-
+		if(currentActor.getAttack()+random.nextInt(20)+1 >= target.getDefence()+10) {
+			int damage = target.handleDamage(this, currentActor, currentActor.getDamage());
+			formatMessage("%s hits %s for %d damage", currentActor.getName(), target.getName(), damage);
+		}
+		else
+			formatMessage("%s tried to attack but %s got away", currentActor.getName(), target.getName());			
 		
 		map.clean(loc);
 
@@ -411,14 +416,14 @@ public class Game implements IGame {
 		return map.getWidth();
 	}
 
-	public void keyPressed(KeyCode code) {
+	public boolean keyPressed(KeyCode code) {
 		// only an IPlayer/human can handle keypresses, and only if it's the human's
 		// turn
 		if (currentActor instanceof IPlayer) {
 			((IPlayer) currentActor).keyPressed(this, code); // do your thing
-			if (movePoints <= 0)
-				doTurn(); // proceed with turn if we're out of moves
+			return (movePoints > 0);// proceed with turn if we're out of moves
 		}
+		return false;
 	}
 
 	@Override

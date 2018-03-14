@@ -8,8 +8,10 @@ import inf101.v18.gfx.gfxmode.ITurtle;
 import inf101.v18.grid.GridDirection;
 import inf101.v18.grid.ILocation;
 import inf101.v18.rogue101.game.IGame;
+import inf101.v18.rogue101.objects.IActor;
 import inf101.v18.rogue101.objects.IItem;
 import inf101.v18.rogue101.objects.INonPlayer;
+import int101.v18.rogue101.player.Player;
 
 public class Rabbit implements INonPlayer {
 	private int food = 0;
@@ -37,24 +39,30 @@ public class Rabbit implements INonPlayer {
 				}
 			}
 		}
-		// TODO: prøv forskjellige varianter her
-		List<GridDirection> possibleMoves = game.getPossibleMoves();
-		
-		if (!possibleMoves.isEmpty()) { //hvis det ikke er noen possible moves skal objektet ikke gjøre noe
-			for(GridDirection dir : possibleMoves) { //gjennomgår for hver direction i possibleMoves
-				ILocation loc = game.getLocation(dir); //henter Location i hver lovlige retning
-				for(IItem neighb_item : game.getMap().getItems(loc)) // henter items i hver location
-					if(neighb_item instanceof Carrot) { //hvis det finnes en carrot skal jeg bevege meg dit
-						game.move(dir);
-						return;
-					}						
+
+		//DELOPPG B6 endret på denne nå som jeg skal angripe. Sjekker først alle fire retninger om det er en IActor der
+		List<GridDirection> possibleMoves = GridDirection.FOUR_DIRECTIONS; //endret denne fra game.getPossibleMoves();
+
+		for(GridDirection dir : possibleMoves) { //gjennomgår for hver direction i possibleMoves
+			ILocation loc = game.getLocation(dir); //henter Location i hver retning
+			for(IItem neighb_item : game.getMap().getAll(loc)) { // henter items i hver location
+				if(neighb_item instanceof IActor) { //hvis det finnes en actor skal jeg angripe
+					game.attack(dir, neighb_item);
+					return;
+				}
+				else if(neighb_item instanceof Carrot) { //hvis det finnes en carrot beveger kaninen seg mot den.
+					game.move(dir);
+					return;
+				}
 			}
-			Collections.shuffle(possibleMoves); //Hvis jeg har gjennomgått alle possibleMoves uten å gjøre noe 
-			game.move(possibleMoves.get(0));    //skal jeg gå i en tilfeldig retning.
 		}
-		/*if(game.canGo(GridDirection.NORTH))
-			game.move(GridDirection.NORTH);
-		*/
+		// hvis det ikke finnes hverken Carrots eller IActors skal kaninen bare hoppe til en tilfeldig mulig retning
+		
+		possibleMoves = game.getPossibleMoves();
+		if(possibleMoves.size() == 0) //hvis kaninen nå ikke har noen mulige moves gjør den ingenting.
+			return;
+		Collections.shuffle(possibleMoves); //shuffler mulige moves
+		game.move(possibleMoves.get(0));    //og kaninen beveger seg i en tilfeldig retning
 	}
 
 	@Override
