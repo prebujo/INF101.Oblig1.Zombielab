@@ -1,50 +1,49 @@
 package inf101.v18.rogue101.objects;
 
-import inf101.v18.gfx.gfxmode.ITurtle;
-import inf101.v18.gfx.textmode.BlocksAndBoxes;
 import inf101.v18.rogue101.game.IGame;
 
-public class Wall implements IItem {
-	private int hp = getMaxHealth();
-
-	@Override
-	public boolean draw(ITurtle painter, double w, double h) {
-		return false;
-	}
+public class DeadPlayer implements IItem{
 
 	@Override
 	public int getCurrentHealth() {
-		return hp;
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	@Override
 	public int getDefence() {
-		return 10;
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	@Override
 	public int getMaxHealth() {
-		return 1000;
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	@Override
 	public String getName() {
-		return "wall";
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public int getSize() {
-		return 3;
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 	@Override
 	public String getSymbol() {
-		return BlocksAndBoxes.BLOCK_FULL;
+		// TODO Auto-generated method stub
+		return "😣";
 	}
 
 	@Override
 	public int handleDamage(IGame game, IItem source, int amount) {
-		hp -= amount;
-		return amount;
+		// TODO Auto-generated method stub
+		return 0;
 	}
+
 }

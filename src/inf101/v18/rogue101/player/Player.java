@@ -13,6 +13,11 @@ import javafx.scene.input.KeyCode;
 public class Player implements IPlayer {
 	
 	private int hp = getMaxHealth(); //lager en feltvariabel for hp slik som rabbit
+	private int dam = 20; //setter base damage som feltvariabel
+	private int def = 20; //setter base defence som feltvariabel
+	private int maxHP = 50; //setter base maxHP som feltvariabel
+	private int atk = 20; //setter base attack som feltvariabel
+	private int vis = 0; // setter base visibility til 0
 
 	@Override
 	public boolean draw(ITurtle painter, double w, double h) {
@@ -21,7 +26,7 @@ public class Player implements IPlayer {
 
 	@Override
 	public int getAttack() {  //setter attack slik at player stort sett vinner over Rabbit (logisk!:)
-		return 50;
+		return atk;
 	}
 
 	@Override
@@ -31,17 +36,17 @@ public class Player implements IPlayer {
 
 	@Override
 	public int getDamage() {
-		return 50;
+		return dam;
 	}
 
 	@Override
 	public int getDefence() {
-		return 50;
+		return def;
 	}
 
 	@Override
 	public int getMaxHealth() { //satt spillerens helse lik 50
-		return 50;
+		return maxHP;
 	}
 
 	@Override
@@ -51,7 +56,7 @@ public class Player implements IPlayer {
 
 	@Override
 	public int getSize() {
-		return 4;
+		return 5;
 	}
 
 	@Override
@@ -96,17 +101,25 @@ public class Player implements IPlayer {
 	
 	//DELOPPG B2 d)
 	private void tryToMove(IGame game, GridDirection dir) {
-		if(game.canGo(dir)) {		//bruker canGo for å sjekke om spilleren kan gå i retningen
+		//bruker canGo for å sjekke om spilleren kan gå i retningen, altså lovlig celle og ikke opptatt
+		if(game.canGo(dir)) {		
 			game.move(dir);
 		}
-		else {		//tidligere skrev jeg ut Outch! og mistet hp når spilleren ikke kunne gå i denne retningen
-			//Nå angriper jeg det første Item/Actor som finnes i den retningen. Dette gir mulighet for å angripe vegger/andre ting
+		//DELOPPG. B6 c) 
+		//sjekker så om det er lovlig å bevege seg i retning fra der vi er uavhengig om det er noen der
+		//(tidligere skrev jeg ut Outch! og mistet hp når spilleren ikke kunne gå i denne retningen)
+		else if(game.getLocation().canGo(dir)) { //altså hvis det er lovlig å gå denne veien
+			//Så angriper jeg det første Item/Actor som finnes i den retningen. Dette gir mulighet for å angripe vegger/andre ting
 			game.attack(dir, game.getMap().getAll(game.getLocation(dir)).get(0));	
-		}		
+		}
+		else {
+			game.displayMessage("A much harder impenetrable wall.. Your efforts are in vain..");
+			hp--;
+		}
 	}
 	
 	//DELOPPG B2 e)
-	private void showStatus(IGame game) {		//showStatus viser spilleres hp sammen med beskrivende tekst.
+	public void showStatus(IGame game) {		//showStatus viser spilleres hp sammen med beskrivende tekst.
 		//DELOPPG B4 d) passer på at hvis jeg ikke holder et item skriver jeg ut en tom streng
 		String itemName = "";	//tom streng
 		if(heldItem != null)	//hvis jeg holder et item
@@ -144,6 +157,14 @@ public class Player implements IPlayer {
 		else
 			game.displayMessage("Cant drop item here.."); //informerer brukeren at det ikke var mulig
 	}
+
+	@Override
+	public int getVisibility() {
+		// TODO Auto-generated method stub
+		return vis;
+	}
+	
+
 
 
 }

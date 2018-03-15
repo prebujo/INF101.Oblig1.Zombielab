@@ -4,7 +4,7 @@ import inf101.v18.gfx.gfxmode.ITurtle;
 import inf101.v18.gfx.textmode.BlocksAndBoxes;
 import inf101.v18.rogue101.game.IGame;
 
-public class Wall implements IItem {
+public class Sword implements IWeapon {
 	private int hp = getMaxHealth();
 
 	@Override
@@ -24,12 +24,12 @@ public class Wall implements IItem {
 
 	@Override
 	public int getMaxHealth() {
-		return 1000;
+		return 10;
 	}
 
 	@Override
 	public String getName() {
-		return "wall";
+		return "sword";
 	}
 
 	@Override
@@ -39,12 +39,24 @@ public class Wall implements IItem {
 
 	@Override
 	public String getSymbol() {
-		return BlocksAndBoxes.BLOCK_FULL;
+		return "S";
 	}
 
 	@Override
 	public int handleDamage(IGame game, IItem source, int amount) {
-		hp -= amount;
-		return amount;
+		return 0;
 	}
+
+	@Override
+	public int getAttack() {
+		// TODO Auto-generated method stub
+		return 100;
+	}
+
+	@Override
+	public int getDamage() {
+		// TODO Auto-generated method stub
+		return 50;
+	}
+
 }

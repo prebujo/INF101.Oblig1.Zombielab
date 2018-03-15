@@ -161,10 +161,50 @@ d) la også til en metode som sjekker rekkefølgen på location. gridDistance m�
 
    **Deloppg. B6**
 
-a) 
+a) implementerte ferdig koden, se Game.attack. 
 
+b) La til attack for rabbit slik at en rabbit sjekker alle retninger og angriper en evtl IActor eller går til en evtl carrot. Hvis det ikke finnes noen carrot eller actor går Rabbit i en tilfeldig retning slik som tidligere.
 
+c) La til angrep for spilleren. Sjekker nå først om retningen spilleren vil gå i er ledig (altså ikke ulovlig og ikke IActor eller Wall) hvis det er mulig beveger spilleren seg dit.
+Hvis ikke vet jeg at enten er cellen opptatt (av Wall eller IActor) så da sjekker jeg om retningen er lovlig (altså ikke utenfor brettet) og angriper i så fall det som befinner seg på første plass av getAll i denne retningen. 
+Hvis ikke skriver jeg ut en beskjed til brukeren om at det ikke er mulig å gå videre og spilleren miste et helsepoeng for å ha prøvd (tough-luck;)
+
+   **Deloppg. B7: SPØRSMÅL**
+a) I Labyrint Laben brukte vi grid og hjelpemetoden isValidPosition med koordinater for x og y. Dette er relativt oversiktelig men har ulempen med at du hele tiden må bruke playerX og playerY og sjekke posisjonene ift. denne. I spillet bruker jeg allNeighbours fra ILocation som returnerer alle naboer i alle 8 retninger gitt at de ikke er utenfor spillområdet. Dette gjør det mer anvendbart når man skal sjekke alle naboer ettersom "ulovlige" naboer ikke blir tatt med automatisk og jeg slipper å få programmet til å sjekke om f.eks. NORTH er en gyldig retning. Metoden i Game er dermed mer generell og bedre for en programmerer å bruke men mindre "oversiktlig" da det ikke alltid er så lett å skjønne hvor de "gyldige retningene" kommer fra.
+
+b) Fordeler ved å la ting gå igjennom Game:
+Game håndterer unntak/regler som GameMap f.eks. ikke holder styr på. Ved å la trekkene gå igjennom game vil man også endre på game-objekt som trekkene blir kalt på direkte istedet for å måtte ha to objekter (game og gameMap). Man gjør det også lettere å håndtere hvem sin tur det er. Eks: Hvis en spiller skal flytte seg til et felt sjekker Game først om det er et lovlig trekk ved å kalle på de riktige metodene istedet for at forflyttingen skjer uten sjekk og game oppdaterer da alle objektene inneholdt i det nåværende spillet.
+Ulemper: 
+Kan bli veldig mye for en klasse å håndtere ved veldig mange trekk i tillegg til alle reglene osv. Man kunne vurdert å splitte opp Game i flere klasser for å gjøre det mer oversiktelig som GameMove,GameRules osv men foreløpig er det enda oversiktelig nok. 
+
+c) Jeg har prøvd å gjøre noen slike forbedringer underveis. Man kunne f.eks. ved første implementasjon plukke opp flere ting etterhverandre og dermed ville de items du hadde plukket opp "forsvinne". Dette kommer jeg til å endre på senere slik at jeg kan plukke opp flere Items i en liste.
+Også GameMap.hasNeighbour antar at input ILocation "from" er en gyldig location og gjør ingen tester på det før den kaller på canGo.
+Display Status sjekker heller ikke om Strengen som skal skrives ut er for lang. Dette kunne med fordel vært gjort for å passe på at ikke strengen blir avkortet.
+
+d) Tilstand:
+Ser at flere av implementasjonene har tilstander (feltvariabler) som jeg ikke så når før jeg kikket på koden og jobbet med det. 
+Sammenheng:
+Sammenhengene ble også mye klarere når jeg begynte å bruke og sette meg ordentlig inn i koden. F.eks. at det er sammenhenger mellom Game og nesten alle de andre klassene. At en IActor nå gjennom metodene sine "endrer" på game objektet som blir sendt som argument i metodene attack og move. At GameMap har et Multigrid som feltvariabel og en hashcode liste av items for å holde styr på navigering og hvor ting er på kartet. osv.
+
+Endelig svar: Ja jeg tenker nok veldig annerledes nå som jeg har sett på koden og ser sammenhengene/tilstandene implementert.
 # Del C
 ## Oversikt over designvalg og hva du har gjort
-* ... blah, blah, er implementert i klassen [KurtMario](src/inf101/v18/rogue101/player/KurtMario.java), blah, blah `ITurtleShell` ...
+*   
+**Overordnet:** 
+Jeg har endret på spillet og dermed laget mine egne klasser av både main og Player bl.a. Under forklarer jeg overordnet hva jeg har gjort i hver klasse. Dette samt kommentarer rundt i koden tilsvarer dermed mitt svar på oppg. Spillet er ikke ferdig implementert men jeg har prøvd meg på samtlige ting nevnt i DelC for å vise at jeg kan bruke mest mulig aspekter av det vi har lært til nå i kurset. Spillet er dermed ikke perfekt men spillet samt koden burde vise at jeg kan stoffet hittil ganske godt. Grunnen til at jeg ikke har implementert spillet helt perfekt er rett og slett fordi det tar veldig mye tid og jeg skjønner det slik at poenget er ikke å skape et perfekt spill men vise at man kan innholdet. Håper den som retter har forståelse for dette.
+
+   **MainDELC.java**
+Lagde en egen main slik at man fortsatt kan kjøre den gamle main metoden for å teste arbeidet fra Oppg. A&B. I denne main metoden har jeg bl.a. endret slik at jeg bruker GameDELC
+
+   **GameDELC.java**
+implementerte et eget Game for ikke å ødelegge arbeidet fra oppg A&B. Her har jeg for det første brukt et annet kart "zombies3.txt" under maps. I dette kartet har jeg også en rekke nye objekter som jeg bruker i mitt spill, bl.a. Zombie, Door, Flesh, Knife, Torch, Shadow, Sword, osv (se under). Bruker også PlayerDELC istedet for Player. 
+	
+	SKYGGE
+Har endret opprettelsen av spillbrettet slik at det alltid legges en "Shadow" over hvert item i spillet for å skjule det. Alle ruter spilleren går på (pluss alle naboruter innenfor getVi
+
+**PlayerDELC.java**
+Også her implementerte jeg en egen spiller. Dette er fordi jeg har gjort om på en del av implementasjonene fra Del A-B og i tillegg lagt til ganske mange nye funksjoner. bl.a. har en spiller nå et inventory eller Backpack som implementerer metoden IContainer() (se under). Spilleren kan også plukke opp en ny backpack å sette denne på ryggen for å utvide bærekapasiteten.
+Spilleren (og alle Actors) har også fått en ny feltvariabel "vis" som jeg bruker i GameDELC (se over).
+
+ ... blah, blah, er implementert i klassen [KurtMario](src/inf101/v18/rogue101/player/KurtMario.java), blah, blah `ITurtleShell` ...
  

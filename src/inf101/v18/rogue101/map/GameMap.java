@@ -17,6 +17,7 @@ import inf101.v18.grid.IMultiGrid;
 import inf101.v18.grid.MultiGrid;
 import inf101.v18.rogue101.Main;
 import inf101.v18.rogue101.game.IllegalMoveException;
+import inf101.v18.rogue101.objects.Door;
 import inf101.v18.rogue101.objects.IActor;
 import inf101.v18.rogue101.objects.IItem;
 import inf101.v18.rogue101.objects.Wall;
@@ -75,7 +76,7 @@ public class GameMap implements IGameMap {
 
 	@Override
 	public boolean canGo(ILocation to) {
-		return !grid.contains(to, (i) -> (i instanceof Wall || i instanceof IActor));
+		return !grid.contains(to, (i) -> (i instanceof Wall || i instanceof IActor || i instanceof Door)); //lagt til door som unntak
 	}
 
 	@Override
