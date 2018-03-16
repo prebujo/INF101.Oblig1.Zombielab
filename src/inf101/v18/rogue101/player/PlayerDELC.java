@@ -2,15 +2,14 @@
 package inf101.v18.rogue101.player;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 import inf101.v18.gfx.gfxmode.ITurtle;
 import inf101.v18.grid.GridDirection;
 import inf101.v18.rogue101.game.IGame;
 import inf101.v18.rogue101.objects.Backpack;
-import inf101.v18.rogue101.objects.Door;
+
 import inf101.v18.rogue101.objects.Empty_Backpack;
 import inf101.v18.rogue101.objects.Exit;
 import inf101.v18.rogue101.objects.FirstAidKit;
@@ -27,7 +26,7 @@ public class PlayerDELC implements IPlayer {
 	private int hp = getMaxHealth(); //lager en feltvariabel for hp slik som rabbit
 	private final int dam = 10; //setter base damage som feltvariabel
 	private final int def = 10; //setter base defence som feltvariabel
-	private final int maxHP = 100; //setter base maxHP som feltvariabel
+
 	private final int atk = 10; //setter base attack som feltvariabel
 	private int vis = 0; // setter base visibility til 0
 	private int inv_cap = 5; //starter med inventory capacity 4 (en ting i hver lomme 2x pluss en ting i hver hånd og på ryggen
@@ -147,17 +146,15 @@ public class PlayerDELC implements IPlayer {
 		//sjekker så om det er lovlig å bevege seg i retning fra der vi er uavhengig om det er noen der
 		//(tidligere skrev jeg ut Outch! og mistet hp når spilleren ikke kunne gå i denne retningen)
 		else if(game.getLocation().canGo(dir)) {//altså hvis det er lovlig å gå denne veien
-			//Så sjekker jeg først om jeg kan åpne en dør i den retningen
-			boolean attack = true;
 			//sjekker om det er en dør i retningen jeg skal gå...
 			if(game.hasDoor(dir)) {
 				IItem key = new Key(); //dummy for å sjekke navn
 				//hvis det er det må jeg sjekke om jeg har nøkkel
-				if(inv.contains(key)) { //laget en metode som sjekker om name er lik navnet på objektet som blir sendt inn
-				//hvis jeg har et item med navn key skal jeg finne det.
+				if(inv.contains(key)) { //laget en metode som sjekker det et item i inv
+					//hvis jeg har et item med navn key skal jeg finne det.
 					for(IItem it : inv.itemSet()) {				
 						if (it instanceof Key) {  //må først sjekke om jeg har en key i inventory 
-							attack = !game.openDoor(dir);// da skal jeg åpne døren
+							game.openDoor(dir);// da skal jeg åpne døren
 							inv.remove(it);  //og fjerne key fra inventory
 							return;
 						}
@@ -166,7 +163,7 @@ public class PlayerDELC implements IPlayer {
 				else if (backpack.contains(key)) { //sjekker også om jeg har en key i backpack
 					for(IItem it : backpack.itemSet()) {				
 						if (it instanceof Key) {
-							attack = !game.openDoor(dir);
+							game.openDoor(dir);
 							backpack.remove(it);
 							return;
 						}
@@ -229,6 +226,7 @@ public class PlayerDELC implements IPlayer {
 	}
 
 	//metode for å plukke opp første item som ligger på en location
+	@SuppressWarnings("unchecked")
 	public void pickUp(IGame game) {  
 		
 		List<IItem> list = game.getLocalItems();  //henter ut liste over items
@@ -356,12 +354,6 @@ public class PlayerDELC implements IPlayer {
 	weapons.add(tempWeap);
 	}
 	
-	//Ikke ferdig enda. Ville legge til muligheten for å legge fra seg et item fra backpack
-	//men ble ikke så viktig for hensikten med spillet
-	private void dropBackpackItem(IGame game) {
-		// Kommer til denne hvis jeg har tid..
-		
-	}
 	
 	//returnerer carryCap til utskrift
 	private int carryCap(){

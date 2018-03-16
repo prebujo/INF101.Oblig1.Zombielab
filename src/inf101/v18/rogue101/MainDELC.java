@@ -7,7 +7,6 @@ import inf101.v18.gfx.Screen;
 import inf101.v18.gfx.gfxmode.ITurtle;
 import inf101.v18.gfx.textmode.Printer;
 import inf101.v18.gfx.textmode.TextMode;
-import inf101.v18.rogue101.game.Game;
 import inf101.v18.rogue101.game.GameDELC;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;

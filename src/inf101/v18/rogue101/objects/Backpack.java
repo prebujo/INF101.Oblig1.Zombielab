@@ -1,7 +1,6 @@
 package inf101.v18.rogue101.objects;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,11 +59,6 @@ public class Backpack implements IContainer<IItem>{
 		return 0;
 	}
 
-	@Override
-	public List getAll() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public boolean remove(IItem item) { //fjerner et item

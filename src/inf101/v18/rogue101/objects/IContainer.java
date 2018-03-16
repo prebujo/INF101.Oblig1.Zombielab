@@ -1,6 +1,5 @@
 package inf101.v18.rogue101.objects;
 
-import java.util.List;
 import java.util.Set;
 
 public interface IContainer<T extends IItem> extends IItem{
@@ -57,16 +56,6 @@ public interface IContainer<T extends IItem> extends IItem{
 	default int getFreeSpace() {
 		return 0;
 	}
-	/**
-	 * Get all items (both IActors and other IItems) at the given location
-	 * <p>
-	 * The returned list either can't be modified, or modifying it won't affect the
-	 * map.
-	 * 
-	 * @param loc
-	 * @return A list of items
-	 */
-	List<T> getAll();
 	
 	default int size() {
 		return 0;

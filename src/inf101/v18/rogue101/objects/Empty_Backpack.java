@@ -1,7 +1,6 @@
 package inf101.v18.rogue101.objects;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -9,7 +8,6 @@ import inf101.v18.rogue101.game.IGame;
 
 public class Empty_Backpack implements IContainer<IItem>{
 
-	private int size = 0;
 	private final int SIZE_CAP = 0;
 	Map<IItem, Integer> items = new HashMap<IItem, Integer>();
 
@@ -78,16 +76,6 @@ public class Empty_Backpack implements IContainer<IItem>{
 	public boolean add(IItem item) {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public List getAll() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public int size() {
-		return size;
 	}
 	
 	public int size_cap(){

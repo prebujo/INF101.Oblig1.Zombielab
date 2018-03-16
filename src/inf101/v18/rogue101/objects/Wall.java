@@ -1,7 +1,6 @@
 package inf101.v18.rogue101.objects;
 
 import inf101.v18.gfx.gfxmode.ITurtle;
-import inf101.v18.gfx.textmode.BlocksAndBoxes;
 import inf101.v18.rogue101.game.IGame;
 
 public class Wall implements IItem {

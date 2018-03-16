@@ -1,6 +1,6 @@
 package inf101.v18.rogue101.examples;
 
-import java.util.ArrayList;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -11,7 +11,6 @@ import inf101.v18.rogue101.game.IGame;
 import inf101.v18.rogue101.objects.IActor;
 import inf101.v18.rogue101.objects.IItem;
 import inf101.v18.rogue101.objects.INonPlayer;
-import inf101.v18.rogue101.player.Player;
 
 public class Rabbit implements INonPlayer {
 	private int food = 0;
