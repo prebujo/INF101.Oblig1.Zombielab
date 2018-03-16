@@ -24,9 +24,9 @@ Dette prosjektet inneholder [Semesteroppgave 1](SEM-1.md). Du kan også [lese op
 # Fyll inn egne svar/beskrivelse/kommentarer til prosjektet under
 * Levert av:   *Preben Bucher-Johannessen* (*pjo047*)
 * Del A: [X] helt ferdig, [ ] delvis ferdig
-* Del B: [ ] helt ferdig, [X] delvis ferdig
-* Del C: [ ] helt ferdig, [ ] delvis ferdig
-* [ ] hele semesteroppgaven er ferdig og klar til retting!
+* Del B: [X] helt ferdig, [X] delvis ferdig
+* Del C: [X] helt ferdig, [ ] delvis ferdig
+* [X] hele semesteroppgaven er ferdig og klar til retting!
 
 # Del A
 ## Svar på spørsmål
