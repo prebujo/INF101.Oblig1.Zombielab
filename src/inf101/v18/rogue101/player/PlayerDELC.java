@@ -12,11 +12,14 @@ import inf101.v18.rogue101.game.IGame;
 import inf101.v18.rogue101.objects.Backpack;
 import inf101.v18.rogue101.objects.Door;
 import inf101.v18.rogue101.objects.Empty_Backpack;
+import inf101.v18.rogue101.objects.Exit;
+import inf101.v18.rogue101.objects.FirstAidKit;
 import inf101.v18.rogue101.objects.IContainer;
 import inf101.v18.rogue101.objects.IItem;
 import inf101.v18.rogue101.objects.IPlayer;
 import inf101.v18.rogue101.objects.IWeapon;
 import inf101.v18.rogue101.objects.Key;
+import inf101.v18.rogue101.objects.Torch;
 import javafx.scene.input.KeyCode;
 
 public class PlayerDELC implements IPlayer {
@@ -77,7 +80,7 @@ public class PlayerDELC implements IPlayer {
 
 	@Override
 	public String getSymbol() {
-		return hp > 0 ? "🙂" : "😫"; //satt spillerens symbol til @ og * hvis man dør
+		return hp > 0 ? "\u001b[35m" + "🙂" + "\u001b[30m" : "\u001b[32m"+"😁"+"\u001b[30m"; //satt spillerens symbol til @ og * hvis man dør
 	}
 
 	@Override
@@ -113,7 +116,7 @@ public class PlayerDELC implements IPlayer {
         else if(key == KeyCode.W) { //kaller change weap metoden
         	changeWeapon(game);
         }
-        else if(key == KeyCode.N) { //kaller drop backpack metoden
+        else if(key == KeyCode.N) { //kaller drop backpack metoden, ikke ferdig
         	dropBackpack(game);
         }
         else if(key == KeyCode.Q) { //kaller useFAK (use first aid kit) metoden
@@ -125,7 +128,7 @@ public class PlayerDELC implements IPlayer {
         //man kan også legge til på slutten her en måte å håndtere ikke godkjente keys men jeg så ikke det som nødvendig enda
         showStatus(game);  //viser status for hver gang spilleren beveger seg.
         showInventory(game);
-        showBackpack(game);
+        showKeyMap(game);
     }
 	
 
@@ -153,7 +156,7 @@ public class PlayerDELC implements IPlayer {
 				if(inv.contains(key)) { //laget en metode som sjekker om name er lik navnet på objektet som blir sendt inn
 				//hvis jeg har et item med navn key skal jeg finne det.
 					for(IItem it : inv.itemSet()) {				
-						if (it.getName() == "key") {  //må først sjekke om jeg har en key i inventory 
+						if (it instanceof Key) {  //må først sjekke om jeg har en key i inventory 
 							attack = !game.openDoor(dir);// da skal jeg åpne døren
 							inv.remove(it);  //og fjerne key fra inventory
 							return;
@@ -162,7 +165,7 @@ public class PlayerDELC implements IPlayer {
 				}
 				else if (backpack.contains(key)) { //sjekker også om jeg har en key i backpack
 					for(IItem it : backpack.itemSet()) {				
-						if (it.getName() == "key") {
+						if (it instanceof Key) {
 							attack = !game.openDoor(dir);
 							backpack.remove(it);
 							return;
@@ -197,8 +200,8 @@ public class PlayerDELC implements IPlayer {
 		
 	}
 	
-	private void showInventory(IGame game) {		//showStatus viser spilleres hp sammen med beskrivende tekst.
-		//DELOPPG B4 d) passer på at hvis jeg ikke holder et item skriver jeg ut en tom streng
+	private void showInventory(IGame game) {		
+		// show inventory viser hva som er i sekken og inventory til spilleren
 		String s = "";
 		for(IItem it: inv.itemSet()) {
 			s += it.getName();
@@ -206,13 +209,8 @@ public class PlayerDELC implements IPlayer {
 			s += (inv.getItemAmount(it)+1);
 			s += " ";			
 		}
-			
-		game.displayInventory("Inv: " +s);
-	}
-	
-	private void showBackpack(IGame game) {
-		//DELOPPG B4 d) passer på at hvis jeg ikke holder et item skriver jeg ut en tom streng
-		String s = "";
+		
+		s+=" Pack: ";
 		for(IItem it: backpack.itemSet()) {
 			s += it.getName();
 			s += "x";
@@ -220,12 +218,18 @@ public class PlayerDELC implements IPlayer {
 			s += " ";			
 		}
 			
-		game.displayBackpack("Pack: " +s);
+		game.displayInventory("Inv: " +s);
 	}
-	//DELIOPPG. C 
-
 	
-	public void pickUp(IGame game) {  //metode for å plukke opp første item som ligger på en location
+	private void showKeyMap(IGame game) {
+		//Skriver ut KeyMap for spilleren
+		String s = "w - eq weapon, p - pickup, d - drop, q - First Aid  ⭠ ⭡ ⭢ ⭣ to move";
+		
+		game.displayKeyMap("Key Map: " +s);
+	}
+
+	//metode for å plukke opp første item som ligger på en location
+	public void pickUp(IGame game) {  
 		
 		List<IItem> list = game.getLocalItems();  //henter ut liste over items
 		if(list.size() == 0) {		//hvis det ikker er noen items på location skal jeg
@@ -233,9 +237,9 @@ public class PlayerDELC implements IPlayer {
 			return;											//og avslutte metoden
 		}
 		
-		IItem item = game.pickUp(list.get(0));
-		if (!inv.add(item))
-			if(!backpack.add(item))
+		IItem item = game.pickUp(list.get(0)); //henter første item
+		if (!inv.add(item))	//prøver å legge til inv
+			if(!backpack.add(item)) //prøver å legge til backpack
 				System.out.println("Inventory full..");
 			else
 				System.out.println("added" + item.getName() + " to backpack..");
@@ -244,13 +248,17 @@ public class PlayerDELC implements IPlayer {
 		
 		if(item instanceof IWeapon && !weapons.contains(item))
 			weapons.add((IWeapon) item);
-		if(item.getName() == "torch")
+		if(item instanceof Torch)
 			vis += 1;
-		if(item.getName() == "backpack")
-			backpack = (IContainer<IItem>) item;			
+		if(item instanceof Backpack)
+			backpack = (IContainer<IItem>) item;
+		if(item instanceof Exit)
+			game.won();
+			
 	}
 	
-	public void dropInventoryItem(IGame game) {	//metode for å slippe et item
+	//Metode for å slippe et Item fra inventory eller backpack
+	public void dropInventoryItem(IGame game) {	
 		if(inv.size() <= 0 && backpack.size() <= 0) {  //hvis jeg ikke holder noe blir det skrevet 
 			game.displayMessage("You are not holding anything.."); //ut en melding
 			return;											//og metoden avsluttes
@@ -258,9 +266,14 @@ public class PlayerDELC implements IPlayer {
 		if(inv.size() > 0) {
 			for(IItem it : inv.itemSet()) { 
 				if(it instanceof IItem) { //hvis jeg holder på et item
+					if(it == wieldedWeap) {
+						game.displayMessage("Unwield first..");
+						return;
+					}
 					if(game.drop(it)) {	//og hvis jeg kan slippe det ned her
-						if(it.getName() == "torch")
+						if(it instanceof Torch)
 							vis--;
+						
 						inv.remove(it); //og fjerner da dette Item fra inventory
 						return;
 					}
@@ -272,12 +285,16 @@ public class PlayerDELC implements IPlayer {
 			}
 		}
 		else {
+			//hvis Inventory er tomt legger jeg fra meg ting fra ryggsekken.
 			for(IItem it : backpack.itemSet()) { 
-				if(it instanceof IItem) { //hvis jeg holder på et item
+				if(it instanceof IItem) { //kan bare droppe IItems
+					if(it == wieldedWeap) {
+						game.displayMessage("Unwield first..");
+						return;
+					}
 					if(game.drop(it)) {	//og hvis jeg kan slippe det ned her
-						if(it.getName() == "torch")
-							vis--;
-						inv.remove(it); //og fjerner da dette Item fra inventory
+						if(it instanceof Torch)
+						backpack.remove(it); //og fjerner da dette Item fra backpack
 						return;
 					}
 					else {
@@ -289,8 +306,10 @@ public class PlayerDELC implements IPlayer {
 		}				
 	}
 	
+	//metode for å legge fra seg en ryggsekk.
+	//ikke så viktig for spillet så jeg har ikke lagt inn noe Keycode for å utføre dette.
 	public void dropBackpack(IGame game) {
-		if(backpack.getName() == "no") {
+		if(backpack instanceof Empty_Backpack) {
 			game.displayMessage("Not wearing a backpack");
 			return;
 		}
@@ -304,10 +323,10 @@ public class PlayerDELC implements IPlayer {
 
 	@Override
 	public int getVisibility() {
-		// TODO Auto-generated method stub
+		// Returnerer visibility til bruk i game for å fjerne skygge
 		return vis;
 	}
-	//hvis jeg har et wielded Weapon retunerer jeg attack fra det.
+	//hvis jeg har et wielded Weapon retunerer jeg attack til våpenenet til metoden getAttack.
 	public int wieldedWeapAttack() {
 		if(wieldedWeap != null)
 			return wieldedWeap.getAttack();
@@ -315,7 +334,7 @@ public class PlayerDELC implements IPlayer {
 			return 0;
 	}
 	
-	//hvis jeg har et wielded Weapon retunerer jeg damage fra det.
+	//hvis jeg har et wielded Weapon retunerer jeg damage fra det til metoden getDamage()
 	public int wieldedWeapDam() {
 		if(wieldedWeap != null)
 			return wieldedWeap.getDamage();
@@ -323,8 +342,8 @@ public class PlayerDELC implements IPlayer {
 			return 0;
 	}
 	
-	
-	private void changeWeapon(IGame game) {  //metode for å endre mellom weapons
+	//metode for å endre spilleren har i hånden. aktiveres ved å trykke w
+	private void changeWeapon(IGame game) {  
 	if(weapons.size()==0) {		//hvis jeg ikke har noen weapons
 		game.displayMessage("You dont have a Weapon..");
 		return;
@@ -336,20 +355,30 @@ public class PlayerDELC implements IPlayer {
 	//legger til det midlertidige våpenet i våpensamlingen
 	weapons.add(tempWeap);
 	}
+	
+	//Ikke ferdig enda. Ville legge til muligheten for å legge fra seg et item fra backpack
+	//men ble ikke så viktig for hensikten med spillet
 	private void dropBackpackItem(IGame game) {
-		// TODO Auto-generated method stub
+		// Kommer til denne hvis jeg har tid..
 		
 	}
 	
+	//returnerer carryCap til utskrift
 	private int carryCap(){
 			return (inv_cap - inv.size() + backpack.freeSpace());
-
 	}
-
+	
+	//metode som bruker en First Aid Kit og deretter fjerner det fra inventory/backpack
 	private void useFAK(IGame game) {
 		for(IItem it : inv.itemSet())
-			if(it.getName() == "FAK") {
+			if(it instanceof FirstAidKit) {
 				inv.remove(it);
+				hp = Math.min(hp+100, getMaxHealth());
+				return;
+			}
+		for(IItem it : backpack.itemSet())
+			if(it instanceof FirstAidKit) {
+				backpack.remove(it);
 				hp = Math.min(hp+100, getMaxHealth());
 				return;
 			}

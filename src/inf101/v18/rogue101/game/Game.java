@@ -578,7 +578,7 @@ public class Game implements IGame {
 	}
 
 	@Override
-	public void displayBackpack(String s) {
+	public void displayKeyMap(String s) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -594,5 +594,11 @@ public class Game implements IGame {
 	public boolean hasDoor(GridDirection dir) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void won() {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -40,7 +40,7 @@ public class Door implements IItem {
 
 		@Override
 		public String getSymbol() {
-			return BlocksAndBoxes.BLOCK_DIAG_BACKWARD;
+			return "🚪";
 		}
 
 		@Override

@@ -119,7 +119,7 @@ public interface IGame {
 	 * @param s
 	 *            A message
 	 */
-	void displayBackpack(String s);
+	void displayKeyMap(String s);
 
 	/**
 	 * Displays a message in the message area on the screen (below the map and the
@@ -350,4 +350,6 @@ public interface IGame {
 	boolean openDoor(GridDirection dir);
 
 	boolean hasDoor(GridDirection dir);
+	
+	void won();
 }

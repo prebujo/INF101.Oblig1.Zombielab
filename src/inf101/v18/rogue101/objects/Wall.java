@@ -39,7 +39,7 @@ public class Wall implements IItem {
 
 	@Override
 	public String getSymbol() {
-		return BlocksAndBoxes.BLOCK_FULL;
+		return "\u001b[93m"+"🏿"+"\u001b[30m";
 	}
 
 	@Override

@@ -19,7 +19,7 @@ public class Zombie implements INonPlayer {
 	@Override
 	public void doTurn(IGame game) {
 		for (IItem item : game.getLocalItems()) {
-			if (item instanceof Flesh) { //hvis zombie finner flesh er turn til zombie ferdig.
+			if (item instanceof Flesh) { //hvis zombie finner flesh skal den spise
 				System.out.println("zombie found flesh");
 				int eaten = item.handleDamage(game, this, 20);
 				System.out.println("zombie ate flesh worth" + eaten);
@@ -58,7 +58,7 @@ public class Zombie implements INonPlayer {
 	}
 
 	@Override
-	public int getAttack() {  //endret rabbit til å blir litt mer realistisk svak
+	public int getAttack() {  
 		return 40;
 	}
 
@@ -73,7 +73,7 @@ public class Zombie implements INonPlayer {
 	}
 
 	@Override
-	public int getDefence() { //endret til mer realistisk rabbit så spilleren overlever og Player Test funker
+	public int getDefence() { 
 		return 30;
 	}
 
@@ -94,7 +94,7 @@ public class Zombie implements INonPlayer {
 
 	@Override
 	public String getSymbol() {
-		return hp > 0 ? "Z" : "¤";
+		return hp > 0 ? "\u001b[32m"+"👰"+"\u001b[30m" : "¤";
 	}
 
 	@Override

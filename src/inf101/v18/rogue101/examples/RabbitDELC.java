@@ -107,7 +107,7 @@ public class RabbitDELC implements INonPlayer {
 
 	@Override
 	public String getSymbol() {
-		return hp > 0 ? "R" : "¤";
+		return hp > 0 ? "🐇" : "¤";
 	}
 
 	@Override

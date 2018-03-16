@@ -30,6 +30,7 @@ import inf101.v18.rogue101.objects.Backpack;
 import inf101.v18.rogue101.objects.DeadPlayer;
 import inf101.v18.rogue101.objects.Door;
 import inf101.v18.rogue101.objects.Dust;
+import inf101.v18.rogue101.objects.Exit;
 import inf101.v18.rogue101.objects.FirstAidKit;
 import inf101.v18.rogue101.objects.Flesh;
 import inf101.v18.rogue101.objects.IActor;
@@ -76,6 +77,12 @@ public class GameDELC implements IGame {
 	private int numPlayers = 0;
 	private List<String> lastMessages = new ArrayList<>();
 	private List<String> lastActions = new ArrayList<>();
+	private IItem fakObj = new FirstAidKit();
+	private IItem torchObj = new Torch();
+	private IItem keyObj = new Key();
+	private IItem carObj = new Carrot();
+	private IItem aplObj = new Apple();
+	private IItem fleshObj = new Flesh();
 
 
 	public GameDELC(Screen screen, ITurtle painter, Printer printer) {
@@ -93,7 +100,7 @@ public class GameDELC implements IGame {
 		// inputGrid will be filled with single-character strings indicating what (if
 		// anything)
 		// should be placed at that map square
-		IGrid<String> inputGrid = MapReader.readFile("maps/zombies3.txt");
+		IGrid<String> inputGrid = MapReader.readFile("maps/ZombieLab.txt");
 		if (inputGrid == null) {
 			System.err.println("Map not found – falling back to builtin map");
 			inputGrid = MapReader.readString(Main.BUILTIN_MAP);
@@ -103,10 +110,13 @@ public class GameDELC implements IGame {
 			IItem item = createItem(inputGrid.get(loc));
 			if (item != null) {
 				map.add(loc, item);
-				if (item.getName() != "shadow"&&item.getName() != "player")
-					map.add(loc,new Shadow());
+				if (!(item instanceof Shadow) && !(item instanceof IPlayer)) //hvis jeg legger til noe annet enn en spiller
+					map.add(loc,new Shadow());			//eller skygge skal jeg legge en skygge oppå den
 			}
 		}
+		displayStatus("You wake up in a strange Building,some sort of lab..You dont remember anything..");
+		displayInventory("How did u get here?There is a foul stench in the air..Something is different..");
+		displayKeyMap("Time to find a way out of here and answers..Its so dark..if only u had a light..");
 
 	}
 
@@ -153,7 +163,14 @@ public class GameDELC implements IGame {
 		map.clean(loc);
 
 		if (target.isDestroyed()) {
-			if(target instanceof RabbitDELC) {
+			//hvis spilleren blir drept skriver jeg ut gameover og etterlater en dead.player
+			if(target instanceof PlayerDELC) {
+				map.add(map.go(currentLocation, dir), new DeadPlayer());
+				gameOver();
+				return move(dir);
+			}
+			//hvis det er rabbit etterlater jeg flesh... mmm zombie-food
+			else if(target instanceof RabbitDELC) {
 				map.add(map.go(currentLocation, dir), new Flesh());
 				return move(dir);
 				}
@@ -179,7 +196,6 @@ public class GameDELC implements IGame {
 				// first collect all the actors:
 				beginTurn();
 			}
-
 			// process actors one by one; for the IPlayer, we return and wait for keypresses
 			// Possible TODO: for INonPlayer, we could also return early (returning
 			// *false*), and then insert a little timer delay between each non-player move
@@ -201,26 +217,26 @@ public class GameDELC implements IGame {
 					((INonPlayer) currentActor).doTurn(this);
 					// remove any dead items from current location
 					if(currentActor.isDestroyed())
-						map.add(currentLocation, new Flesh());
+						map.add(currentLocation, fleshObj);
 					map.clean(currentLocation);
 				} else if (currentActor instanceof IPlayer) {
 					if (currentActor.isDestroyed()) {
 						// a dead human player gets removed from the game
 						// TODO: you might want to be more clever here
-						displayBackpack("You got Killed.. Game OVER..");
+						displayKeyMap("You got Killed.. Game OVER..");
 						map.add(currentLocation, new Flesh());
 						map.add(currentLocation, new DeadPlayer());
 						currentActor = null;
 						currentLocation = null;
 					} else {
-						
-						for(IItem it : map.getItems(currentLocation)) //removing shadow from players current location
-							if(it.getName() == "shadow")
+						//SHADOW REMOVER, fjerner skygge rundt spilleren så ha kan se
+						for(IItem it : map.getItems(currentLocation)) //fjerner skygge på spillerens location
+							if(it instanceof Shadow)
 								map.remove(currentLocation, it);
-						
-						for(ILocation neighb : getVisible())
+						//fjerner så skygge rundt spilleren avhenging av spillerens getVisible
+						for(ILocation neighb : getVisible()) //getVisible returnerer vis som først er 0
 							for(IItem it : map.getItems(neighb)) //removing shadow from visible cells around player
-								if(it.getName() == "shadow")
+								if(it instanceof Shadow)
 									map.remove(neighb, it);
 						
 						// For the human player, we need to wait for input, so we just return.
@@ -296,9 +312,9 @@ public class GameDELC implements IGame {
 		case "R":
 			return new RabbitDELC(); //ny Rabbit
 		case "C":
-			return new Carrot();
+			return carObj;
 		case "A":			//DELOPPG B1 c)
-			return new Apple();  //la til Apple som item på kartet
+			return aplObj;  //la til Apple som item på kartet
 		case "@"://DELOPPG B2 b)
 			player = new PlayerDELC();
 			return player;  //legger til player for symbolet @
@@ -312,17 +328,19 @@ public class GameDELC implements IGame {
 		case ",":
 			return new Shadow();
 		case "K":
-			return new Key();
+			return keyObj;
 		case "N":
 			return new Knife();
 		case "T":
-			return new Torch();
+			return torchObj;
 		case "B":
 			return new Backpack();
 		case "S":
 			return new Sword(); 
 		case "P":
-			return new FirstAidKit();
+			return fakObj;
+		case "E":
+			return new Exit();
 		default:
 			// alternative/advanced method
 			Supplier<IItem> factory = itemFactories.get(sym);
@@ -384,7 +402,7 @@ public class GameDELC implements IGame {
 		
 	}
 	
-	public void displayBackpack(String s){
+	public void displayKeyMap(String s){
 		printer.clearLine(Main.LINE_MSG2);
 		printer.printAt(1, Main.LINE_MSG2, s);
 		System.out.println("Inventory: «" + s + "»");
@@ -613,7 +631,7 @@ public class GameDELC implements IGame {
 	public boolean openDoor(GridDirection dir) {
 		ILocation targLoc = map.getNeighbour(currentLocation, dir);
 		for(IItem it : map.getItems(targLoc)) //removing shadow from players current location
-			if(it.getName() == "door") {
+			if(it instanceof Door) {
 				map.remove(targLoc, it);
 				displayMessage("opened door with key..");
 				return true;
@@ -625,8 +643,31 @@ public class GameDELC implements IGame {
 	public boolean hasDoor(GridDirection dir) {
 		// TODO Auto-generated method stub
 		for(IItem it : map.getAll(map.getNeighbour(currentLocation, dir)))
-			if(it.getName() == "door")
+			if(it instanceof Door)
 				return true;
 		return false;
+	}
+	//Metode som skriver ut melding om at du har tapt spillet. Fant ikke helt ut hvordan får spillet til å stoppe.
+	//ser mer på det hvis jeg får tid.
+	public void gameOver() {
+		printer.clear();
+		String s = "You died... GAME OVER...";
+		printer.clearLine(Main.LINE_STATUS);
+		printer.printAt(1, Main.LINE_STATUS, s);
+		System.out.println("«" + s + "»");
+	}
+	
+	//Metode som skriver ut melding om at du har rundet spillet og fjerner spilleren.. samme som over med å stoppe spillet..
+	public void won() {
+		String s = "You found the exit and left into a new world.. TBC..";
+		
+		printer.clear();
+		printer.clearLine(Main.LINE_MSG3);
+		printer.printAt(1, Main.LINE_MSG3, s);
+		System.out.println("«" + s + "»");
+		currentActor.handleDamage(this, new Zombie(), 1000);
+		map.clean(currentLocation);
+		currentActor = null;
+		currentLocation = null;
 	}
 }

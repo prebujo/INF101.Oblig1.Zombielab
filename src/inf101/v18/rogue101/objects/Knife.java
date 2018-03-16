@@ -39,7 +39,7 @@ public class Knife implements IWeapon {
 
 	@Override
 	public String getSymbol() {
-		return "N";
+		return "🔪";
 	}
 
 	@Override

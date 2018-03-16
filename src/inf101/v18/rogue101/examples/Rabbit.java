@@ -107,7 +107,7 @@ public class Rabbit implements INonPlayer {
 
 	@Override
 	public String getSymbol() {
-		return hp > 0 ? "R" : "¤";
+		return hp > 0 ? "\u001b[33m"+"R"+"\u001b[30m" : "¤";
 	}
 
 	@Override

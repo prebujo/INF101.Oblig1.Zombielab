@@ -51,7 +51,7 @@ public class Backpack implements IContainer<IItem>{
 	@Override
 	public String getSymbol() {
 		// TODO Auto-generated method stub
-		return "B";
+		return "🎒 ";
 	}
 
 	@Override

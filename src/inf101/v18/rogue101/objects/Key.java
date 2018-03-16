@@ -39,7 +39,7 @@ public class Key implements IItem{
 
 	@Override
 	public String getSymbol() {
-		return "K";
+		return "\u001b[90m"+"🗝"+"\u001b[30m";
 	}
 
 	@Override

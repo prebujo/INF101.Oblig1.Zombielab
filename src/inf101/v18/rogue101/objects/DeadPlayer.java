@@ -37,7 +37,7 @@ public class DeadPlayer implements IItem{
 	@Override
 	public String getSymbol() {
 		// TODO Auto-generated method stub
-		return "😣";
+		return "\u001b[31m"+"😣" +"\u001b[30m";
 	}
 
 	@Override

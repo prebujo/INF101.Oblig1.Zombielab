@@ -190,21 +190,104 @@ Endelig svar: Ja jeg tenker nok veldig annerledes nå som jeg har sett på koden
 # Del C
 ## Oversikt over designvalg og hva du har gjort
 *   
+   **ZombieLab**
+Et zombie survival spill hvor en ukjent helt våkner uten å huske noe og må finne veien ut fra en rar laboratorie-bygning fyllt med, merkelig nok rabiate kaniner og zombier. Overlevelse blir det viktigste og han må bruke tingene rundt seg for å overleve..
+
 **Overordnet:** 
-Jeg har endret på spillet og dermed laget mine egne klasser av både main og Player bl.a. Under forklarer jeg overordnet hva jeg har gjort i hver klasse. Dette samt kommentarer rundt i koden tilsvarer dermed mitt svar på oppg. Spillet er ikke ferdig implementert men jeg har prøvd meg på samtlige ting nevnt i DelC for å vise at jeg kan bruke mest mulig aspekter av det vi har lært til nå i kurset. Spillet er dermed ikke perfekt men spillet samt koden burde vise at jeg kan stoffet hittil ganske godt. Grunnen til at jeg ikke har implementert spillet helt perfekt er rett og slett fordi det tar veldig mye tid og jeg skjønner det slik at poenget er ikke å skape et perfekt spill men vise at man kan innholdet. Håper den som retter har forståelse for dette.
+Jeg har endret på spillet og dermed laget mine egne klasser av både main og Player bl.a. Under forklarer jeg overordnet hva jeg har gjort i hver klasse. Dette samt kommentarer rundt i koden tilsvarer dermed mitt svar på Deloppg. C. Spillet er ikke 100% ferdig implementert men jeg har prøvd meg på samtlige ting nevnt i DelC for å vise at jeg kan bruke mest mulig aspekter av det vi har lært til nå i kurset. Spillet er dermed ikke perfekt men spillet samt koden burde vise at jeg kan stoffet hittil godt. Ellers så er spillet nå ganske vanskelig og det er lett for å bli tatt av zombier spesielt hvis ikke du husker på å wielde våpen eller bruke first aid kits.. Zombiapokalypse er en tøff verden..
 
    **MainDELC.java**
 Lagde en egen main slik at man fortsatt kan kjøre den gamle main metoden for å teste arbeidet fra Oppg. A&B. I denne main metoden har jeg bl.a. endret slik at jeg bruker GameDELC
+	
+	STYLING C3-C5
+Lagt til Symbola som font og innført en del emojis som figurer for de forskjellige klassene. Har også endret farge for å gjøre spillet mer fargerikt. Kjør spillet evtl se de forskjellige objektene for symboler. Jeg har ikke lagt fokuset på styling i spillutviklingen og heller fokusert på spillets funksjoner. Etter min mening er funksjoner viktigere for Rouge like spill. :)
 
    **GameDELC.java**
 implementerte et eget Game for ikke å ødelegge arbeidet fra oppg A&B. Her har jeg for det første brukt et annet kart "zombies3.txt" under maps. I dette kartet har jeg også en rekke nye objekter som jeg bruker i mitt spill, bl.a. Zombie, Door, Flesh, Knife, Torch, Shadow, Sword, osv (se under). Bruker også PlayerDELC istedet for Player. 
 	
-	SKYGGE
-Har endret opprettelsen av spillbrettet slik at det alltid legges en "Shadow" over hvert item i spillet for å skjule det. Alle ruter spilleren går på (pluss alle naboruter innenfor getVi
+	SKYGGE C7
+Har endret opprettelsen av spillbrettet slik at det alltid legges en "Shadow" over hvert item i spillet for å skjule det. Alle ruter spilleren går på (pluss alle naboruter innenfor getVisible ny metode implementert i iActor), får skyggen fjernet. Dette gjør at spilleren ikke ser hva som skjer på spillbrettet og gjør spillet mer mystisk..
+
+	Inventory C2
+Laget en metode displayInventory som spilleren bruker for å skrive ut under Status linjen hva spilleren har med seg.
+
+	KeyMap C9
+Laget en metode for å skrive en beskjed ut på linje 3 som blir brukt av spilleren for å skrive ut en Key-Map altså oversikt over hvilke taster man kan trykke på og hva de gjør.
+
+	Attack C10
+Endret oppsettet til Attack til at hvis spilleren blir drept kjører jeg metoden gameOver som skriver ut en avsluttende melding og klarerer alt annet. Endret også at hvis en kanin dør blir det lagt ut flesh som Zombiene vil spise.
+
+	hasDoor og openDoor C11
+implementerte to metoder for å avgjøre om en retning inneholder en door og en metode for å fjerne døren.
+
+	gameOver og win C6
+Har lagt til to metoder som skriver ut en melding om at spilleren har vunnet/tapt og spilleren blir i begge tilfeller borte. Fant ikke helt ut hvordan jeg skulle få spillet til å stoppe i det tilfellet (utenom å avslutte alt med System.exit) så det er et forbedringspotensiale.
+	
+	
 
 **PlayerDELC.java**
 Også her implementerte jeg en egen spiller. Dette er fordi jeg har gjort om på en del av implementasjonene fra Del A-B og i tillegg lagt til ganske mange nye funksjoner. bl.a. har en spiller nå et inventory eller Backpack som implementerer metoden IContainer() (se under). Spilleren kan også plukke opp en ny backpack å sette denne på ryggen for å utvide bærekapasiteten.
-Spilleren (og alle Actors) har også fått en ny feltvariabel "vis" som jeg bruker i GameDELC (se over).
+	
+	BackPack C2
+Spilleren har nå et inventory som implementeres av IContainer (se under).Han kan i tillegg ha en ryggsekk på ryggen og legge fra seg denne.
 
- ... blah, blah, er implementert i klassen [KurtMario](src/inf101/v18/rogue101/player/KurtMario.java), blah, blah `ITurtleShell` ...
+	Visibility C7
+Spilleren (og alle Actors) har også fått en ny feltvariabel "vis" som blir brukt av GameDELC (se over) for å fjerne skygge. Spilleren kan øke denne variabelen ved å plukke opp Torch (lommelykt). 
+
+	Weapon wielding C1
+Spilleren må equipt eller wielde et våpen for å kunne angripe bedre. Dette er avgjørende for overlevelse. Man må altså da plukke opp noe av typen IWeapon (se under) og deretter trykke på w for å bruke våpenet. Metoden changeWeap bytte mellom våpnene spilleren har med seg. Ved å wielde et våpen endrer også spilleren sin totale Attack og Damage. Hvis spilleren bare bærer med seg et våpen skjer det ingenting.
+
+	DoTurn C11
+Endret oppsettet til DoTurn slik at spilleren bare går i en retning hvis canGo blir godkjent. Endret også canGo slik at den overser en Door i tillegg til Wall og IActor. Hvis man ikke kan gå i den retningen må jeg først avgjøre om det er en dør og dermed prøve å åpne den døren med en Key (se under). Hvis man ikke har en key kommer man forbi døren. Hvis det ikke er en dør i retningen angriper spilleren det som er den veien. Spilleren kan dermed også angripe en vegg selv om veggene har ganske mye helse.
+
+	Pickup
+spilleren kan plukke opp et objekt på spillbrettet. Dette påvirker spilleren på forskjellige måter og hvis spilleren plukker opp et Exit Item blir spillet avsluttet og spilleren borte. Andre Items påvirker spilleren også som beskrevet under
+
+**ZombieLab.txt**
+Nytt kart som blir brukt av GameDELC tilpasset ZombieLab..
+
+**IContainer.java C2**
+Har laget en Interface IContainer med T som utvider Item IContainer selv er også utvidet av IItem. Altså kan jeg plassere IContainere rundt påkartet og plukke dem opp/slippe de ned.
+
+**IWeapon.java C1**
+Lagde en egen interface for Weapon som utvider IItem. Et IWeapon må kunne returnere Attack og Damage slik som en spiller.
+
+**Backpack.java C2**
+En implementasjon av IContainer som blir brukt av spiller som inventory eller backpack. Denne gjør at spilleren kan bære med seg flere ting. Jeg har implementert HashMap for å holde styr på alle Items i Backpacken og hvor mange det er av hvert Item. Merk at Item må være det samme Objektet og jeg har derfor ikke lenger opprettet nye Objekter for hver gang av de Objektene spilleren kan plukke opp flere av. Dette kan man sikkert løse bedre ved å override HashMap etc.
+
+**FirstAidKit.java C1**
+Et Iitem som kan konsumeres av spilleren for å øke helse.
+
+**Door.java C11**
+Implementerte et kosept med en Dør som ikke kan angripes av spilleren
+
+**Key.java C11**
+Har implementert nøkler som kan brukes til å åpne dører.
+
+**Knife.java C1**
+Er implementert av IWeapon og er dermed et IItem som også har Attack og Damage som. Knife øker Damage og Attack til spilleren litt når den wieldes.
+
+**Sword.java C1**
+Er implementert av IWeapon og er dermed et IItem som også har Attack og Damage som. Sword øker Damage og Attack til spilleren mer når den wieldes.
+
+**Flesh.java C12**
+Er et Item som Zombier liker å spise.. Blir sluppet hver gang en Kanin eller andre levende ting dør.
+
+**Torch.java C7**
+Item som øker spilleren visibility
+
+**Shadow.java C7**
+Skygge som ligger over alt på kartet og blir fjerner for hver tur spilleren har. avhenger sv spillerens Visibility..
+
+**Exit.java**
+Item som er utgangen i spillet. Spilleren blir borte når har plukker opp dette og spiller kjører won() metoden som skriver ut beskjed om at spilleren fant veien ut TBC osv..
+
+
+
+q
+
+	
+
+
+
  

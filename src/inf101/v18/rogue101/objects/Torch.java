@@ -39,7 +39,7 @@ public class Torch implements IItem{
 
 	@Override
 	public String getSymbol() {
-		return "T";
+		return "\u001b[93m"+"🔅"+ "\u001b[30m";
 	}
 
 	@Override

@@ -39,7 +39,7 @@ public class Sword implements IWeapon {
 
 	@Override
 	public String getSymbol() {
-		return "S";
+		return "\u001b[95m"+"🗡"+"\u001b[30m";
 	}
 
 	@Override

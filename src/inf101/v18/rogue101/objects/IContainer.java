@@ -4,31 +4,35 @@ import java.util.List;
 import java.util.Set;
 
 public interface IContainer<T extends IItem> extends IItem{
-	
-	Set<IItem> itemSet();
+	/**
+	 *
+	 * @return Set<IItem> to iterate through items in Container
+	 *         {@link #containsItem()}
+	 */	
+	Set<T> itemSet();
 	
 	/**
 	 * @param item 
 	 * @return boolean to indicate success or not in removing item from Container
 	 *         {@link #containsItem()}
 	 */
-	boolean remove(IItem item);
+	boolean remove(T item);
 
 	/**
 	 * @param item
 	 * @return The Item from Container if it exist
 	 *         {@link #containsItem()}
 	 */
-	IItem get(IItem item);
+	T get(T item);
 	
 	/**
 	 * @param item
 	 * @return boolean to indicate if item was added to container
 	 *         {@link #freeSpace()}
 	 */
-	boolean add(IItem item);
+	boolean add(T item);
 	
-	default boolean contains(IItem item) {
+	default boolean contains(T item) {
 		return false;
 	}
 	
@@ -62,13 +66,13 @@ public interface IContainer<T extends IItem> extends IItem{
 	 * @param loc
 	 * @return A list of items
 	 */
-	List<IItem> getAll();
+	List<T> getAll();
 	
 	default int size() {
 		return 0;
 	}
 
-	default int getItemAmount(IItem item) {
+	default int getItemAmount(T item) {
 		return 0;
 	}
 	

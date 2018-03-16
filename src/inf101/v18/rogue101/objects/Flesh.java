@@ -39,7 +39,7 @@ public class Flesh implements IItem {
 
 	@Override
 	public String getSymbol() {
-		return "F";
+		return "\u001b[31m"+"🍠"+"\u001b[30m";
 	}
 
 	@Override

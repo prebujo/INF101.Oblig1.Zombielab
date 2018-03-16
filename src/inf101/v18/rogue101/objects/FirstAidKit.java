@@ -38,7 +38,7 @@ public class FirstAidKit implements IItem{
 
 	@Override
 	public String getSymbol() {
-		return "P";
+		return "\u001b[31m"+"💙"+"\u001b[30m";
 	}
 
 	@Override
