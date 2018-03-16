@@ -7,7 +7,7 @@ import java.util.Set;
 
 import inf101.v18.rogue101.game.IGame;
 
-public class Empty_Backpack implements IContainer{
+public class Empty_Backpack implements IContainer<IItem>{
 
 	private int size = 0;
 	private final int SIZE_CAP = 0;
