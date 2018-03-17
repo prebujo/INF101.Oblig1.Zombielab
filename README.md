@@ -11,7 +11,8 @@ Dette prosjektet inneholder [Semesteroppgave 1](SEM-1.md). Du kan også [lese op
 
 **Innleveringsfrist:**
 * Del A + minst to deloppgaver av Del B skal være ferdig til **fredag 9. mars kl. 2359**. 
-* Hele oppgaven skal være ferdig til **onsdag 14. mars kl. 2359**
+* Hele oppgaven skal være ferdig til **fredag 16. mars kl. 2359** ([AoE](https://www.timeanddate.com/worldclock/fixedtime.html?msg=4&iso=20180316T2359&p1=3399))
+* [Ekstra tips til innlevering](https://retting.ii.uib.no/inf101/inf101.v18/wikis/innlevering)
 
 (Kryss av under her, i README.md, så kan vi følge med på om du anser deg som ferdig med ting eller ikke. Hvis du er helt ferdig til den første fristen, eller før den andre fristen, kan du si fra til gruppeleder slik at de kan begynne å rette.)
 
