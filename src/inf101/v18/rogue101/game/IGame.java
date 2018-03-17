@@ -106,6 +106,20 @@ public interface IGame {
 	 *            A message
 	 */
 	void displayStatus(String s);
+	/**
+	 * Displays a inventory message in the inventory area on the screen (below status)
+	 * 
+	 * @param s
+	 *            A message
+	 */
+	void displayInventory(String s);
+	/**
+	 * Displays a backpack inventory message in the inventory area on the screen (below status)
+	 * 
+	 * @param s
+	 *            A message
+	 */
+	void displayKeyMap(String s);
 
 	/**
 	 * Displays a message in the message area on the screen (below the map and the
@@ -317,4 +331,25 @@ public interface IGame {
 	 * @return A random generator
 	 */
 	Random getRandom();
+	
+	/**
+	 * @return The last message printed to the display
+	 */
+	String getLastMessage();
+
+	/**
+	 * @return The last action from the log of actions
+	 */
+	String getLastAction();
+	
+	/**
+	 * @return The current location of the player
+	 */
+	ILocation getPlayerLoc();
+
+	boolean openDoor(GridDirection dir);
+
+	boolean hasDoor(GridDirection dir);
+	
+	void won();
 }

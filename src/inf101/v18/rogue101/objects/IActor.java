@@ -8,6 +8,15 @@ package inf101.v18.rogue101.objects;
  *
  */
 public interface IActor extends IItem {
+	
+	/**
+	 * @return This actor's visibility (used to remove shadow from field)
+	 *         
+	 */
+	default int getVisibility() {
+		return 0;
+	}
+
 	/**
 	 * @return This actor's attack score (used against an item's
 	 *         {@link #getDefence()} score to see if an attack is successful)

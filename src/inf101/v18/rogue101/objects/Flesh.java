@@ -1,9 +1,10 @@
 package inf101.v18.rogue101.objects;
 
 import inf101.v18.gfx.gfxmode.ITurtle;
+
 import inf101.v18.rogue101.game.IGame;
 
-public class Wall implements IItem {
+public class Flesh implements IItem {
 	private int hp = getMaxHealth();
 
 	@Override
@@ -23,12 +24,12 @@ public class Wall implements IItem {
 
 	@Override
 	public int getMaxHealth() {
-		return 1000;
+		return 200;
 	}
 
 	@Override
 	public String getName() {
-		return "wall";
+		return "door";
 	}
 
 	@Override
@@ -38,7 +39,7 @@ public class Wall implements IItem {
 
 	@Override
 	public String getSymbol() {
-		return "\u001b[93m"+"🏿"+"\u001b[30m";
+		return "\u001b[31m"+"🍠"+"\u001b[30m";
 	}
 
 	@Override
@@ -46,4 +47,5 @@ public class Wall implements IItem {
 		hp -= amount;
 		return amount;
 	}
+
 }

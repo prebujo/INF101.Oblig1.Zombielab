@@ -22,4 +22,5 @@ public interface IPlayer extends IActor {
 	 *            Game, for interacting with the world
 	 */
 	void keyPressed(IGame game, KeyCode key);
+	
 }

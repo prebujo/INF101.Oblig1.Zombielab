@@ -19,23 +19,35 @@ import inf101.v18.grid.ILocation;
 import inf101.v18.rogue101.Main;
 import inf101.v18.rogue101.examples.Apple;
 import inf101.v18.rogue101.examples.Carrot;
-import inf101.v18.rogue101.examples.Rabbit;
+import inf101.v18.rogue101.examples.RabbitDELC;
+import inf101.v18.rogue101.examples.Zombie;
 import inf101.v18.rogue101.map.GameMap;
 import inf101.v18.rogue101.map.IGameMap;
 import inf101.v18.rogue101.map.IMapView;
 import inf101.v18.rogue101.map.MapReader;
+import inf101.v18.rogue101.objects.Backpack;
+import inf101.v18.rogue101.objects.DeadPlayer;
+import inf101.v18.rogue101.objects.Door;
 import inf101.v18.rogue101.objects.Dust;
+import inf101.v18.rogue101.objects.Exit;
+import inf101.v18.rogue101.objects.FirstAidKit;
+import inf101.v18.rogue101.objects.Flesh;
 import inf101.v18.rogue101.objects.IActor;
 import inf101.v18.rogue101.objects.IItem;
 import inf101.v18.rogue101.objects.INonPlayer;
 import inf101.v18.rogue101.objects.IPlayer;
+import inf101.v18.rogue101.objects.Key;
+import inf101.v18.rogue101.objects.Knife;
+import inf101.v18.rogue101.objects.Shadow;
+import inf101.v18.rogue101.objects.Sword;
+import inf101.v18.rogue101.objects.Torch;
 import inf101.v18.rogue101.objects.Wall;
-import inf101.v18.rogue101.player.Player;
+import inf101.v18.rogue101.player.PlayerDELC;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 
-public class Game implements IGame {
+public class GameDELC implements IGame {
 	/**
 	 * All the IActors that have things left to do this turn
 	 */
@@ -54,6 +66,7 @@ public class Game implements IGame {
 	 * individual items don't.
 	 */
 	private IGameMap map;
+	private IPlayer player;
 	private IActor currentActor;
 	private ILocation currentLocation;
 	private int movePoints = 0;
@@ -62,9 +75,15 @@ public class Game implements IGame {
 	private int numPlayers = 0;
 	private List<String> lastMessages = new ArrayList<>();
 	private List<String> lastActions = new ArrayList<>();
+	private IItem fakObj = new FirstAidKit();
+	private IItem torchObj = new Torch();
+	private IItem keyObj = new Key();
+	private IItem carObj = new Carrot();
+	private IItem aplObj = new Apple();
+	private IItem fleshObj = new Flesh();
 
 
-	public Game(Screen screen, ITurtle painter, Printer printer) {
+	public GameDELC(Screen screen, ITurtle painter, Printer printer) {
 		this.painter = painter;
 		this.printer = printer;
 
@@ -79,7 +98,7 @@ public class Game implements IGame {
 		// inputGrid will be filled with single-character strings indicating what (if
 		// anything)
 		// should be placed at that map square
-		IGrid<String> inputGrid = MapReader.readFile("maps/level2.txt");
+		IGrid<String> inputGrid = MapReader.readFile("maps/ZombieLab.txt");
 		if (inputGrid == null) {
 			System.err.println("Map not found – falling back to builtin map");
 			inputGrid = MapReader.readString(Main.BUILTIN_MAP);
@@ -89,12 +108,17 @@ public class Game implements IGame {
 			IItem item = createItem(inputGrid.get(loc));
 			if (item != null) {
 				map.add(loc, item);
+				if (!(item instanceof Shadow) && !(item instanceof IPlayer)) //hvis jeg legger til noe annet enn en spiller
+					map.add(loc,new Shadow());			//eller skygge skal jeg legge en skygge oppå den
 			}
 		}
+		displayStatus("You wake up in a strange Building,some sort of lab..You dont remember anything..");
+		displayInventory("How did u get here?There is a foul stench in the air..Something is different..");
+		displayKeyMap("Time to find a way out of here and answers..Its so dark..if only u had a light..");
 
 	}
 
-	public Game(String mapString) {
+	public GameDELC(String mapString) {
 		printer = new Printer(1280, 720);
 		painter = new TurtlePainter(1280, 720);
 		IGrid<String> inputGrid = MapReader.readString(mapString);
@@ -137,7 +161,19 @@ public class Game implements IGame {
 		map.clean(loc);
 
 		if (target.isDestroyed()) {
-			return move(dir);
+			//hvis spilleren blir drept skriver jeg ut gameover og etterlater en dead.player
+			if(target instanceof PlayerDELC) {
+				map.add(map.go(currentLocation, dir), new DeadPlayer());
+				gameOver();
+				return move(dir);
+			}
+			//hvis det er rabbit etterlater jeg flesh... mmm zombie-food
+			else if(target instanceof RabbitDELC) {
+				map.add(map.go(currentLocation, dir), new Flesh());
+				return move(dir);
+				}
+			else
+				return move(dir);
 		} else {
 			movePoints--;
 			return currentLocation;
@@ -149,34 +185,8 @@ public class Game implements IGame {
 	 * 
 	 * @return True if the game should wait for more user input
 	 */
-	public boolean doTurn() {
-		//OPPG A3 c)
-		//genererer nye carrots med 20% sannsynlighet her. Gjør det altså kun hvis det fortsatt er spillere altså kaniner
-		//tilstede som kan spise de.
-		boolean adding = random.nextInt(100) < 20; //gjennomfører med 20% sannsynlighet
-		if(adding) {
-			List<IItem> items;  //liste over items
-			ILocation location; //location hvor jeg evtl legger til en gulrot.
-			do {	//gjennomgår minst en gang og 
-			int x = random.nextInt(map.getWidth());//genererer tilfeldig x og			
-			int y = random.nextInt(map.getHeight()); //y koordinater for en location
-			
-			location = map.getLocation(x, y); //henter ut ved hjelp av x og y
-
-			items = map.getItems(location); //liste over items på location
-			
-			}while (!(items.isEmpty())); //gjennomgår så lenge items ikke er tom
-			map.add(location, new Carrot()); //når jeg har funnet en tom location legger jeg til en ny carrot her.
-			//OBS bør egentlig endre metoden slik at det kommer en feilmelding hvis man ikke finner en location som er ledig. Da vil sannsynligvis 
-			//denne løkken aldri avslutte. Antar for enkelhets skyld at man aldri vil lage et kart som er så lite og fyllt med så mange kaniner/vegger
-		}
-		
-			
-		do {
-
-				
-			
-			
+	public boolean doTurn() {			
+		do {			
 			if (actors.isEmpty()) {
 				// System.err.println("new turn!");
 
@@ -184,7 +194,6 @@ public class Game implements IGame {
 				// first collect all the actors:
 				beginTurn();
 			}
-
 			// process actors one by one; for the IPlayer, we return and wait for keypresses
 			// Possible TODO: for INonPlayer, we could also return early (returning
 			// *false*), and then insert a little timer delay between each non-player move
@@ -205,16 +214,29 @@ public class Game implements IGame {
 					// computer-controlled players do their stuff right away
 					((INonPlayer) currentActor).doTurn(this);
 					// remove any dead items from current location
+					if(currentActor.isDestroyed())
+						map.add(currentLocation, fleshObj);
 					map.clean(currentLocation);
 				} else if (currentActor instanceof IPlayer) {
 					if (currentActor.isDestroyed()) {
 						// a dead human player gets removed from the game
 						// TODO: you might want to be more clever here
-						displayMessage("YOU DIE!!!");
-						map.remove(currentLocation, currentActor);
+						displayKeyMap("You got Killed.. Game OVER..");
+						map.add(currentLocation, new Flesh());
+						map.add(currentLocation, new DeadPlayer());
 						currentActor = null;
 						currentLocation = null;
 					} else {
+						//SHADOW REMOVER, fjerner skygge rundt spilleren så ha kan se
+						for(IItem it : map.getItems(currentLocation)) //fjerner skygge på spillerens location
+							if(it instanceof Shadow)
+								map.remove(currentLocation, it);
+						//fjerner så skygge rundt spilleren avhenging av spillerens getVisible
+						for(ILocation neighb : getVisible()) //getVisible returnerer vis som først er 0
+							for(IItem it : map.getItems(neighb)) //removing shadow from visible cells around player
+								if(it instanceof Shadow)
+									map.remove(neighb, it);
+						
 						// For the human player, we need to wait for input, so we just return.
 						// Further keypresses will cause keyPressed() to be called, and once the human
 						// makes a move, it'll lose its movement point and doTurn() will be called again
@@ -286,15 +308,37 @@ public class Game implements IGame {
 		case ".":				//DELOPPG B3 a)
 			return new Dust(); //legger til nytt dust hvis symbolet er .
 		case "R":
-			return new Rabbit();
+			return new RabbitDELC(); //ny Rabbit
 		case "C":
-			return new Carrot();
+			return carObj;
 		case "A":			//DELOPPG B1 c)
-			return new Apple();  //la til Apple som item på kartet
-		case "@":			//DELOPPG B2 b)
-			return new Player();  //legger til player for symbolet @
+			return aplObj;  //la til Apple som item på kartet
+		case "@"://DELOPPG B2 b)
+			player = new PlayerDELC();
+			return player;  //legger til player for symbolet @
 		case " ":
 			return null;
+			//DELOPPG C, videreutvikling
+		case "D":
+			return new Door();
+		case "Z":
+			return new Zombie();
+		case ",":
+			return new Shadow();
+		case "K":
+			return keyObj;
+		case "N":
+			return new Knife();
+		case "T":
+			return torchObj;
+		case "B":
+			return new Backpack();
+		case "S":
+			return new Sword(); 
+		case "P":
+			return fakObj;
+		case "E":
+			return new Exit();
 		default:
 			// alternative/advanced method
 			Supplier<IItem> factory = itemFactories.get(sym);
@@ -323,10 +367,8 @@ public class Game implements IGame {
 		while (lastMessages.size() > 20)
 			lastMessages.remove(0);
 
-		printer.clearLine(Main.LINE_MSG1);
-		printer.printAt(1, Main.LINE_MSG1, s);
-		printer.clearLine(Main.LINE_MSG2);
-		printer.printAt(1, Main.LINE_MSG2, "Message2");
+		printer.clearLine(Main.LINE_MSG3);
+		printer.printAt(1, Main.LINE_MSG3, s);
 		System.out.println("Message: «" + s + "»");	
 
 	}
@@ -351,7 +393,28 @@ public class Game implements IGame {
 		System.out.println("Status: «" + s + "»");
 	}
 	
+	public void displayInventory(String s) {
+		printer.clearLine(Main.LINE_MSG1);
+		printer.printAt(1, Main.LINE_MSG1, s);
+		System.out.println("Inventory: «" + s + "»");
+		
+	}
 	
+	public void displayKeyMap(String s){
+		printer.clearLine(Main.LINE_MSG2);
+		printer.printAt(1, Main.LINE_MSG2, s);
+		System.out.println("Inventory: «" + s + "»");
+		
+	}
+	
+	@Override
+	public String getLastAction() {
+		if (lastActions.isEmpty())
+			return "";
+		else
+			return lastActions.get(lastActions.size() - 1);
+	}
+
 
 	public void draw() {
 		map.draw(painter, printer);
@@ -434,7 +497,7 @@ public class Game implements IGame {
 	public List<ILocation> getVisible() {
 		// TODO: maybe replace 3 by some sort of visibility range obtained from
 		// currentActor?
-		return map.getNeighbourhood(currentLocation, 3);
+		return map.getNeighbourhood(currentLocation, currentActor.getVisibility());
 	}
 
 	@Override
@@ -557,48 +620,52 @@ public class Game implements IGame {
 	public Random getRandom() {
 		return random;
 	}
-
+	//DELOPPG. C
 	@Override
-	public String getLastAction() {
-		// TODO Auto-generated method stub
-		return null;
+	public ILocation getPlayerLoc() {		
+		return map.getLocation(player);
 	}
-
-	//SE "GameDELC" for DELOPPG C implementasjon
-	@Override
-	public ILocation getPlayerLoc() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void displayInventory(String s) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void displayKeyMap(String s) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	@Override
 	public boolean openDoor(GridDirection dir) {
-		return false;
-		// TODO Auto-generated method stub
-		
+		ILocation targLoc = map.getNeighbour(currentLocation, dir);
+		for(IItem it : map.getItems(targLoc)) //removing shadow from players current location
+			if(it instanceof Door) {
+				map.remove(targLoc, it);
+				displayMessage("opened door with key..");
+				return true;
+			}
+		return false;		
 	}
 
 	@Override
 	public boolean hasDoor(GridDirection dir) {
 		// TODO Auto-generated method stub
+		for(IItem it : map.getAll(map.getNeighbour(currentLocation, dir)))
+			if(it instanceof Door)
+				return true;
 		return false;
 	}
-
-	@Override
+	//Metode som skriver ut melding om at du har tapt spillet. Fant ikke helt ut hvordan får spillet til å stoppe.
+	//ser mer på det hvis jeg får tid.
+	public void gameOver() {
+		printer.clear();
+		String s = "You died... GAME OVER...";
+		printer.clearLine(Main.LINE_STATUS);
+		printer.printAt(1, Main.LINE_STATUS, s);
+		System.out.println("«" + s + "»");
+	}
+	
+	//Metode som skriver ut melding om at du har rundet spillet og fjerner spilleren.. samme som over med å stoppe spillet..
 	public void won() {
-		// TODO Auto-generated method stub
+		String s = "You found the exit and left into a new world.. TBC..";
 		
+		printer.clear();
+		printer.clearLine(Main.LINE_MSG3);
+		printer.printAt(1, Main.LINE_MSG3, s);
+		System.out.println("«" + s + "»");
+		currentActor.handleDamage(this, new Zombie(), 1000);
+		map.clean(currentLocation);
+		currentActor = null;
+		currentLocation = null;
 	}
 }

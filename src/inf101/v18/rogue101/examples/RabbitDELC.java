@@ -12,13 +12,13 @@ import inf101.v18.rogue101.objects.IActor;
 import inf101.v18.rogue101.objects.IItem;
 import inf101.v18.rogue101.objects.INonPlayer;
 
-public class Rabbit implements INonPlayer {
+public class RabbitDELC implements INonPlayer {
 	private int food = 0;
 	private int hp = getMaxHealth();
 
 	@Override
 	public void doTurn(IGame game) {
-		if (food == 0)
+		if (food == 20)
 			hp--;
 		else
 			food--;
@@ -101,12 +101,12 @@ public class Rabbit implements INonPlayer {
 
 	@Override
 	public int getSize() {
-		return 4;
+		return 3;
 	}
 
 	@Override
 	public String getSymbol() {
-		return hp > 0 ? "\u001b[33m"+"R"+"\u001b[30m" : "¤";
+		return hp > 0 ? "🐇" : "¤";
 	}
 
 	@Override

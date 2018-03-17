@@ -3,7 +3,7 @@ package inf101.v18.rogue101.objects;
 import inf101.v18.gfx.gfxmode.ITurtle;
 import inf101.v18.rogue101.game.IGame;
 
-public class Wall implements IItem {
+public class Knife implements IWeapon {
 	private int hp = getMaxHealth();
 
 	@Override
@@ -23,27 +23,39 @@ public class Wall implements IItem {
 
 	@Override
 	public int getMaxHealth() {
-		return 1000;
+		return 10;
 	}
 
 	@Override
 	public String getName() {
-		return "wall";
+		return "knife";
 	}
 
 	@Override
 	public int getSize() {
-		return 3;
+		return 2;
 	}
 
 	@Override
 	public String getSymbol() {
-		return "\u001b[93m"+"🏿"+"\u001b[30m";
+		return "🔪";
 	}
 
 	@Override
 	public int handleDamage(IGame game, IItem source, int amount) {
-		hp -= amount;
-		return amount;
+		return 0;
 	}
+
+	@Override
+	public int getAttack() {
+		// TODO Auto-generated method stub
+		return 40;
+	}
+
+	@Override
+	public int getDamage() {
+		// TODO Auto-generated method stub
+		return 20;
+	}
+
 }

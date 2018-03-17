@@ -1,6 +1,5 @@
 package inf101.v18.rogue101.examples;
 
-
 import java.util.Collections;
 import java.util.List;
 
@@ -8,38 +7,28 @@ import inf101.v18.gfx.gfxmode.ITurtle;
 import inf101.v18.grid.GridDirection;
 import inf101.v18.grid.ILocation;
 import inf101.v18.rogue101.game.IGame;
+import inf101.v18.rogue101.objects.Flesh;
 import inf101.v18.rogue101.objects.IActor;
 import inf101.v18.rogue101.objects.IItem;
 import inf101.v18.rogue101.objects.INonPlayer;
 
-public class Rabbit implements INonPlayer {
-	private int food = 0;
+public class Zombie implements INonPlayer {
+
 	private int hp = getMaxHealth();
 
 	@Override
 	public void doTurn(IGame game) {
-		if (food == 0)
-			hp--;
-		else
-			food--;
-		if (hp < 1)
-			return;
-
 		for (IItem item : game.getLocalItems()) {
-			if (item instanceof Carrot) {
-				System.out.println("found carrot!");
-				int eaten = item.handleDamage(game, this, 5);
-				if (eaten > 0) {
-					System.out.println("ate carrot worth " + eaten + "!");
-					food += eaten;
-					game.displayMessage("You hear a faint crunching (" + getName() + " eats " + item.getArticle() + " "
-							+ item.getName() + ")");
-					return;
-				}
+			if (item instanceof Flesh) { //hvis zombie finner flesh skal den spise
+				System.out.println("zombie found flesh");
+				int eaten = item.handleDamage(game, this, 20);
+				System.out.println("zombie ate flesh worth" + eaten);
+				game.displayMessage("You hear a faint crunching.. someone or something is eating something viciously close by..");
+				return;
 			}
 		}
-
-		//DELOPPG B6 endret på denne nå som jeg skal angripe. Sjekker først alle fire retninger om det er en IActor der
+		
+		//sjekker så alle 4 retninger om det er noen IActor der
 		List<GridDirection> possibleMoves = GridDirection.FOUR_DIRECTIONS; //endret denne fra game.getPossibleMoves();
 
 		for(GridDirection dir : possibleMoves) { //gjennomgår for hver direction i possibleMoves
@@ -49,19 +38,18 @@ public class Rabbit implements INonPlayer {
 					game.attack(dir, neighb_item);
 					return;
 				}
-				else if(neighb_item instanceof Carrot) { //hvis det finnes en carrot beveger kaninen seg mot den.
+				else if(neighb_item instanceof Flesh) { //hvis det finnes flesh beveger zombies seg mot den.
 					game.move(dir);
 					return;
 				}
 			}
 		}
-		// hvis det ikke finnes hverken Carrots eller IActors skal kaninen bare hoppe til en tilfeldig mulig retning
-		
+		// hvis det ikke finnes IActors eller flesh skal zombier bare gå til en tilfeldig mulig retning
 		possibleMoves = game.getPossibleMoves();
-		if(possibleMoves.size() == 0) //hvis kaninen nå ikke har noen mulige moves gjør den ingenting.
+		if(possibleMoves.size() == 0) //hvis zombien ikke har noen mulige moves gjør den ingenting.
 			return;
 		Collections.shuffle(possibleMoves); //shuffler mulige moves
-		game.move(possibleMoves.get(0));    //og kaninen beveger seg i en tilfeldig retning
+		game.move(possibleMoves.get(0));    //og zombien beveger seg i en tilfeldig retning
 	}
 
 	@Override
@@ -70,8 +58,8 @@ public class Rabbit implements INonPlayer {
 	}
 
 	@Override
-	public int getAttack() {  //endret rabbit til å blir litt mer realistisk svak
-		return 10;
+	public int getAttack() {  
+		return 40;
 	}
 
 	@Override
@@ -81,32 +69,32 @@ public class Rabbit implements INonPlayer {
 
 	@Override
 	public int getDamage() {
-		return 10;
+		return 40;
 	}
 
 	@Override
-	public int getDefence() { //endret til mer realistisk rabbit så spilleren overlever og Player Test funker
-		return 10;
+	public int getDefence() { 
+		return 30;
 	}
 
 	@Override
 	public int getMaxHealth() {
-		return 10;
+		return 50;
 	}
 
 	@Override
 	public String getName() {
-		return "rabbit";
+		return "zombie";
 	}
 
 	@Override
 	public int getSize() {
-		return 4;
+		return 3;
 	}
 
 	@Override
 	public String getSymbol() {
-		return hp > 0 ? "\u001b[33m"+"R"+"\u001b[30m" : "¤";
+		return hp > 0 ? "\u001b[32m"+"👰"+"\u001b[30m" : "¤";
 	}
 
 	@Override

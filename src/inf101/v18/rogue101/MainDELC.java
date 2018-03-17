@@ -7,7 +7,7 @@ import inf101.v18.gfx.Screen;
 import inf101.v18.gfx.gfxmode.ITurtle;
 import inf101.v18.gfx.textmode.Printer;
 import inf101.v18.gfx.textmode.TextMode;
-import inf101.v18.rogue101.game.Game;
+import inf101.v18.rogue101.game.GameDELC;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -18,7 +18,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-public class Main extends Application {
+public class MainDELC extends Application {
 	// you might want to tune these options
 	public static final boolean MAIN_USE_BACKGROUND_GRID = true;
 	public static final boolean MAP_AUTO_SCALE_ITEM_DRAW = true;
@@ -44,7 +44,7 @@ public class Main extends Application {
 	private ITurtle painter;
 	private Printer printer;
 
-	private Game game;
+	private GameDELC game;
 
 	private boolean grid = MAIN_USE_BACKGROUND_GRID;
 	private boolean autoNextTurn = false;
@@ -53,7 +53,7 @@ public class Main extends Application {
 
 	private void setup() {
 		//
-		game = new Game(screen, painter, printer);
+		game = new GameDELC(screen, painter, printer);
 		game.draw();
 
 		//
@@ -87,8 +87,8 @@ public class Main extends Application {
 		painter = screen.createPainter();
 		printer.setTextMode(MAIN_TEXT_MODE, true);
 		
-		// Font with emojis – need separate download
-		// printer.setFont(Printer.FONT_SYMBOLA);
+		//Font with emojis – need separate download
+		printer.setFont(Printer.FONT_SYMBOLA);
 		
 		if (grid)
 			printer.drawCharCells();
