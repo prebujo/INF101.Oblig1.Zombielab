@@ -522,13 +522,12 @@ public class TextFont {
 	/**
 	 * Draw the given text at position (x, y), with horizontal scaling.
 	 * 
-	 * Text will be clipped so each character fits its expected square-shaped area,
-	 * and the area will be cleared to transparency before drwaing.
+	 * The area will be cleared to transparency before drawing.
 	 * 
 	 * The graphics context's current path will be overwritten.
 	 * 
 	 * @param ctx
-	 *            a grapics context
+	 *            a graphics context
 	 * @param x
 	 *            X-position of the lower left corner of the text
 	 * @param y
@@ -541,6 +540,29 @@ public class TextFont {
 	public void drawTextAt(GraphicsContext ctx, double x, double y, String text, double xScaleFactor, int mode,
 			Paint bg) {
 		textAt(ctx, x, y, text, xScaleFactor, true, false, ctx.getFill(), null, mode, bg);
+	}
+
+	/**
+	 * Draw the given text at position (x, y), with horizontal scaling.
+	 * 
+	 * The area will not be cleared to transparency before drawing.
+	 * 
+	 * The graphics context's current path will be overwritten.
+	 * 
+	 * @param ctx
+	 *            a graphics context
+	 * @param x
+	 *            X-position of the lower left corner of the text
+	 * @param y
+	 *            Y-position of the lower left corner of the text
+	 * @param text
+	 *            string to be printed
+	 * @param xScaleFactor
+	 *            a horizontal scaling factor
+	 */
+	public void drawTextNoClearAt(GraphicsContext ctx, double x, double y, String text, double xScaleFactor, int mode,
+			Paint bg) {
+		textAt(ctx, x, y, text, xScaleFactor, false, false, ctx.getFill(), null, mode, bg);
 	}
 
 	private void fakeBlockElement(GraphicsContext ctx, String text, double xScaleFactor) {
