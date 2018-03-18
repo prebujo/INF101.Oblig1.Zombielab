@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 
 import inf101.v18.gfx.gfxmode.TurtlePainter;
 import inf101.v18.gfx.textmode.Printer;
+import inf101.v18.rogue101.AppInfo;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
@@ -257,6 +258,7 @@ public class Screen {
 		Group root = new Group();
 		Scene scene = new Scene(root, winWidth, winHeight, Color.BLACK);
 		stage.setScene(scene);
+		stage.setTitle(AppInfo.APP_NAME);
 		if ((configFlags & CONFIG_FLAG_HIDE_MOUSE) != 0) {
 			scene.setCursor(Cursor.NONE);
 		}
