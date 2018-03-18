@@ -61,6 +61,7 @@ public class Printer implements IPaintLayer {
 			1.0000, 1.0000, true);
 	private static final Paint DEFAULT_BACKGROUND = Color.TRANSPARENT;
 	private static final TextMode DEFAULT_MODE = TextMode.MODE_40X22;
+	private static final boolean DEBUG_REDRAW = false;
 
 	public static String center(String s, int width) {
 		for (; s.length() < width; s = " " + s + " ")
@@ -102,7 +103,13 @@ public class Printer implements IPaintLayer {
 
 	private final double width;
 	private final double height;
-	
+
+	private int dirtyX0 = Integer.MAX_VALUE;
+	private int dirtyX1 = Integer.MIN_VALUE;
+	private int dirtyY0 = Integer.MAX_VALUE;
+	private int dirtyY1 = Integer.MIN_VALUE;
+	private boolean useBuffer = true;
+
 	public Printer(double width, double height) {
 		this.screen = null;
 		this.textPage = null;
@@ -141,13 +148,13 @@ public class Printer implements IPaintLayer {
 				moveTo(leftMargin, topMargin);
 				for (Char[] line : lineBuffer)
 					Arrays.fill(line, null);
-				if(textPage != null) {
-				GraphicsContext context = textPage.getGraphicsContext2D();
-				if (background != null && background != Color.TRANSPARENT) {
-					context.setFill(background);
-					context.fillRect(0.0, 0.0, textPage.getWidth(), textPage.getHeight());
-				} else
-					context.clearRect(0.0, 0.0, textPage.getWidth(), textPage.getHeight());
+				if (textPage != null) {
+					GraphicsContext context = textPage.getGraphicsContext2D();
+					if (background != null && background != Color.TRANSPARENT) {
+						context.setFill(background);
+						context.fillRect(0.0, 0.0, textPage.getWidth(), textPage.getHeight());
+					} else
+						context.clearRect(0.0, 0.0, textPage.getWidth(), textPage.getHeight());
 				}
 				break;
 			case "\b":
@@ -239,7 +246,10 @@ public class Printer implements IPaintLayer {
 		y = constrainY(y);
 		if (y > 0 && y <= TextMode.PAGE_HEIGHT_MAX) {
 			Arrays.fill(lineBuffer.get(y - 1), null);
-			redrawTextPage();
+			dirty(1, y);
+			dirty(getLineWidth(), y);
+			if (!useBuffer)
+				redrawDirty();
 		}
 	}
 
@@ -257,7 +267,10 @@ public class Printer implements IPaintLayer {
 		for (int i = y1; i <= y2; i++) {
 			Arrays.fill(lineBuffer.get(i - 1), x1 - 1, x2, null);
 		}
-		redrawTextPage();
+		dirty(x1, y1);
+		dirty(x2, y2);
+		if (!useBuffer)
+			redrawDirty();
 	}
 
 	private int constrainX(int x) {
@@ -296,11 +309,16 @@ public class Printer implements IPaintLayer {
 		textMode = textMode.nextMode();
 		if (adjustDisplayAspect && screen != null)
 			screen.setAspect(textMode.getAspect());
-		redrawTextPage();
+		dirty(1, 1);
+		dirty(getLineWidth(), getPageHeight());
+		if (!useBuffer)
+			redrawDirty();
 	}
 
 	private void drawChar(int x, int y, Char c) {
-		if (c != null && textPage != null) {
+		if (useBuffer) {
+			dirty(x, y);
+		} else if (c != null && textPage != null) {
 			GraphicsContext context = textPage.getGraphicsContext2D();
 
 			context.setFill(c.fill);
@@ -510,31 +528,42 @@ public class Printer implements IPaintLayer {
 	}
 
 	public void redrawTextPage() {
+		redrawTextPage(1, 1, getLineWidth(), getPageHeight());
+		clean();
+	}
+
+	private void redrawTextPage(int x0, int y0, int x1, int y1) {
 		/*
 		 * System.out.printf("redrawTextPage benchmark");
 		 * System.out.printf("  %5s %5s %7s %4s %5s %5s %5s%n", "ms", "chars",
 		 * "ms/char", "mode", "indir", "inv", "fake"); for (int m = -1; m < 8; m++) {
 		 * long t0 = System.currentTimeMillis(); int n = 0;
 		 */
-		if(textPage == null)
+		if (textPage == null)
 			return;
 		GraphicsContext context = textPage.getGraphicsContext2D();
 
+		double px0 = (x0 - 1) * getCharWidth(), py0 = (y0 - 1) * getCharHeight();
+		double px1 = x1 * getCharWidth(), py1 = y1 * getCharHeight();
+		if (DEBUG_REDRAW)
+			System.out.printf("redrawTextPage(): Area to clear: (%2f,%2f)–(%2f,%2f)%n", px0, py0, px1, py1);
 		if (background != null && background != Color.TRANSPARENT) {
 			context.setFill(background);
-			context.fillRect(0.0, 0.0, textPage.getWidth(), textPage.getHeight());
-		} else
-			context.clearRect(0.0, 0.0, textPage.getWidth(), textPage.getHeight());
-		for (int tmpY = 1; tmpY <= getPageHeight(); tmpY++) {
+			context.fillRect(px0, py0, px1 - px0, py1 - py0);
+		} else {
+			context.clearRect(px0, py0, px1 - px0, py1 - py0);
+		}
+		for (int tmpY = y0; tmpY <= y1; tmpY++) {
 			Char[] line = lineBuffer.get(tmpY - 1);
-			for (int tmpX = 1; tmpX <= getLineWidth(); tmpX++) {
+			for (int tmpX = x0; tmpX <= x1; tmpX++) {
 				Char c = line[tmpX - 1];
 				if (c != null) {
 					context.save();
 					context.setFill(c.fill);
 					context.setStroke(c.stroke);
-					font.drawTextAt(context, (tmpX - 1) * getCharWidth(), tmpY * getCharHeight(), c.s,
-							textMode.getCharWidth() / textMode.getCharBoxSize(), c.mode/* m */, c.bg);
+					Paint bg = c.bg == background ? null : c.bg;
+					font.drawTextNoClearAt(context, (tmpX - 1) * getCharWidth(), tmpY * getCharHeight(), c.s,
+							textMode.getCharWidth() / textMode.getCharBoxSize(), c.mode/* m */, bg);
 					context.restore();
 					// n++;
 
@@ -590,14 +619,20 @@ public class Printer implements IPaintLayer {
 		Char[] remove = lineBuffer.remove(lineBuffer.size() - 1);
 		Arrays.fill(remove, null);
 		lineBuffer.add(0, remove);
-		redrawTextPage();
+		dirty(1, 1);
+		dirty(getLineWidth(), getPageHeight());
+		if (!useBuffer)
+			redrawDirty();
 	}
 
 	public void scrollUp() {
 		Char[] remove = lineBuffer.remove(0);
 		Arrays.fill(remove, null);
 		lineBuffer.add(remove);
-		redrawTextPage();
+		dirty(1, 1);
+		dirty(getLineWidth(), getPageHeight());
+		if (!useBuffer)
+			redrawDirty();
 	}
 
 	public boolean setAutoScroll(boolean autoScroll) {
@@ -703,7 +738,10 @@ public class Printer implements IPaintLayer {
 		textMode = mode;
 		if (adjustDisplayAspect && screen != null)
 			screen.setAspect(textMode.getAspect());
-		redrawTextPage();
+		dirty(1, 1);
+		dirty(getLineWidth(), getPageHeight());
+		if (!useBuffer)
+			redrawDirty();
 	}
 
 	public void setTopMargin() {
@@ -744,4 +782,63 @@ public class Printer implements IPaintLayer {
 		return height;
 	}
 
+	private boolean isDirty() {
+		return dirtyX0 <= dirtyX1 || dirtyY0 <= dirtyY1;
+	}
+
+	/**
+	 * Expand the dirty region (area that should be redrawn) to include the given
+	 * position
+	 * 
+	 * @param x
+	 * @param y
+	 */
+	private void dirty(int x, int y) {
+		dirtyX0 = Math.max(Math.min(x, dirtyX0), 1);
+		dirtyX1 = Math.min(Math.max(x, dirtyX1), getLineWidth());
+		dirtyY0 = Math.max(Math.min(y, dirtyY0), 1);
+		dirtyY1 = Math.min(Math.max(y, dirtyY1), getPageHeight());
+	}
+
+	/**
+	 * Redraw the part of the page that has changed since last redraw.
+	 */
+	public void redrawDirty() {
+		if (isDirty()) {
+			if (DEBUG_REDRAW)
+				System.out.printf("redrawDirty(): Dirty region is (%d,%d)–(%d,%d)%n", dirtyX0, dirtyY0, dirtyX1,
+						dirtyY1);
+			redrawTextPage(dirtyX0, dirtyY0, dirtyX1, dirtyY1);
+			clean();
+		}
+	}
+
+	/**
+	 * Mark the entire page as clean
+	 */
+	private void clean() {
+		dirtyX0 = Integer.MAX_VALUE;
+		dirtyX1 = Integer.MIN_VALUE;
+		dirtyY0 = Integer.MAX_VALUE;
+		dirtyY1 = Integer.MIN_VALUE;
+	}
+
+	/**
+	 * With buffered printing, nothing is actually drawn until
+	 * {@link #redrawDirty()} or {@link #redrawTextPage()} is called.
+	 * 
+	 * @param buffering
+	 *            Whether to use buffering
+	 */
+	public void setBuffering(boolean buffering) {
+		useBuffer = buffering;
+	}
+
+	/**
+	 * @return True if buffering is enabled
+	 * @see #setBuffering(boolean)
+	 */
+	public boolean getBuffering() {
+		return useBuffer;
+	}
 }

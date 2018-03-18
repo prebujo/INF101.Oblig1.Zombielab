@@ -103,6 +103,7 @@ public class Main extends Application {
 					if (grid)
 						printer.drawCharCells();
 					game.draw();
+					printer.redrawDirty();
 					return true;
 				} else if (code == KeyCode.A) {
 					screen.cycleAspect();
@@ -150,6 +151,7 @@ public class Main extends Application {
 						game.displayDebug("Exception: " + e.getMessage());
 					}
 				}
+				printer.redrawDirty();
 				return true;
 			}
 			return false;
@@ -172,6 +174,7 @@ public class Main extends Application {
 			System.out.println("doTurn() took " + (System.currentTimeMillis() - t) + "ms");
 		long t2 = System.currentTimeMillis();
 		game.draw();
+		printer.redrawDirty();
 		if (DEBUG_TIME) {
 			System.out.println("draw() took " + (System.currentTimeMillis() - t2) + "ms");
 			System.out.println("doTurn()+draw() took " + (System.currentTimeMillis() - t) + "ms");
